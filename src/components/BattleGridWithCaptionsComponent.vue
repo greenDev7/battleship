@@ -3,12 +3,34 @@
         <tbody>
             <tr>
                 <td></td>
+                <td></td>
                 <td>
-                    <canvas id="alphabeticCanvas" ref="alphabeticCanvas" class="canvas" :style="getAlphabeticCanvasStyle()"></canvas>
+                    <canvas id="alphabeticCanvas" ref="alphabeticCanvas" class="canvas"
+                        :style="getAlphabeticCanvasStyle()"></canvas>
                 </td>
             </tr>
             <tr>
-                <td><canvas id="digitalCanvas" ref="digitalCanvas" class="canvas" :style="getDigitalCanvasStyle()"></canvas></td>
+                <td style="display: block;">
+                
+                    <table class="inner">
+                    <tbody>
+                        <tr><td>1</td></tr>                        
+                        <tr><td>2</td></tr>                        
+                        <tr><td>3</td></tr>                        
+                        <tr><td>4</td></tr>                        
+                        <tr><td>5</td></tr>                        
+                        <tr><td>6</td></tr>                        
+                        <tr><td>7</td></tr>                        
+                        <tr><td>8</td></tr>                        
+                        <tr><td>9</td></tr>                        
+                        <tr><td>10</td></tr>                        
+                    </tbody>
+                
+                    </table>
+       
+                </td>            
+                <td><canvas id="digitalCanvas" ref="digitalCanvas" class="canvas"
+                        :style="getDigitalCanvasStyle()"></canvas></td>
                 <td>
                     <BattleGridComponent :canvasWidth="canvasWidth" :canvasHeight="canvasHeight" />
                 </td>
@@ -20,6 +42,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import BattleGridComponent from './BattleGridComponent.vue';
+import digitsBitmap from "../assets/digits1.png";
 
 export default defineComponent({
     name: "BattleGridWithCaptionsComponent",
@@ -53,7 +76,7 @@ export default defineComponent({
             return {
                 width: this.digitalCanvasWidth + 'px',
                 height: this.canvasHeight + 'px',
-                'border': '1px solid blue'
+                // 'border': '1px solid blue'
             }
         },
 
@@ -80,7 +103,7 @@ export default defineComponent({
         },
 
         makeDigitalCanvasGrid() {
-            let canvas = <HTMLCanvasElement>this.$refs.digitalCanvas;
+            let canvas = <HTMLCanvasElement>this.$refs['digitalCanvas'];
             let ctx = canvas.getContext("2d");
 
             if (ctx) {
@@ -99,12 +122,40 @@ export default defineComponent({
 
                 ctx.stroke();
             }
+        },
+
+        drawDigits() {
+            let canvas = <HTMLCanvasElement>this.$refs['digitalCanvas'];
+            let ctx = canvas.getContext("2d");
+
+            if (ctx) {
+                ctx.canvas.width = this.digitalCanvasWidth;
+                ctx.canvas.height = this.canvasHeight;
+
+                this.bindImageToCanvas(ctx, digitsBitmap, 75, 660);
+            }
+        },
+
+        bindImageToCanvas(ctx: CanvasRenderingContext2D, imgSrcString: string, sourceImgWidth: number, sourceImgHeight: number) {
+            let img = new Image();
+            img.src = imgSrcString;
+            img.onload = () => {
+                let sWidth: number = sourceImgWidth;
+                let sHeight: number = sourceImgHeight / 10;
+
+                let dl: number = this.digitalCanvasWidth;
+
+                for (let i = 0; i < 10; i++) {
+                    ctx.drawImage(img, 0 + 5, i * sHeight + 1, sWidth, sHeight - 1, 0, i * dl, dl, dl);   
+                }
+            };
         }
     },
 
     mounted() {
         this.makeAlphabeticCanvasGrid();
-        this.makeDigitalCanvasGrid();
+        // this.makeDigitalCanvasGrid();
+        this.drawDigits();
     }
 })
 </script>
@@ -113,12 +164,20 @@ export default defineComponent({
 table,
 tr,
 td {
-    /* border: 1px solid blue; */
+    border: 1px solid blue;
     border-collapse: collapse;
     padding: 0px;
 }
 
-canvas {
+.canvas {
     display: block;
+}
+
+.inner {
+    height: 350px;
+}
+
+.inner > tbody> tr > td {
+    padding-top: 4px;
 }
 </style>
