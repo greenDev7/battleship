@@ -1,12 +1,13 @@
 <template>
-    <table id="container">
+    <table>
         <tbody>
             <tr>
                 <td>
                     <BattleGridWithCaptionsComponent :canvasWidth=canvasWidth :canvasHeight=canvasHeight />
                 </td>
                 <td>
-                    <BattleGridWithCaptionsComponent :canvasWidth=canvasWidth :canvasHeight=canvasHeight :gridType="'hostile'" />
+                    <BattleGridWithCaptionsComponent :canvasWidth=canvasWidth :canvasHeight=canvasHeight
+                        :gridType="'hostile'" />
                 </td>
             </tr>
         </tbody>
@@ -26,17 +27,12 @@ export default defineComponent({
     props: {
         canvasWidth: { type: Number, default: 300 },
         canvasHeight: { type: Number, default: 300 },
-    } 
+    }
 })
 </script>
 
 
 <style lang="css" scoped>
-table {
-    border-collapse: collapse;
-    /* border: 1px solid red; */
-}
-
 td {
     padding-left: 15px;
 }

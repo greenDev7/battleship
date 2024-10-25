@@ -1,5 +1,7 @@
 <template>
-    <canvas id="canvas" ref="canvas"></canvas>
+    <div :style="{ height: canvasHeight + 'px' }">
+        <canvas ref="canvas"></canvas>
+    </div>
 </template>
 
 
@@ -9,6 +11,8 @@ import { defineComponent } from 'vue'
 export default defineComponent({
     props: {
         gridType: { type: String, default: "Mine" },
+        xSize: { type: Number, default: 10 },
+        ySize: { type: Number, default: 10 },
         canvasWidth: { type: Number, default: 300 },
         canvasHeight: { type: Number, default: 300 },
         gridLineThickness: { type: Number, default: 0.2 },
@@ -21,7 +25,7 @@ export default defineComponent({
 
     methods: {
         initialize() {
-            let canvas = <HTMLCanvasElement> this.$refs.canvas;
+            let canvas = <HTMLCanvasElement>this.$refs.canvas;
             let ctx = canvas.getContext("2d");
 
             if (ctx) {
@@ -34,19 +38,20 @@ export default defineComponent({
         },
 
         makeGrid(ctx: CanvasRenderingContext2D, thickness: number) {
-            let squareLength = this.canvasWidth / 10;
+            let xSquareLength = this.canvasWidth / this.xSize;
+            let ySquareLength = this.canvasHeight / this.ySize;
 
             ctx.beginPath();
 
             ctx.lineWidth = thickness;
             ctx.setLineDash([3, 3]);
 
-            for (let x = 0; x <= this.canvasWidth; x += squareLength) {
+            for (let x = 0; x <= this.canvasWidth; x += xSquareLength) {
                 ctx.moveTo(x, 0);
                 ctx.lineTo(x, this.canvasHeight);
             };
 
-            for (let y = 0; y <= this.canvasHeight; y += squareLength) {
+            for (let y = 0; y <= this.canvasHeight; y += ySquareLength) {
                 ctx.moveTo(0, y);
                 ctx.lineTo(this.canvasWidth, y);
             };
@@ -63,8 +68,7 @@ export default defineComponent({
 
 
 <style lang="css" scoped>
-#canvas {
+canvas {
     border: 1px dashed rgb(99, 99, 99);
-    display: block;
 }
 </style>

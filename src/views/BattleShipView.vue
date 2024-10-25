@@ -1,20 +1,21 @@
 <template>
-    <BattleBoardComponent id="board"></BattleBoardComponent>
+    <BattleGridComponent class="inline" />
+    <BattleBoardComponent :canvasWidth="300" :canvasHeight="300" id="board" class="inline" />
 </template>
 
 <script lang="ts">
 import BattleBoardComponent from '../components/BattleBoardComponent.vue'
+import BattleGridComponent from "../components/BattleGridComponent.vue";
 
 export default {
     name: "BattleShipView",
 
-    components: { BattleBoardComponent }
+    components: { BattleGridComponent, BattleBoardComponent }
 }
 </script>
 
 <style lang="css" scoped>
-#board {
-    margin-left: auto;
-    margin-right: auto;
+.inline {
+    display: inline-block;
 }
 </style>
