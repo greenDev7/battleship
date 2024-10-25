@@ -39,7 +39,7 @@ export default defineComponent({
             ctx.beginPath();
 
             ctx.lineWidth = thickness;
-            ctx.setLineDash([]);
+            ctx.setLineDash([3, 3]);
 
             for (let x = 0; x <= this.canvasWidth; x += squareLength) {
                 ctx.moveTo(x, 0);
