@@ -3,11 +3,10 @@
         <tbody>
             <tr>
                 <td>
-                    <BattleGridWithCaptionsComponent :canvasWidth=canvasWidth :canvasHeight=canvasHeight />
+                    <BattleGridWithCaptionsComponent />
                 </td>
                 <td>
-                    <BattleGridWithCaptionsComponent :canvasWidth=canvasWidth :canvasHeight=canvasHeight
-                        :gridType="'hostile'" />
+                    <BattleGridWithCaptionsComponent :gridType="'hostile'" />
                 </td>
             </tr>
         </tbody>
@@ -23,11 +22,6 @@ export default defineComponent({
     name: "BattleBoardComponent",
 
     components: { BattleGridWithCaptionsComponent },
-
-    props: {
-        canvasWidth: { type: Number, default: 300 },
-        canvasHeight: { type: Number, default: 300 },
-    }
 })
 </script>
 

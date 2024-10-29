@@ -1,15 +1,12 @@
-import Point2D from "./Point2D";
+import ShipType from "./ShipType";
 
 export default class Ship {
+    size: number;
+    type: ShipType;
 
-    private _shipStructure: Point2D[]
-
-    constructor(shipStructure: Point2D[]) {
-        this._shipStructure = shipStructure;
-    }
-
-    public get shipStructure(): Point2D[] {
-        return this._shipStructure;
+    constructor(size: number, type: ShipType) {
+        this.size = size;
+        this.type = type;
     }
 
 }

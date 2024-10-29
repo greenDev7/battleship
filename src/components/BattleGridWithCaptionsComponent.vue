@@ -3,7 +3,7 @@
         <tbody>
             <tr>
                 <td></td>
-                <td :style="{width: canvasWidth + 'px'}">
+                <td :style="{ width: getCanvasWidth + 'px' }">
                     <table id="alphabeticTable">
                         <tbody>
                             <tr>
@@ -17,30 +17,50 @@
                                 <td>з</td>
                                 <td>и</td>
                                 <td>к</td>
-                            </tr>                                                  
-                        </tbody>                
+                            </tr>
+                        </tbody>
                     </table>
                 </td>
             </tr>
-            <tr :style="{height: canvasHeight + 'px'}">
+            <tr :style="{ height: getCanvasHeight + 'px' }">
                 <td id="digitCell">
                     <table id="digitTable">
                         <tbody>
-                            <tr><td>1</td></tr>                        
-                            <tr><td>2</td></tr>                        
-                            <tr><td>3</td></tr>                        
-                            <tr><td>4</td></tr>                        
-                            <tr><td>5</td></tr>                        
-                            <tr><td>6</td></tr>                        
-                            <tr><td>7</td></tr>                        
-                            <tr><td>8</td></tr>                        
-                            <tr><td>9</td></tr>                        
-                            <tr><td>10</td></tr>                        
-                        </tbody>                
+                            <tr>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                            </tr>
+                            <tr>
+                                <td>7</td>
+                            </tr>
+                            <tr>
+                                <td>8</td>
+                            </tr>
+                            <tr>
+                                <td>9</td>
+                            </tr>
+                            <tr>
+                                <td>10</td>
+                            </tr>
+                        </tbody>
                     </table>
                 </td>
                 <td>
-                    <BattleGridComponent :canvasWidth="canvasWidth" :canvasHeight="canvasHeight" />
+                    <BattleGridComponent />
                 </td>
             </tr>
         </tbody>
@@ -50,6 +70,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import BattleGridComponent from './BattleGridComponent.vue';
+import { mapGetters } from 'vuex';
 
 export default defineComponent({
     name: "BattleGridWithCaptionsComponent",
@@ -57,10 +78,16 @@ export default defineComponent({
     components: { BattleGridComponent },
 
     props: {
-        canvasWidth: { type: Number, default: 350 },
-        canvasHeight: { type: Number, default: 350 },
         gridType: { type: String, default: "Mine" },
-    }   
+    },
+
+    computed: {
+        ...mapGetters([
+            "getCanvasWidth",
+            "getCanvasHeight"
+        ]),
+    },
+
 })
 </script>
 
@@ -73,7 +100,7 @@ td {
     padding: 0px;
 }
 
-#digitTable > tbody> tr > td {
+#digitTable>tbody>tr>td {
     padding-top: 3px;
     padding-right: 7px;
 }
@@ -90,7 +117,7 @@ td {
     width: 100%;
 }
 
-#alphabeticTable > tbody> tr > td {
+#alphabeticTable>tbody>tr>td {
     width: 10%;
     padding-bottom: 5px;
 }
