@@ -18,11 +18,7 @@ export default defineComponent({
     props: {
         ship: { type: Ship, default: new Ship(2, ShipType.Vertical) },
     },
-
-    data() {
-        return {}
-    },
-
+    
     computed: {
         ...mapGetters([
             "getGridCellWidth",

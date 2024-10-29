@@ -9,17 +9,21 @@
 import Ship from '@/model/Ship';
 import ShipType from '@/model/ShipType';
 import store from '@/store/modules/GameStore';
+import ship2Horizontal from "../assets/ship2Horizontal.png";
+import ship2Vertical from "../assets/ship2Vertical.png";
 
 import { defineComponent, PropType } from 'vue'
 import { mapGetters } from 'vuex';
+import GameStore from '@/store/modules/GameStore';
+import Position from '@/model/Position';
+import GridType from '@/model/GridType';
 
 export default defineComponent({
 
     name: "BattleGridComponent",
 
     props: {
-        gridType: { type: String, default: "Mine" },
-        ships: { type: Array as PropType<Ship[]>, default: () => [new Ship(2, ShipType.Horizontal)] }
+        gridType: { type: String, default: GridType.Own },
     },
 
     data() {
@@ -74,6 +78,32 @@ export default defineComponent({
 
         arrangeShips(ctx: CanvasRenderingContext2D) {
 
+            // Расставляем корабли только на флотильской сетке (GridType.Fleet),
+            // с которой игрок будет перетягивать их на  свое поле
+            if (this.gridType === GridType.Fleet) {
+                this.arrangeSingleShip(ctx, new Ship(2, ShipType.Horizontal), new Position(0, 0));
+                this.arrangeSingleShip(ctx, new Ship(2, ShipType.Vertical), new Position(4, 3));
+            }
+        },
+
+        arrangeSingleShip(ctx: CanvasRenderingContext2D, ship: Ship, position: Position) {
+            let img = new Image();
+            img.src = this.determineShipImage(ship);
+            const sp = GameStore.state.scaleParameter;
+            img.onload = () => { ctx.drawImage(img, position.positionX * this.getGridCellWidth, position.positionY * this.getGridCellHeight, img.width * sp, img.height * sp); };
+        },
+
+        determineShipImage(ship: Ship): string {
+            let imgSourceString: string = "";
+
+            if (ship.type === ShipType.Horizontal) {
+                if (ship.size === 2) imgSourceString = ship2Horizontal;
+            }
+            else {
+                if (ship.size === 2) imgSourceString = ship2Vertical;
+            }
+
+            return imgSourceString;
         },
     },
 

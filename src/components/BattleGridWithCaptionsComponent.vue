@@ -71,6 +71,7 @@
 import { defineComponent } from 'vue'
 import BattleGridComponent from './BattleGridComponent.vue';
 import { mapGetters } from 'vuex';
+import GridType from '@/model/GridType';
 
 export default defineComponent({
     name: "BattleGridWithCaptionsComponent",
@@ -78,7 +79,7 @@ export default defineComponent({
     components: { BattleGridComponent },
 
     props: {
-        gridType: { type: String, default: "Mine" },
+        gridType: { type: String, default: GridType.Own },
     },
 
     computed: {

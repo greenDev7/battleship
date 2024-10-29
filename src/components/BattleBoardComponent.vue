@@ -6,7 +6,7 @@
                     <BattleGridWithCaptionsComponent />
                 </td>
                 <td>
-                    <BattleGridWithCaptionsComponent :gridType="'hostile'" />
+                    <BattleGridWithCaptionsComponent :gridType=hostileGrid />
                 </td>
             </tr>
         </tbody>
@@ -17,11 +17,18 @@
 <script>
 import { defineComponent } from 'vue'
 import BattleGridWithCaptionsComponent from './BattleGridWithCaptionsComponent.vue';
+import GridType from '@/model/GridType';
 
 export default defineComponent({
     name: "BattleBoardComponent",
 
     components: { BattleGridWithCaptionsComponent },
+
+    data() {
+        return {
+            hostileGrid: GridType.Hostile
+        }
+    }
 })
 </script>
 
