@@ -1,17 +1,25 @@
 <template>
+    <Ship class="inline" />
     <BattleGridComponent class="inline" />
-    <BattleBoardComponent :canvasWidth="300" :canvasHeight="300" id="board" class="inline" />
+    <BattleBoardComponent class="inline" />
 </template>
 
 <script lang="ts">
 import BattleBoardComponent from '../components/BattleBoardComponent.vue'
+import Ship from "../components/Ship.vue";
 import BattleGridComponent from "../components/BattleGridComponent.vue";
+import { defineComponent } from 'vue'
+import GameStore from '@/store/modules/GameStore';
 
-export default {
+export default defineComponent({
     name: "BattleShipView",
 
-    components: { BattleGridComponent, BattleBoardComponent }
-}
+    components: { BattleGridComponent, BattleBoardComponent, Ship },
+
+    mounted() {
+        console.log(GameStore.state.game);
+    }
+})
 </script>
 
 <style lang="css" scoped>

@@ -1,26 +1,23 @@
+import Point2D from "./Point2D";
 import Ship from "./Ship";
 
-
-class Game {
+export default class Game {
     ships: Ship[];
 
     constructor() {
-        let ships: Ship[] = new Array<Ship>(4);
+        console.log('Game constructor invocation...');
+        this.ships = this.createInitialShips();
+    }
 
-        ships.push(new Ship(1));
-        ships.push(new Ship(1));
-        ships.push(new Ship(1));
-        ships.push(new Ship(1));
+    private createInitialShips(): Ship[] {
+        let ships: Ship[] = new Array<Ship>();
 
-        ships.push(new Ship(2));
-        ships.push(new Ship(2));
-        ships.push(new Ship(2));
+        let ship2type1Structure: Point2D[] = [new Point2D(0, 0), new Point2D(1, 0)];
+        let ship2type2Structure: Point2D[] = [new Point2D(0, 0), new Point2D(0, 1)];
 
-        ships.push(new Ship(3));
-        ships.push(new Ship(3));
+        ships.push(new Ship(ship2type1Structure));
+        ships.push(new Ship(ship2type2Structure));
 
-        ships.push(new Ship(4));
-
-        this.ships = ships;
+        return ships;
     }
 }
