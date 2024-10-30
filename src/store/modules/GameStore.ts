@@ -6,7 +6,7 @@ import { createStore } from 'vuex'
 export default createStore({
     state: {
         game: new Game(),
-        scaleParameter: 1,
+        scaleParameter: 0.8,
         gridLineThickness: 0.3,
         canvasWidth: 300,
         canvasHeight: 300,

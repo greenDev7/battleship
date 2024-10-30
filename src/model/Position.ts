@@ -6,5 +6,4 @@ export default class Position {
         this.positionX = positionX;
         this.positionY = positionY;
     }
-
 }

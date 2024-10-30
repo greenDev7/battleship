@@ -9,8 +9,16 @@
 import Ship from '@/model/Ship';
 import ShipType from '@/model/ShipType';
 import store from '@/store/modules/GameStore';
+
+import ship1 from "../assets/ship1.png"
 import ship2Horizontal from "../assets/ship2Horizontal.png";
 import ship2Vertical from "../assets/ship2Vertical.png";
+import ship3Horizontal from "../assets/ship3Horizontal.png";
+import ship3Vertical from "../assets/ship3Vertical.png";
+import ship4Horizontal from "../assets/ship4Horizontal.png";
+import ship4Vertical from "../assets/ship4Vertical.png";
+
+
 
 import { defineComponent, PropType } from 'vue'
 import { mapGetters } from 'vuex';
@@ -51,13 +59,12 @@ export default defineComponent({
                 // Рисуем сетку
                 this.makeGrid(ctx, store.state.gridLineThickness);
 
+                // Расставляем корабли
                 this.arrangeShips(ctx);
             };
         },
 
         makeGrid(ctx: CanvasRenderingContext2D, thickness: number) {
-            let ySquareLength = this.getCanvasHeight / store.state.numberOfCellsOnTheAxisY;
-
             ctx.beginPath();
 
             ctx.lineWidth = thickness;
@@ -79,10 +86,23 @@ export default defineComponent({
         arrangeShips(ctx: CanvasRenderingContext2D) {
 
             // Расставляем корабли только на флотильской сетке (GridType.Fleet),
-            // с которой игрок будет перетягивать их на  свое поле
+            // с которой игрок будет перетягивать их на свое поле
             if (this.gridType === GridType.Fleet) {
+
+                this.arrangeSingleShip(ctx, new Ship(1), new Position(8, 2));
+                this.arrangeSingleShip(ctx, new Ship(1), new Position(0, 9));
+                this.arrangeSingleShip(ctx, new Ship(1), new Position(7, 5));
+                this.arrangeSingleShip(ctx, new Ship(1), new Position(8, 8));
+
+
                 this.arrangeSingleShip(ctx, new Ship(2, ShipType.Horizontal), new Position(0, 0));
                 this.arrangeSingleShip(ctx, new Ship(2, ShipType.Vertical), new Position(4, 3));
+                this.arrangeSingleShip(ctx, new Ship(2, ShipType.Vertical), new Position(1, 2));
+
+                this.arrangeSingleShip(ctx, new Ship(3, ShipType.Horizontal), new Position(5, 0));
+                this.arrangeSingleShip(ctx, new Ship(3, ShipType.Horizontal), new Position(4, 9));
+
+                this.arrangeSingleShip(ctx, new Ship(4, ShipType.Vertical), new Position(2, 6));
             }
         },
 
@@ -90,17 +110,26 @@ export default defineComponent({
             let img = new Image();
             img.src = this.determineShipImage(ship);
             const sp = GameStore.state.scaleParameter;
-            img.onload = () => { ctx.drawImage(img, position.positionX * this.getGridCellWidth, position.positionY * this.getGridCellHeight, img.width * sp, img.height * sp); };
+            img.onload = () => {
+                ctx.drawImage(img, position.positionX * this.getGridCellWidth,
+                    position.positionY * this.getGridCellHeight, img.width * sp, img.height * sp);
+            };
         },
 
         determineShipImage(ship: Ship): string {
             let imgSourceString: string = "";
 
             if (ship.type === ShipType.Horizontal) {
+                if (ship.size === 1) imgSourceString = ship1;
                 if (ship.size === 2) imgSourceString = ship2Horizontal;
+                if (ship.size === 3) imgSourceString = ship3Horizontal;
+                if (ship.size === 4) imgSourceString = ship4Horizontal;
             }
             else {
                 if (ship.size === 2) imgSourceString = ship2Vertical;
+                if (ship.size === 3) imgSourceString = ship3Vertical;
+                if (ship.size === 4) imgSourceString = ship4Vertical;
+
             }
 
             return imgSourceString;
