@@ -7,6 +7,7 @@
 
 <script lang="ts">
 import Ship from '@/model/Ship';
+import Game from '@/model/Game';
 import ShipType from '@/model/ShipType';
 import store from '@/store/modules/GameStore';
 
@@ -88,21 +89,9 @@ export default defineComponent({
             // Расставляем корабли только на флотильской сетке (GridType.Fleet),
             // с которой игрок будет перетягивать их на свое поле
             if (this.gridType === GridType.Fleet) {
-
-                this.arrangeSingleShip(ctx, new Ship(1), new Position(8, 2));
-                this.arrangeSingleShip(ctx, new Ship(1), new Position(0, 9));
-                this.arrangeSingleShip(ctx, new Ship(1), new Position(7, 5));
-                this.arrangeSingleShip(ctx, new Ship(1), new Position(8, 8));
-
-
-                this.arrangeSingleShip(ctx, new Ship(2, ShipType.Horizontal), new Position(0, 0));
-                this.arrangeSingleShip(ctx, new Ship(2, ShipType.Vertical), new Position(4, 3));
-                this.arrangeSingleShip(ctx, new Ship(2, ShipType.Vertical), new Position(1, 2));
-
-                this.arrangeSingleShip(ctx, new Ship(3, ShipType.Horizontal), new Position(5, 0));
-                this.arrangeSingleShip(ctx, new Ship(3, ShipType.Horizontal), new Position(4, 9));
-
-                this.arrangeSingleShip(ctx, new Ship(4, ShipType.Vertical), new Position(2, 6));
+                for (const loc of Game.createDefaultShipLocations()) {
+                    this.arrangeSingleShip(ctx, new Ship(loc.size, loc.type), loc.position);
+                }                
             }
         },
 
