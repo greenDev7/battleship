@@ -17,7 +17,7 @@ export default class Ship {
      */
     public static createShip(length: number, type: ShipType, x: number, y: number): Ship {
         return new Ship(length, type, new Location(x, y));
-    }
+    };
 
     /**
      * Перемещает корабль вверх на одну клетку

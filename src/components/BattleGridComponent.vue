@@ -6,8 +6,8 @@
 
 
 <script lang="ts">
+
 import Ship from '@/model/Ship';
-import Game from '@/model/Game';
 import ShipType from '@/model/ShipType';
 import store from '@/store/modules/GameStore';
 
@@ -31,10 +31,6 @@ export default defineComponent({
 
     props: {
         gridType: { type: String, default: GridType.Own },
-    },
-
-    data() {
-        return {}
     },
 
     computed: {
@@ -84,10 +80,8 @@ export default defineComponent({
 
         arrangeShips(ctx: CanvasRenderingContext2D) {
 
-            // Расставляем корабли только на флотильской сетке (GridType.Fleet),
-            // с которой игрок будет перетягивать их на свое поле
-            if (this.gridType === GridType.Fleet) {
-                for (const ship of GameStore.state.initialShips)
+            if (this.gridType === GridType.Own) {
+                for (const ship of GameStore.state.ships)
                     this.arrangeSingleShip(ctx, ship);
             }
         },
@@ -135,13 +129,13 @@ export default defineComponent({
     mounted() {
         this.initialize();
 
-        if (this.gridType === GridType.Fleet) {
+        if (this.gridType === GridType.Own) {
             let canvas = <HTMLCanvasElement>this.$refs.canvas;
             let ctx = canvas.getContext("2d");
             if (ctx)
                 this.subscribeToEvents(ctx);
         };
-    },
+    }
 })
 </script>
 

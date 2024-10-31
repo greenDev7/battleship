@@ -10,7 +10,7 @@ export default createStore({
         numberOfCellsOnTheAxisX: 10,
         numberOfCellsOnTheAxisY: 10,
 
-        initialShips: Game.createInitialShips(),
+        ships: Game.createInitialShips(),
     },
     getters: {
         getCanvasWidth(state) {

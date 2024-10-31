@@ -60,7 +60,7 @@
                     </table>
                 </td>
                 <td>
-                    <BattleGridComponent />
+                    <BattleGridComponent :grid-type="gridType" />
                 </td>
             </tr>
         </tbody>
@@ -68,8 +68,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import BattleGridComponent from './BattleGridComponent.vue';
+import { defineComponent, PropType } from 'vue'
+import BattleGridComponent from "./BattleGridComponent.vue";
 import { mapGetters } from 'vuex';
 import GridType from '@/model/GridType';
 
@@ -87,8 +87,7 @@ export default defineComponent({
             "getCanvasWidth",
             "getCanvasHeight"
         ]),
-    },
-
+    }
 })
 </script>
 
