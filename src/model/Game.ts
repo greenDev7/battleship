@@ -27,5 +27,12 @@ export default class Game {
 
             Ship.createShip(4, ShipType.Vertical, 2, 6)
         ]
+    };
+
+    /**
+     * Расставляет случайным образом корабли на сетке
+     */
+    public createInitialRandomShips() {
+        
     }
 }

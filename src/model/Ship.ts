@@ -18,4 +18,25 @@ export default class Ship {
     public static createShip(length: number, type: ShipType, x: number, y: number): Ship {
         return new Ship(length, type, new Location(x, y));
     }
+
+    /**
+     * Перемещает корабль вверх на одну клетку
+     */
+    public moveUp = () => { this.loc.y--; };
+
+    /**
+     * Перемещает корабль вверх на одну клетку
+     */
+    public moveDown = () => { this.loc.y++; };
+
+    /**
+     * Перемещает корабль влево на одну клетку
+     */
+    public moveLeft = () => { this.loc.x--; };
+
+    /**
+     * Перемещает корабль вправо на одну клетку
+     */
+    public moveRight = () => { this.loc.x++ };
+
 }

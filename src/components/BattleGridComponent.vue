@@ -89,9 +89,8 @@ export default defineComponent({
             // Расставляем корабли только на флотильской сетке (GridType.Fleet),
             // с которой игрок будет перетягивать их на свое поле
             if (this.gridType === GridType.Fleet) {
-                for (const ship of Game.createInitialShips()) {
+                for (const ship of Game.createInitialShips())
                     this.arrangeSingleShip(ctx, ship);
-                }
             }
         },
 
