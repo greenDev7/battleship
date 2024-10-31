@@ -1,17 +1,16 @@
 import Game from '@/model/Game'
-import Ship from '@/model/Ship';
-import ShipType from '@/model/ShipType';
 import { createStore } from 'vuex'
 
 export default createStore({
     state: {
-        game: new Game(),
-        scaleParameter: 0.8,
+        scaleParameter: 1,
         gridLineThickness: 0.3,
         canvasWidth: 300,
         canvasHeight: 300,
         numberOfCellsOnTheAxisX: 10,
         numberOfCellsOnTheAxisY: 10,
+
+        initialShips: Game.createInitialShips(),
     },
     getters: {
         getCanvasWidth(state) {

@@ -19,13 +19,11 @@ import ship3Vertical from "../assets/ship3Vertical.png";
 import ship4Horizontal from "../assets/ship4Horizontal.png";
 import ship4Vertical from "../assets/ship4Vertical.png";
 
-
-
 import { defineComponent, PropType } from 'vue'
 import { mapGetters } from 'vuex';
 import GameStore from '@/store/modules/GameStore';
-import Position from '@/model/Location';
 import GridType from '@/model/GridType';
+import Location from '@/model/Location';
 
 export default defineComponent({
 
@@ -89,7 +87,7 @@ export default defineComponent({
             // Расставляем корабли только на флотильской сетке (GridType.Fleet),
             // с которой игрок будет перетягивать их на свое поле
             if (this.gridType === GridType.Fleet) {
-                for (const ship of Game.createInitialShips())
+                for (const ship of GameStore.state.initialShips)
                     this.arrangeSingleShip(ctx, ship);
             }
         },
@@ -122,10 +120,27 @@ export default defineComponent({
 
             return imgSourceString;
         },
+
+        onMouseDownHandler(event: MouseEvent) {
+            event.preventDefault();
+            console.log('Current location: ', Location.getLocationByOffsetXY(event.offsetX, event.offsetY, this.getGridCellWidth, this.getGridCellHeight));
+        },
+
+        subscribeToEvents(ctx: CanvasRenderingContext2D) {
+            console.log('addEventListener...');
+            ctx.canvas.addEventListener('click', this.onMouseDownHandler);
+        },
     },
 
     mounted() {
         this.initialize();
+
+        if (this.gridType === GridType.Fleet) {
+            let canvas = <HTMLCanvasElement>this.$refs.canvas;
+            let ctx = canvas.getContext("2d");
+            if (ctx)
+                this.subscribeToEvents(ctx);
+        };
     },
 })
 </script>

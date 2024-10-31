@@ -5,8 +5,7 @@ export default class Game {
 
     constructor() {
         console.log('Game constructor invocation...');
-        console.log('Default arrangement...');
-    }
+    };
 
     /**
      * createDefaultShips
@@ -33,6 +32,6 @@ export default class Game {
      * Расставляет случайным образом корабли на сетке
      */
     public createInitialRandomShips() {
-        
+
     }
 }
