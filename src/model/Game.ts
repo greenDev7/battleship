@@ -1,4 +1,4 @@
-import ShipLocation from "./ShipLocation";
+import Ship from "./Ship";
 import ShipType from "./ShipType";
 
 export default class Game {
@@ -9,23 +9,23 @@ export default class Game {
     }
 
     /**
-     * createDefaultShipLocations
+     * createDefaultShips
     */
-    public static createDefaultShipLocations(): ShipLocation[] {
+    public static createInitialShips(): Ship[] {
         return [
-            ShipLocation.createShipLocation(8, 2, ShipType.Horizontal, 1),
-            ShipLocation.createShipLocation(0, 9, ShipType.Horizontal, 1),
-            ShipLocation.createShipLocation(7, 5, ShipType.Horizontal, 1),
-            ShipLocation.createShipLocation(8, 8, ShipType.Horizontal, 1),
+            Ship.createShip(1, ShipType.Horizontal, 8, 2),
+            Ship.createShip(1, ShipType.Horizontal, 0, 9),
+            Ship.createShip(1, ShipType.Horizontal, 7, 5),
+            Ship.createShip(1, ShipType.Horizontal, 8, 8),
 
-            ShipLocation.createShipLocation(0, 0, ShipType.Horizontal, 2),
-            ShipLocation.createShipLocation(4, 3, ShipType.Vertical, 2),
-            ShipLocation.createShipLocation(1, 2, ShipType.Vertical, 2),
+            Ship.createShip(2, ShipType.Horizontal, 0, 0),
+            Ship.createShip(2, ShipType.Vertical, 4, 3),
+            Ship.createShip(2, ShipType.Vertical, 1, 2),
 
-            ShipLocation.createShipLocation(5, 0, ShipType.Horizontal, 3),
-            ShipLocation.createShipLocation(4, 9, ShipType.Horizontal, 3),
+            Ship.createShip(3, ShipType.Horizontal, 5, 0),
+            Ship.createShip(3, ShipType.Horizontal, 4, 9),
 
-            ShipLocation.createShipLocation(2, 6, ShipType.Vertical, 4)
+            Ship.createShip(4, ShipType.Vertical, 2, 6)
         ]
     }
 }

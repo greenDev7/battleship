@@ -24,7 +24,7 @@ import ship4Vertical from "../assets/ship4Vertical.png";
 import { defineComponent, PropType } from 'vue'
 import { mapGetters } from 'vuex';
 import GameStore from '@/store/modules/GameStore';
-import Position from '@/model/Position';
+import Position from '@/model/Location';
 import GridType from '@/model/GridType';
 
 export default defineComponent({
@@ -89,19 +89,19 @@ export default defineComponent({
             // Расставляем корабли только на флотильской сетке (GridType.Fleet),
             // с которой игрок будет перетягивать их на свое поле
             if (this.gridType === GridType.Fleet) {
-                for (const loc of Game.createDefaultShipLocations()) {
-                    this.arrangeSingleShip(ctx, new Ship(loc.size, loc.type), loc.position);
-                }                
+                for (const ship of Game.createInitialShips()) {
+                    this.arrangeSingleShip(ctx, ship);
+                }
             }
         },
 
-        arrangeSingleShip(ctx: CanvasRenderingContext2D, ship: Ship, position: Position) {
+        arrangeSingleShip(ctx: CanvasRenderingContext2D, ship: Ship) {
             let img = new Image();
             img.src = this.determineShipImage(ship);
             const sp = GameStore.state.scaleParameter;
             img.onload = () => {
-                ctx.drawImage(img, position.positionX * this.getGridCellWidth,
-                    position.positionY * this.getGridCellHeight, img.width * sp, img.height * sp);
+                ctx.drawImage(img, ship.loc.x * this.getGridCellWidth,
+                    ship.loc.y * this.getGridCellHeight, img.width * sp, img.height * sp);
             };
         },
 
@@ -109,15 +109,15 @@ export default defineComponent({
             let imgSourceString: string = "";
 
             if (ship.type === ShipType.Horizontal) {
-                if (ship.size === 1) imgSourceString = ship1;
-                if (ship.size === 2) imgSourceString = ship2Horizontal;
-                if (ship.size === 3) imgSourceString = ship3Horizontal;
-                if (ship.size === 4) imgSourceString = ship4Horizontal;
+                if (ship.length === 1) imgSourceString = ship1;
+                if (ship.length === 2) imgSourceString = ship2Horizontal;
+                if (ship.length === 3) imgSourceString = ship3Horizontal;
+                if (ship.length === 4) imgSourceString = ship4Horizontal;
             }
             else {
-                if (ship.size === 2) imgSourceString = ship2Vertical;
-                if (ship.size === 3) imgSourceString = ship3Vertical;
-                if (ship.size === 4) imgSourceString = ship4Vertical;
+                if (ship.length === 2) imgSourceString = ship2Vertical;
+                if (ship.length === 3) imgSourceString = ship3Vertical;
+                if (ship.length === 4) imgSourceString = ship4Vertical;
 
             }
 

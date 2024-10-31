@@ -12,8 +12,6 @@ export default createStore({
         canvasHeight: 300,
         numberOfCellsOnTheAxisX: 10,
         numberOfCellsOnTheAxisY: 10,
-        
-        ships: [new Ship(2, ShipType.Horizontal)]
     },
     getters: {
         getCanvasWidth(state) {
