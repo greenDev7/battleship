@@ -24,6 +24,7 @@ import { mapGetters } from 'vuex';
 import GameStore from '@/store/modules/GameStore';
 import GridType from '@/model/GridType';
 import Location from '@/model/Location';
+import GameEventHandler from '@/model/GameEventHandler';
 
 export default defineComponent({
 
@@ -38,27 +39,12 @@ export default defineComponent({
             "getCanvasWidth",
             "getCanvasHeight",
             "getGridCellWidth",
-            "getGridCellHeight"
+            "getGridCellHeight",
+            "getShipByLocation"
         ]),
     },
 
     methods: {
-        initialize() {
-            let canvas = <HTMLCanvasElement>this.$refs.canvas;
-            let ctx = canvas.getContext("2d");
-
-            if (ctx) {
-                ctx.canvas.width = this.getCanvasWidth;
-                ctx.canvas.height = this.getCanvasHeight;
-
-                // Рисуем сетку
-                this.makeGrid(ctx, store.state.gridLineThickness);
-
-                // Расставляем корабли
-                this.arrangeShips(ctx);
-            };
-        },
-
         makeGrid(ctx: CanvasRenderingContext2D, thickness: number) {
             ctx.beginPath();
 
@@ -78,15 +64,12 @@ export default defineComponent({
             ctx.stroke();
         },
 
-        arrangeShips(ctx: CanvasRenderingContext2D) {
-
-            if (this.gridType === GridType.Own) {
-                for (const ship of GameStore.state.ships)
-                    this.arrangeSingleShip(ctx, ship);
-            }
+        drawShips(ctx: CanvasRenderingContext2D) {
+            for (const ship of GameStore.state.ships)
+                this.drawSingleShip(ctx, ship);
         },
 
-        arrangeSingleShip(ctx: CanvasRenderingContext2D, ship: Ship) {
+        drawSingleShip(ctx: CanvasRenderingContext2D, ship: Ship) {
             let img = new Image();
             img.src = this.determineShipImage(ship);
             const sp = GameStore.state.scaleParameter;
@@ -98,6 +81,8 @@ export default defineComponent({
 
         determineShipImage(ship: Ship): string {
             let imgSourceString: string = "";
+
+            console.log('ship2Horizontal: ', ship2Horizontal);
 
             if (ship.type === ShipType.Horizontal) {
                 if (ship.length === 1) imgSourceString = ship1;
@@ -115,26 +100,37 @@ export default defineComponent({
             return imgSourceString;
         },
 
-        onMouseDownHandler(event: MouseEvent) {
-            event.preventDefault();
-            console.log('Current location: ', Location.getLocationByOffsetXY(event.offsetX, event.offsetY, this.getGridCellWidth, this.getGridCellHeight));
-        },
+        // onMouseDownHandler(event: MouseEvent) {
+        //     event.preventDefault();
+        //     let loc: Location = Location.getLocationByOffsetXY(event.offsetX, event.offsetY, this.getGridCellWidth, this.getGridCellHeight);
+        //     console.log('Current location: ', loc);
+        //     console.log('selected ship: ', this.getShipByLocation(loc));
+        // },
 
         subscribeToEvents(ctx: CanvasRenderingContext2D) {
             console.log('addEventListener...');
-            ctx.canvas.addEventListener('click', this.onMouseDownHandler);
+            // ctx.canvas.addEventListener('click', this.onMouseDownHandler);
+            ctx.canvas.addEventListener('click', GameEventHandler.onMouseDownHandler);
         },
     },
 
     mounted() {
-        this.initialize();
+        let canvas = <HTMLCanvasElement>this.$refs.canvas;
+        let ctx = canvas.getContext("2d");
 
-        if (this.gridType === GridType.Own) {
-            let canvas = <HTMLCanvasElement>this.$refs.canvas;
-            let ctx = canvas.getContext("2d");
-            if (ctx)
+        if (ctx) {
+            ctx.canvas.width = this.getCanvasWidth;
+            ctx.canvas.height = this.getCanvasHeight;
+
+            // Рисуем сетку
+            this.makeGrid(ctx, store.state.gridLineThickness);
+
+            if (this.gridType === GridType.Own) {
+                this.drawShips(ctx);
                 this.subscribeToEvents(ctx);
+            }
         };
+
     }
 })
 </script>

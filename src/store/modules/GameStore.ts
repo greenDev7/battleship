@@ -1,5 +1,6 @@
-import Game from '@/model/Game'
-import { createStore } from 'vuex'
+import Game from '@/model/Game';
+import Location from "@/model/Location";
+import { createStore } from 'vuex';
 
 export default createStore({
     state: {
@@ -24,6 +25,9 @@ export default createStore({
         },
         getGridCellHeight(state) {
             return state.canvasHeight * state.scaleParameter / state.numberOfCellsOnTheAxisY;
+        },
+        getShipByLocation: (state) => (location: Location) => {
+            return state.ships.find(s => (s.loc.x === location.x && s.loc.y === location.y));
         },
     },
     mutations: {
