@@ -106,8 +106,6 @@ export default defineComponent({
             let img = new Image();
 
             if (!img.src) {
-                const sp = GameStore.state.scaleParameter;
-
                 let sx = 0, sy = 0;
                 let sw: number = 0, sh: number = 0, dw: number, dh: number;
 
@@ -115,18 +113,21 @@ export default defineComponent({
                 let dy = selectedShip.location.y * this.getGridCellHeight;
 
                 if (selectedShip.type === ShipType.Horizontal) {
-                    sw = selectedShip.length * this.getGridCellWidth * sp;
-                    sh = this.getGridCellHeight * sp;
+                    sw = selectedShip.length * this.getGridCellWidth;
+                    sh = this.getGridCellHeight;
                     img.src = shipBackgroundHorizontal;
                 };
 
                 if (selectedShip.type === ShipType.Vertical) {
-                    sw = this.getGridCellWidth * sp;
-                    sh = selectedShip.length * this.getGridCellHeight * sp;
+                    sw = this.getGridCellWidth;
+                    console.log('sw: ', sw);
+                    sh = selectedShip.length * this.getGridCellHeight;
                     img.src = shipBackgroundVertical;
                 };
 
                 dw = sw;
+
+                console.log('dw: ', dw);
                 dh = sh;
 
                 img.onload = () => {
