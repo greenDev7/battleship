@@ -66,87 +66,21 @@ export default defineComponent({
         },
 
         drawShips(ctx: CanvasRenderingContext2D) {
-            for (const ship of GameStore.state.ships)
-                this.drawSingleShip(ctx, ship);
-        },
-
-        drawSingleShip(ctx: CanvasRenderingContext2D, ship: Ship) {
-            let img = new Image();
-
-            if (!img.src) {
-                img.src = this.determineShipImage(ship);
-                const sp = GameStore.state.scaleParameter;
-                img.onload = () => {
-                    ctx.drawImage(img, ship.location.x * this.getGridCellWidth,
-                        ship.location.y * this.getGridCellHeight, img.width * sp, img.height * sp);
-                };
-            }
-        },
-
-        determineShipImage(ship: Ship): string {
-            let imgSourceString: string = "";
-
-            if (ship.type === ShipType.Horizontal) {
-                if (ship.length === 1) imgSourceString = ship1;
-                if (ship.length === 2) imgSourceString = ship2Horizontal;
-                if (ship.length === 3) imgSourceString = ship3Horizontal;
-                if (ship.length === 4) imgSourceString = ship4Horizontal;
-            }
-            else {
-                if (ship.length === 2) imgSourceString = ship2Vertical;
-                if (ship.length === 3) imgSourceString = ship3Vertical;
-                if (ship.length === 4) imgSourceString = ship4Vertical;
-
-            }
-
-            return imgSourceString;
-        },
-
-        highlightShipStructure(ctx: CanvasRenderingContext2D, selectedShip: Ship) {
-            let img = new Image();
-
-            if (!img.src) {
-                let sx = 0, sy = 0;
-                let sw: number = 0, sh: number = 0, dw: number, dh: number;
-
-                let dx = selectedShip.location.x * this.getGridCellWidth;
-                let dy = selectedShip.location.y * this.getGridCellHeight;
-
-                if (selectedShip.type === ShipType.Horizontal) {
-                    sw = selectedShip.length * this.getGridCellWidth;
-                    sh = this.getGridCellHeight;
-                    img.src = shipBackgroundHorizontal;
-                };
-
-                if (selectedShip.type === ShipType.Vertical) {
-                    sw = this.getGridCellWidth;
-                    console.log('sw: ', sw);
-                    sh = selectedShip.length * this.getGridCellHeight;
-                    img.src = shipBackgroundVertical;
-                };
-
-                dw = sw;
-
-                console.log('dw: ', dw);
-                dh = sh;
-
-                img.onload = () => {
-                    ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
-                };
-            }
-        },
+            let sp = GameStore.state.scaleParameter;
+            GameStore.state.ships.forEach(ship => ship.draw(ctx, this.getGridCellWidth, this.getGridCellHeight, sp));
+        },       
 
         onMouseDownEventHandler(event: MouseEvent, ctx: CanvasRenderingContext2D) {
             event.preventDefault();
             let loc: Location = Location.getLocationByOffsetXY(event.offsetX, event.offsetY, this.getGridCellWidth, this.getGridCellHeight);
             let selectedShip = this.getShipByLocation(loc);
 
-            if (selectedShip) { this.highlightShipStructure(ctx, selectedShip); }
+            // if (selectedShip) { this.highlightShipStructure(ctx, selectedShip); }
             console.log('(Mouse Down) Current location: ', loc);
             console.log('(Mouse Down) Selected ship: ', selectedShip);
         },
 
-        onMouseMoveEventHandler(event: MouseEvent) {
+        onMouseMoveEventHandler(event: MouseEvent, ctx: CanvasRenderingContext2D) {
             // console.log('(Mouse Move) Current coordinates: ', event.offsetX, event.offsetY);
             // let loc: Location = Location.getLocationByOffsetXY(event.offsetX, event.offsetY, this.getGridCellWidth, this.getGridCellHeight);
             // console.log('(Mouse Move) Current location: ', loc);
@@ -160,7 +94,7 @@ export default defineComponent({
         subscribeToEvents(ctx: CanvasRenderingContext2D) {
             console.log('addEventListeners...');
             ctx.canvas.addEventListener('mousedown', (event) => this.onMouseDownEventHandler(event, ctx));
-            ctx.canvas.addEventListener('mousemove', this.onMouseMoveEventHandler);
+            ctx.canvas.addEventListener('mousemove', (event) => this.onMouseMoveEventHandler(event, ctx));
             ctx.canvas.addEventListener('mouseup', this.onMouseUpEventHandler);
         },
     },
