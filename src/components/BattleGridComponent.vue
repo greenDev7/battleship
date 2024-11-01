@@ -18,13 +18,14 @@ import ship3Horizontal from "../assets/ship3Horizontal.png";
 import ship3Vertical from "../assets/ship3Vertical.png";
 import ship4Horizontal from "../assets/ship4Horizontal.png";
 import ship4Vertical from "../assets/ship4Vertical.png";
+import shipBackgroundHorizontal from "../assets/shipBackgroundHorizontal.png";
+import shipBackgroundVertical from "../assets/shipBackgroundVertical.png";
 
 import { defineComponent, PropType } from 'vue'
 import { mapGetters } from 'vuex';
 import GameStore from '@/store/modules/GameStore';
 import GridType from '@/model/GridType';
 import Location from '@/model/Location';
-import GameEventHandler from '@/model/GameEventHandler';
 
 export default defineComponent({
 
@@ -71,18 +72,19 @@ export default defineComponent({
 
         drawSingleShip(ctx: CanvasRenderingContext2D, ship: Ship) {
             let img = new Image();
-            img.src = this.determineShipImage(ship);
-            const sp = GameStore.state.scaleParameter;
-            img.onload = () => {
-                ctx.drawImage(img, ship.loc.x * this.getGridCellWidth,
-                    ship.loc.y * this.getGridCellHeight, img.width * sp, img.height * sp);
-            };
+
+            if (!img.src) {
+                img.src = this.determineShipImage(ship);
+                const sp = GameStore.state.scaleParameter;
+                img.onload = () => {
+                    ctx.drawImage(img, ship.location.x * this.getGridCellWidth,
+                        ship.location.y * this.getGridCellHeight, img.width * sp, img.height * sp);
+                };
+            }
         },
 
         determineShipImage(ship: Ship): string {
             let imgSourceString: string = "";
-
-            console.log('ship2Horizontal: ', ship2Horizontal);
 
             if (ship.type === ShipType.Horizontal) {
                 if (ship.length === 1) imgSourceString = ship1;
@@ -100,17 +102,65 @@ export default defineComponent({
             return imgSourceString;
         },
 
-        // onMouseDownHandler(event: MouseEvent) {
-        //     event.preventDefault();
-        //     let loc: Location = Location.getLocationByOffsetXY(event.offsetX, event.offsetY, this.getGridCellWidth, this.getGridCellHeight);
-        //     console.log('Current location: ', loc);
-        //     console.log('selected ship: ', this.getShipByLocation(loc));
-        // },
+        highlightShipStructure(ctx: CanvasRenderingContext2D, selectedShip: Ship) {
+            let img = new Image();
+
+            if (!img.src) {
+                const sp = GameStore.state.scaleParameter;
+
+                let sx = 0, sy = 0;
+                let sw: number = 0, sh: number = 0, dw: number, dh: number;
+
+                let dx = selectedShip.location.x * this.getGridCellWidth;
+                let dy = selectedShip.location.y * this.getGridCellHeight;
+
+                if (selectedShip.type === ShipType.Horizontal) {
+                    sw = selectedShip.length * this.getGridCellWidth * sp;
+                    sh = this.getGridCellHeight * sp;
+                    img.src = shipBackgroundHorizontal;
+                };
+
+                if (selectedShip.type === ShipType.Vertical) {
+                    sw = this.getGridCellWidth * sp;
+                    sh = selectedShip.length * this.getGridCellHeight * sp;
+                    img.src = shipBackgroundVertical;
+                };
+
+                dw = sw;
+                dh = sh;
+
+                img.onload = () => {
+                    ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
+                };
+            }
+        },
+
+        onMouseDownEventHandler(event: MouseEvent, ctx: CanvasRenderingContext2D) {
+            event.preventDefault();
+            let loc: Location = Location.getLocationByOffsetXY(event.offsetX, event.offsetY, this.getGridCellWidth, this.getGridCellHeight);
+            let selectedShip = this.getShipByLocation(loc);
+
+            if (selectedShip) { this.highlightShipStructure(ctx, selectedShip); }
+            console.log('(Mouse Down) Current location: ', loc);
+            console.log('(Mouse Down) Selected ship: ', selectedShip);
+        },
+
+        onMouseMoveEventHandler(event: MouseEvent) {
+            // console.log('(Mouse Move) Current coordinates: ', event.offsetX, event.offsetY);
+            // let loc: Location = Location.getLocationByOffsetXY(event.offsetX, event.offsetY, this.getGridCellWidth, this.getGridCellHeight);
+            // console.log('(Mouse Move) Current location: ', loc);
+        },
+
+        onMouseUpEventHandler(event: MouseEvent) {
+            let loc: Location = Location.getLocationByOffsetXY(event.offsetX, event.offsetY, this.getGridCellWidth, this.getGridCellHeight);
+            console.log('(Mouse Up) Current location: ', loc);
+        },
 
         subscribeToEvents(ctx: CanvasRenderingContext2D) {
-            console.log('addEventListener...');
-            // ctx.canvas.addEventListener('click', this.onMouseDownHandler);
-            ctx.canvas.addEventListener('click', GameEventHandler.onMouseDownHandler);
+            console.log('addEventListeners...');
+            ctx.canvas.addEventListener('mousedown', (event) => this.onMouseDownEventHandler(event, ctx));
+            ctx.canvas.addEventListener('mousemove', this.onMouseMoveEventHandler);
+            ctx.canvas.addEventListener('mouseup', this.onMouseUpEventHandler);
         },
     },
 

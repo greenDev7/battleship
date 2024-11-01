@@ -4,12 +4,12 @@ import ShipType from "./ShipType";
 export default class Ship {
     length: number;
     type: ShipType;
-    loc: Location;
+    location: Location;
 
-    constructor(length: number, type: ShipType, loc: Location) {
+    constructor(length: number, type: ShipType, location: Location) {
         this.length = length;
         this.type = type;
-        this.loc = loc;
+        this.location = location;
     }
 
     /**
@@ -22,21 +22,21 @@ export default class Ship {
     /**
      * Перемещает корабль вверх на одну клетку
      */
-    public moveUp = () => { this.loc.y--; };
+    public moveUp = () => { this.location.y--; };
 
     /**
      * Перемещает корабль вверх на одну клетку
      */
-    public moveDown = () => { this.loc.y++; };
+    public moveDown = () => { this.location.y++; };
 
     /**
      * Перемещает корабль влево на одну клетку
      */
-    public moveLeft = () => { this.loc.x--; };
+    public moveLeft = () => { this.location.x--; };
 
     /**
      * Перемещает корабль вправо на одну клетку
      */
-    public moveRight = () => { this.loc.x++ };
+    public moveRight = () => { this.location.x++ };
 
 }

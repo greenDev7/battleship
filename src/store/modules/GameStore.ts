@@ -27,7 +27,7 @@ export default createStore({
             return state.canvasHeight * state.scaleParameter / state.numberOfCellsOnTheAxisY;
         },
         getShipByLocation: (state) => (location: Location) => {
-            return state.ships.find(s => (s.loc.x === location.x && s.loc.y === location.y));
+            return state.ships.find(s => (s.location.x === location.x && s.location.y === location.y));
         },
     },
     mutations: {
