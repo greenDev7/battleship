@@ -1,5 +1,6 @@
 import Game from '@/model/Game';
 import Location from "@/model/Location";
+import Ship from '@/model/Ship';
 import { createStore } from 'vuex';
 
 export default createStore({
@@ -31,6 +32,14 @@ export default createStore({
         },
     },
     mutations: {
+        moveUpShip(state, selectedShip: Ship) {
+            console.log('in mutations...');
+            state.ships.forEach((ship, index, array) => {
+                if (ship.location.x === selectedShip.location.x && ship.location.y === selectedShip.location.y) {
+                    ship.moveUp();
+                }
+            })
+        }
     },
     actions: {
     },

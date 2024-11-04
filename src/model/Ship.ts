@@ -47,18 +47,27 @@ export default class Ship {
     };
 
     /**
-     * name
+     * Инициализирует (отрисовывает) корабль на канвасе (ctx). Используется при загрузке компонента (в методе mounted vue-компонента)
+     * Для повторной перерисовки кораблей будет использоваться другой метод - reDraw()
      */
-    public draw(ctx: CanvasRenderingContext2D, gridCellWidth: number, gridCellHeight: number, scaleParameter: number) {
+    public initializeShipImages(ctx: CanvasRenderingContext2D | null, gridCellWidth: number, gridCellHeight: number, scaleParameter: number) {
         let img = new Image();
+        img.src = this.imageSourceString;
 
-        if (!img.src) {
-            img.src = this.imageSourceString;
-            img.onload = () => {
-                ctx.drawImage(img, this.location.x * gridCellWidth,
-                    this.location.y * gridCellHeight, img.width * scaleParameter, img.height * scaleParameter);
-            };
-        }
+        img.onload = () => {
+            if (ctx)
+                ctx.drawImage(img, this.location.x * gridCellWidth, this.location.y * gridCellHeight, img.width * scaleParameter, img.height * scaleParameter);
+        };
+    };
+
+    /**
+     * Перерисовывает корабль
+     */
+    public reDraw(ctx: CanvasRenderingContext2D, gridCellWidth: number, gridCellHeight: number, scaleParameter: number) {
+        let img = new Image();
+        img.src = this.imageSourceString;
+        ctx.drawImage(img, this.location.x * gridCellWidth,
+            this.location.y * gridCellHeight, img.width * scaleParameter, img.height * scaleParameter);
     };
 
     /**
