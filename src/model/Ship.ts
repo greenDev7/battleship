@@ -3,15 +3,36 @@ import ShipType from "./ShipType";
 
 
 export default class Ship {
-    length: number;
-    type: ShipType;
-    location: Location;
+    private _length: number;
+    private _type: ShipType;
+    private _location: Location;
 
-    constructor(length: number, type: ShipType, location: Location) {
-        this.length = length;
-        this.type = type;
-        this.location = location;
-    };
+    constructor(_length: number, _type: ShipType, _location: Location) {
+        this._length = _length;
+        this._type = _type;
+        this._location = _location;
+    }
+
+    public get length(): number {
+        return this._length;
+    }
+    public set length(v: number) {
+        this._length = v;
+    }
+
+    public get type(): ShipType {
+        return this._type;
+    }
+    public set type(v: ShipType) {
+        this._type = v;
+    }
+
+    public get location(): Location {
+        return this._location;
+    }
+    public set location(v: Location) {
+        this._location = v;
+    }
 
     /**
      * Создает экземпляр корабля

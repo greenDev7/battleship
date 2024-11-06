@@ -33,5 +33,9 @@ export default class Game {
      */
     public createInitialRandomShips() {
 
+    };
+
+    public isArrangementCorrect(ships: Ship[]): boolean {
+        return true;
     }
 }

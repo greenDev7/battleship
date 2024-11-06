@@ -1,11 +1,25 @@
 export default class Location {
-    x: number;
-    y: number;
+    private _x: number;
+    private _y: number;
 
-    constructor(x: number, y: number) {
-        this.x = x;
-        this.y = y;
+    constructor(_x: number, _y: number) {
+        this._x = _x;
+        this._y = _y;
     };
+
+    public get x(): number {
+        return this._x;
+    }
+    public set x(v: number) {
+        this._x = v;
+    }
+
+    public get y(): number {
+        return this._y;
+    }
+    public set y(v: number) {
+        this._y = v;
+    }
 
     /**
      * Возвращает локацию по координате игрового поля
@@ -15,5 +29,5 @@ export default class Location {
         let currentY = Math.floor(offsetY / cellHeight);
 
         return new Location(currentX, currentY);
-    };
+    }
 }

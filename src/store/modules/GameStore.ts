@@ -32,14 +32,6 @@ export default createStore({
         },
     },
     mutations: {
-        moveUpShip(state, selectedShip: Ship) {
-            console.log('in mutations...');
-            state.ships.forEach((ship, index, array) => {
-                if (ship.location.x === selectedShip.location.x && ship.location.y === selectedShip.location.y) {
-                    ship.moveUp();
-                }
-            })
-        }
     },
     actions: {
     },
