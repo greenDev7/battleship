@@ -44,6 +44,7 @@ export default defineComponent({
 
     methods: {
         makeGrid(ctx: CanvasRenderingContext2D, thickness: number) {
+            ctx.save();
             ctx.beginPath();
 
             ctx.lineWidth = thickness;
@@ -60,12 +61,15 @@ export default defineComponent({
             };
 
             ctx.stroke();
+            ctx.restore();
         },
 
-        async reDrawShips(ctx: CanvasRenderingContext2D) {
+        drawShips(ctx: CanvasRenderingContext2D) {
+            ctx.save();
             ctx.clearRect(0, 0, this.getCanvasWidth, this.getCanvasHeight);
             this.makeGrid(ctx, store.state.gridLineThickness);
-            GameStore.state.ships.forEach(ship => ship.reDraw(ctx, this.getGridCellWidth, this.getGridCellHeight, GameStore.state.scaleParameter));
+            GameStore.state.ships.forEach(ship => ship.draw(ctx, this.getGridCellWidth, this.getGridCellHeight));
+            ctx.restore();
         },
 
         onMouseDownEventHandler(event: MouseEvent) {
@@ -79,7 +83,7 @@ export default defineComponent({
             console.log('(Mouse Down) Selected ship: ', this.$data.selectedShip);
         },
 
-        async onMouseMoveEventHandler(event: MouseEvent) {
+        onMouseMoveEventHandler(event: MouseEvent) {
             let loc: Location = Location.getLocationByOffsetXY(event.offsetX, event.offsetY, this.getGridCellWidth, this.getGridCellHeight);
 
             if (this.$data.selectedShip) {
@@ -89,10 +93,8 @@ export default defineComponent({
                 let ctx: CanvasRenderingContext2D | null = canvas.getContext("2d");
 
                 if (ctx)
-                    await this.reDrawShips(ctx);
+                    this.drawShips(ctx);
             }
-
-            console.log('(Mouse Move) Current location: ', loc);
         },
 
         onDblClickEventHandler(event: MouseEvent) {
@@ -105,11 +107,10 @@ export default defineComponent({
                 let ctx: CanvasRenderingContext2D | null = canvas.getContext("2d");
 
                 if (ctx)
-                    this.reDrawShips(ctx);
+                    this.drawShips(ctx);
             }
 
             console.log('(Mouse DblClick) Current location: ', loc);
-            console.log('(Mouse DblClick) Selected ship: ', this.$data.selectedShip);
         },
 
         onMouseUpEventHandler(event: MouseEvent) {
@@ -137,7 +138,7 @@ export default defineComponent({
             this.makeGrid(ctx, store.state.gridLineThickness);
 
             if (this.gridType === GridType.Own) {
-                GameStore.state.ships.forEach(ship => ship.initializeShipImages(ctx, this.getGridCellWidth, this.getGridCellHeight, GameStore.state.scaleParameter));
+                GameStore.state.ships.forEach(ship => ship.draw(ctx, this.getGridCellWidth, this.getGridCellHeight));
                 this.subscribeToEvents(ctx);
             }
         };

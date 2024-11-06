@@ -1,78 +1,47 @@
 import Location from "./Location";
 import ShipType from "./ShipType";
 
-import ship1 from "../assets/ship1.png"
-import ship2Horizontal from "../assets/ship2Horizontal.png";
-import ship2Vertical from "../assets/ship2Vertical.png";
-import ship3Horizontal from "../assets/ship3Horizontal.png";
-import ship3Vertical from "../assets/ship3Vertical.png";
-import ship4Horizontal from "../assets/ship4Horizontal.png";
-import ship4Vertical from "../assets/ship4Vertical.png";
 
 export default class Ship {
     length: number;
     type: ShipType;
     location: Location;
-    imageSourceString: string;
 
     constructor(length: number, type: ShipType, location: Location) {
         this.length = length;
         this.type = type;
         this.location = location;
-        this.imageSourceString = this.determineShipImage();
     };
 
-    private determineShipImage(): string {
-
-        if (this.type === ShipType.Horizontal) {
-            if (this.length === 1) return ship1;
-            if (this.length === 2) return ship2Horizontal;
-            if (this.length === 3) return ship3Horizontal;
-            if (this.length === 4) return ship4Horizontal;
-        }
-        else {
-            if (this.length === 1) return ship1;
-            if (this.length === 2) return ship2Vertical;
-            if (this.length === 3) return ship3Vertical;
-            if (this.length === 4) return ship4Vertical;
-        }
-
-        return "";
-    }
-
     /**
-     * createShip
+     * Создает экземпляр корабля
      */
     public static createShip(length: number, type: ShipType, x: number, y: number): Ship {
         return new Ship(length, type, new Location(x, y));
     };
 
     /**
-     * Инициализирует (отрисовывает) корабль на канвасе (ctx). Используется при загрузке компонента (в методе mounted vue-компонента)
-     * Для повторной перерисовки кораблей будет использоваться другой метод - reDraw()
+     * Рисует корабль
      */
-    public initializeShipImages(ctx: CanvasRenderingContext2D | null, gridCellWidth: number, gridCellHeight: number, scaleParameter: number) {
-        let img = new Image();
-        img.src = this.imageSourceString;
+    public draw(ctx: CanvasRenderingContext2D | null, gridCellWidth: number, gridCellHeight: number) {
 
-        img.onload = () => {
-            if (ctx)
-                ctx.drawImage(img, this.location.x * gridCellWidth, this.location.y * gridCellHeight, img.width * scaleParameter, img.height * scaleParameter);
+        let rw, rh: number;
+
+        if (this.type === ShipType.Horizontal) {
+            rw = this.length * gridCellWidth;
+            rh = gridCellHeight;
+        } else {
+            rw = gridCellWidth;
+            rh = this.length * gridCellHeight;
         };
-    };
 
-    /**
-     * Перерисовывает корабль
-     */
-    public async reDraw(ctx: CanvasRenderingContext2D, gridCellWidth: number, gridCellHeight: number, scaleParameter: number) {
-        let img = new Image();
-        img.src = this.determineShipImage();
-
-        img.onload = () => {
-            // console.log('this.determineShipImage:', img.name);
-            ctx.drawImage(img, this.location.x * gridCellWidth,
-                this.location.y * gridCellHeight, img.width * scaleParameter, img.height * scaleParameter);
-        };
+        if (ctx) {
+            ctx.save();
+            ctx.strokeStyle = "black";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(this.location.x * gridCellWidth + 1, this.location.y * gridCellHeight + 1, rw - 2, rh - 2);
+            ctx.restore();
+        }
     };
 
     /**
@@ -104,5 +73,4 @@ export default class Ship {
      * Перемещает корабль вправо на одну клетку
      */
     public moveRight = () => { this.location.x++ };
-
 }
