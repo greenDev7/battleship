@@ -75,21 +75,5 @@ export default class Ship {
             this.type = ShipType.Vertical;
         else
             this.type = ShipType.Horizontal;
-    }
-    /**
-     * Перемещает корабль вверх на одну клетку
-     */
-    public moveUp = () => { this.location.y--; };
-    /**
-     * Перемещает корабль вверх на одну клетку
-     */
-    public moveDown = () => { this.location.y++; };
-    /**
-     * Перемещает корабль влево на одну клетку
-     */
-    public moveLeft = () => { this.location.x--; };
-    /**
-     * Перемещает корабль вправо на одну клетку
-     */
-    public moveRight = () => { this.location.x++ };
+    };
 }
