@@ -31,6 +31,7 @@ export default class Ship {
             if (this.length === 4) return ship4Horizontal;
         }
         else {
+            if (this.length === 1) return ship1;
             if (this.length === 2) return ship2Vertical;
             if (this.length === 3) return ship3Vertical;
             if (this.length === 4) return ship4Vertical;
@@ -63,12 +64,26 @@ export default class Ship {
     /**
      * Перерисовывает корабль
      */
-    public reDraw(ctx: CanvasRenderingContext2D, gridCellWidth: number, gridCellHeight: number, scaleParameter: number) {
+    public async reDraw(ctx: CanvasRenderingContext2D, gridCellWidth: number, gridCellHeight: number, scaleParameter: number) {
         let img = new Image();
-        img.src = this.imageSourceString;
-        ctx.drawImage(img, this.location.x * gridCellWidth,
-            this.location.y * gridCellHeight, img.width * scaleParameter, img.height * scaleParameter);
+        img.src = this.determineShipImage();
+
+        img.onload = () => {
+            // console.log('this.determineShipImage:', img.name);
+            ctx.drawImage(img, this.location.x * gridCellWidth,
+                this.location.y * gridCellHeight, img.width * scaleParameter, img.height * scaleParameter);
+        };
     };
+
+    /**
+     * Меняет тип корабля
+     */
+    public changeShipType() {
+        if (this.type === ShipType.Horizontal)
+            this.type = ShipType.Vertical;
+        else
+            this.type = ShipType.Horizontal;
+    }
 
     /**
      * Перемещает корабль вверх на одну клетку

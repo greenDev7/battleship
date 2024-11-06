@@ -62,7 +62,7 @@ export default defineComponent({
             ctx.stroke();
         },
 
-        reDrawShips(ctx: CanvasRenderingContext2D) {
+        async reDrawShips(ctx: CanvasRenderingContext2D) {
             ctx.clearRect(0, 0, this.getCanvasWidth, this.getCanvasHeight);
             this.makeGrid(ctx, store.state.gridLineThickness);
             GameStore.state.ships.forEach(ship => ship.reDraw(ctx, this.getGridCellWidth, this.getGridCellHeight, GameStore.state.scaleParameter));
@@ -79,7 +79,7 @@ export default defineComponent({
             console.log('(Mouse Down) Selected ship: ', this.$data.selectedShip);
         },
 
-        onMouseMoveEventHandler(event: MouseEvent) {
+        async onMouseMoveEventHandler(event: MouseEvent) {
             let loc: Location = Location.getLocationByOffsetXY(event.offsetX, event.offsetY, this.getGridCellWidth, this.getGridCellHeight);
 
             if (this.$data.selectedShip) {
@@ -89,10 +89,27 @@ export default defineComponent({
                 let ctx: CanvasRenderingContext2D | null = canvas.getContext("2d");
 
                 if (ctx)
-                    this.reDrawShips(ctx);
+                    await this.reDrawShips(ctx);
             }
 
             console.log('(Mouse Move) Current location: ', loc);
+        },
+
+        onDblClickEventHandler(event: MouseEvent) {
+            let loc: Location = Location.getLocationByOffsetXY(event.offsetX, event.offsetY, this.getGridCellWidth, this.getGridCellHeight);
+
+            if (this.$data.selectedShip) {
+                this.$data.selectedShip.changeShipType();
+
+                let canvas = <HTMLCanvasElement>this.$refs.canvas;
+                let ctx: CanvasRenderingContext2D | null = canvas.getContext("2d");
+
+                if (ctx)
+                    this.reDrawShips(ctx);
+            }
+
+            console.log('(Mouse DblClick) Current location: ', loc);
+            console.log('(Mouse DblClick) Selected ship: ', this.$data.selectedShip);
         },
 
         onMouseUpEventHandler(event: MouseEvent) {
@@ -105,6 +122,7 @@ export default defineComponent({
             console.log('addEventListeners...');
             ctx.canvas.addEventListener('mousedown', this.onMouseDownEventHandler);
             ctx.canvas.addEventListener('mouseup', this.onMouseUpEventHandler);
+            ctx.canvas.addEventListener('dblclick', this.onDblClickEventHandler);
         },
     },
 
