@@ -79,8 +79,11 @@ export default defineComponent({
             let loc: Location = Location.getLocationByOffsetXY(event.offsetX, event.offsetY, this.getGridCellWidth, this.getGridCellHeight);
             this.$data.selectedShip = this.getShipByLocation(loc);
 
-            console.log('(Mouse Down) Current location: ', loc);
-            console.log('(Mouse Down) Selected ship: ', this.$data.selectedShip);
+            if (this.$data.selectedShip) {
+                console.log('(Mouse Down) Current location: ', loc);
+                console.log('(Mouse Down) Selected ship: ', this.$data.selectedShip);
+                console.log('(Mouse Down) Locations: ', this.$data.selectedShip.getLocations());
+            }
         },
 
         onMouseMoveEventHandler(event: MouseEvent) {

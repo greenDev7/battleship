@@ -11,28 +11,28 @@ export default class Ship {
         this._length = _length;
         this._type = _type;
         this._location = _location;
-    }
+    };
 
     public get length(): number {
         return this._length;
-    }
+    };
     public set length(v: number) {
         this._length = v;
-    }
+    };
 
     public get type(): ShipType {
         return this._type;
-    }
+    };
     public set type(v: ShipType) {
         this._type = v;
-    }
+    };
 
     public get location(): Location {
         return this._location;
-    }
+    };
     public set location(v: Location) {
         this._location = v;
-    }
+    };
 
     /**
      * Создает экземпляр корабля
@@ -52,34 +52,37 @@ export default class Ship {
             ctx.strokeStyle = "black";
             ctx.lineWidth = 2;
 
-            if (this.type === ShipType.Horizontal) {
-                rw = this.length * gridCellWidth;
+            if (this._type === ShipType.Horizontal) {
+                rw = this._length * gridCellWidth;
                 rh = gridCellHeight;
 
             } else {
                 rw = gridCellWidth;
-                rh = this.length * gridCellHeight;
+                rh = this._length * gridCellHeight;
             };
 
             this.drawBulkhead(ctx, gridCellWidth, gridCellHeight);
 
-            ctx.strokeRect(this.location.x * gridCellWidth + 1, this.location.y * gridCellHeight + 1, rw - 2, rh - 2);
+            ctx.strokeRect(this._location.x * gridCellWidth + 1, this._location.y * gridCellHeight + 1, rw - 2, rh - 2);
             ctx.restore();
         }
     };
+    /**
+     * Рисует перемычки корабля
+     */
     private drawBulkhead(ctx: CanvasRenderingContext2D | null, gridCellWidth: number, gridCellHeight: number) {
         if (ctx) {
             ctx.beginPath();
-            for (let i = 1; i < this.length; i++) {
+            for (let i = 1; i < this._length; i++) {
 
-                let x0 = this.location.x * gridCellWidth;
-                let y0 = this.location.y * gridCellHeight;
+                let x0 = this._location.x * gridCellWidth;
+                let y0 = this._location.y * gridCellHeight;
 
-                if (this.type === ShipType.Horizontal) {
+                if (this._type === ShipType.Horizontal) {
                     ctx.moveTo(x0 + i * gridCellWidth, y0);
                     ctx.lineTo(x0 + i * gridCellWidth, y0 + gridCellHeight);
                 }
-                else /* if (this.type === ShipType.Vertical) */ {
+                else /* if (this._type === ShipType.Vertical) */ {
                     ctx.moveTo(x0, y0 + i * gridCellHeight);
                     ctx.lineTo(x0 + gridCellWidth, y0 + i * gridCellHeight);
                 }
@@ -92,9 +95,26 @@ export default class Ship {
      * Меняет тип корабля
      */
     public changeShipType() {
-        if (this.type === ShipType.Horizontal)
-            this.type = ShipType.Vertical;
+        if (this._type === ShipType.Horizontal)
+            this._type = ShipType.Vertical;
         else
-            this.type = ShipType.Horizontal;
+            this._type = ShipType.Horizontal;
+    };
+    /**
+     * Возвращает множество координат (локаций), принадлежащих данному кораблю
+     */
+    public getLocations(): Location[] {
+        // Сразу добавляем координату первой (головной) клетки корабля
+        // т.к. она будет общей как для горизонтального, так и для вертикального корабля
+        let locations: Location[] = [this._location];
+
+        if (this._type === ShipType.Horizontal)
+            for (let i = 1; i < this._length; i++)
+                locations.push(new Location(this._location.x + i, this._location.y));
+        else
+            for (let i = 1; i < this._length; i++)
+                locations.push(new Location(this._location.x, this._location.y + i));
+
+        return locations;
     };
 }

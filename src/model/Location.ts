@@ -9,17 +9,17 @@ export default class Location {
 
     public get x(): number {
         return this._x;
-    }
+    };
     public set x(v: number) {
         this._x = v;
-    }
+    };
 
     public get y(): number {
         return this._y;
-    }
+    };
     public set y(v: number) {
         this._y = v;
-    }
+    };
 
     /**
      * Возвращает локацию по координате игрового поля
@@ -29,5 +29,5 @@ export default class Location {
         let currentY = Math.floor(offsetY / cellHeight);
 
         return new Location(currentX, currentY);
-    }
+    };
 }
