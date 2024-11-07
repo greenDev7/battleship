@@ -32,8 +32,12 @@ export default createStore({
         },
     },
     mutations: {
+        updateScaleParameter(state, scaleParameter: number) {
+            state.scaleParameter = scaleParameter;
+        }
     },
     actions: {
+        
     },
     modules: {
     },
