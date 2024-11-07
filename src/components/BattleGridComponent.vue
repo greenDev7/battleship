@@ -17,6 +17,7 @@ import { mapGetters } from 'vuex';
 import GameStore from '@/store/modules/GameStore';
 import GridType from '@/model/GridType';
 import Location from '@/model/Location';
+import Game from '@/model/Game';
 
 export default defineComponent({
 
@@ -82,7 +83,7 @@ export default defineComponent({
             if (this.$data.selectedShip) {
                 console.log('(Mouse Down) Current location: ', loc);
                 console.log('(Mouse Down) Selected ship: ', this.$data.selectedShip);
-                console.log('(Mouse Down) Locations: ', this.$data.selectedShip.getLocations());
+                // console.log('(Mouse Down) Locations: ', this.$data.selectedShip.getLocations());
             }
         },
 
@@ -120,6 +121,8 @@ export default defineComponent({
             console.log('(Mouse Up)');
             let canvas = <HTMLCanvasElement>this.$refs.canvas;
             canvas.removeEventListener('mousemove', this.onMouseMoveEventHandler);
+
+            console.log('Arrangement is correct:', Game.isArrangementCorrect(GameStore.state.ships));
         },
 
         subscribeToEvents(ctx: CanvasRenderingContext2D) {
