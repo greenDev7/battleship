@@ -117,4 +117,16 @@ export default class Ship {
 
         return locations;
     };
+
+    /**
+     * Возвращает true и координаты пересечений обоих кораблей, если данный корабль пересекается с кораблем ship, иначе возвращает false
+     */
+    public isIntersect(ship: Ship): [boolean, Location | undefined, Location | undefined] {
+        for (const loc1 of this.getLocations())
+            for (const loc2 of ship.getLocations())
+                if (Math.abs(loc1.x - loc2.x) <= 1 && Math.abs(loc1.y - loc2.y) <= 1)
+                    return [true, loc1, loc2];
+
+        return [false, undefined, undefined];
+    }
 }
