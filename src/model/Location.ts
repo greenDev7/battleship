@@ -30,4 +30,16 @@ export default class Location {
 
         return new Location(currentX, currentY);
     };
+
+    /**
+     * Подсвечивает на канвасе расположение данной локации
+     */
+    public highlight(ctx: CanvasRenderingContext2D | null, gridCellWidth: number, gridCellHeight: number) {
+        if (ctx) {
+            ctx.save();
+            ctx.fillStyle = "rgb(229 22 35)";
+            ctx.fillRect(this._x * gridCellWidth + 3, this._y * gridCellHeight + 3, gridCellWidth - 6, gridCellHeight - 6);
+            ctx.restore();
+        }
+    }
 }

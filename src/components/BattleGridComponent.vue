@@ -120,9 +120,15 @@ export default defineComponent({
         onMouseUpEventHandler(event: MouseEvent) {
             console.log('(Mouse Up)');
             let canvas = <HTMLCanvasElement>this.$refs.canvas;
+            let ctx: CanvasRenderingContext2D | null = canvas.getContext("2d");
             canvas.removeEventListener('mousemove', this.onMouseMoveEventHandler);
 
+            let res = Game.isArrangementCorrect(GameStore.state.ships);
             console.log('Arrangement is correct:', Game.isArrangementCorrect(GameStore.state.ships));
+
+            if (!res[0]) {
+                res[1]?.forEach(l => l.highlight(ctx, this.getGridCellWidth, this.getGridCellHeight));
+            }
         },
 
         subscribeToEvents(ctx: CanvasRenderingContext2D) {
