@@ -1,7 +1,5 @@
 <template>
-    <div :style="{ height: getCanvasHeight + 'px' }">
-        <canvas ref="canvas"></canvas>
-    </div>
+    <canvas ref="canvas"></canvas>
 </template>
 
 
@@ -90,6 +88,9 @@ export default defineComponent({
         onMouseMoveEventHandler(event: MouseEvent) {
             let loc: Location = Location.getLocationByOffsetXY(event.offsetX, event.offsetY, this.getGridCellWidth, this.getGridCellHeight);
 
+            // console.log('mouse move:', event.offsetX, event.offsetY);
+            console.log('mouse move (Location):', loc.x, loc.y);
+
             if (this.$data.selectedShip) {
                 this.$data.selectedShip.location = loc;
 
@@ -134,6 +135,7 @@ export default defineComponent({
         subscribeToEvents(ctx: CanvasRenderingContext2D) {
             console.log('addEventListeners...');
             ctx.canvas.addEventListener('mousedown', this.onMouseDownEventHandler);
+            // ctx.canvas.addEventListener('mousemove', this.onMouseMoveEventHandler);
             ctx.canvas.addEventListener('mouseup', this.onMouseUpEventHandler);
             ctx.canvas.addEventListener('dblclick', this.onDblClickEventHandler);
         },
@@ -154,7 +156,6 @@ export default defineComponent({
                 this.subscribeToEvents(ctx);
             }
         };
-
     }
 })
 </script>
@@ -163,5 +164,7 @@ export default defineComponent({
 <style lang="css" scoped>
 canvas {
     border: 1px dashed rgb(99, 99, 99);
+    width: 100%;
+    height: 100%;
 }
 </style>

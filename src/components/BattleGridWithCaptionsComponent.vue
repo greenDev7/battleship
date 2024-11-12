@@ -1,9 +1,9 @@
 <template>
-    <table>
+    <table class="scaling-height scaling-width">
         <tbody>
             <tr>
                 <td></td>
-                <td :style="{ width: getCanvasWidth + 'px' }">
+                <td>
                     <table id="alphabeticTable">
                         <tbody>
                             <tr>
@@ -22,9 +22,9 @@
                     </table>
                 </td>
             </tr>
-            <tr :style="{ height: getCanvasHeight + 'px' }">
-                <td id="digitCell">
-                    <table id="digitTable">
+            <tr class="scaling-height">
+                <td class="scaling-height">
+                    <table id="digitTable" class="scaling-height">
                         <tbody>
                             <tr>
                                 <td>1</td>
@@ -59,7 +59,7 @@
                         </tbody>
                     </table>
                 </td>
-                <td>
+                <td class="scaling-height scaling-width">
                     <BattleGridComponent :grid-type="gridType" />
                 </td>
             </tr>
@@ -100,17 +100,17 @@ td {
     padding: 0px;
 }
 
-#digitTable>tbody>tr>td {
-    padding-top: 3px;
-    padding-right: 7px;
-}
-
-#digitCell {
-    height: inherit;
-}
-
-#digitTable {
+.scaling-height {
     height: 100%;
+}
+
+.scaling-width {
+    width: 100%;
+}
+
+#digitTable>tbody>tr>td {
+    /* padding-top: 3px; */
+    padding-right: 7px;
 }
 
 #alphabeticTable {
