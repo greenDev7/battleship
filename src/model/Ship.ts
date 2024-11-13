@@ -1,3 +1,4 @@
+import GameStore from "@/store";
 import Location from "./Location";
 import ShipType from "./ShipType";
 
@@ -35,15 +36,9 @@ export default class Ship {
     };
 
     /**
-     * Создает экземпляр корабля
-     */
-    public static createShip(length: number, type: ShipType, x: number, y: number): Ship {
-        return new Ship(length, type, new Location(x, y));
-    };
-    /**
      * Рисует корабль
      */
-    public draw(ctx: CanvasRenderingContext2D | null, gridCellWidth: number, gridCellHeight: number) {
+    public draw(ctx: CanvasRenderingContext2D | null) {
 
         let rw, rh: number;
 
@@ -52,39 +47,45 @@ export default class Ship {
             ctx.strokeStyle = "black";
             ctx.lineWidth = 2;
 
+            let gcw: number = GameStore.getters.getGridCellWidth;
+            let gch: number = GameStore.getters.getGridCellHeight;
+
             if (this._type === ShipType.Horizontal) {
-                rw = this._length * gridCellWidth;
-                rh = gridCellHeight;
+                rw = this._length * gcw;
+                rh = gch;
 
             } else {
-                rw = gridCellWidth;
-                rh = this._length * gridCellHeight;
+                rw = gcw;
+                rh = this._length * gch;
             };
 
-            this.drawBulkhead(ctx, gridCellWidth, gridCellHeight);
+            this.drawBulkhead(ctx);
 
-            ctx.strokeRect(this._location.x * gridCellWidth + 1, this._location.y * gridCellHeight + 1, rw - 2, rh - 2);
+            ctx.strokeRect(this._location.x * gcw + 1, this._location.y * gch + 1, rw - 2, rh - 2);
             ctx.restore();
         }
     };
     /**
      * Рисует перемычки корабля
      */
-    private drawBulkhead(ctx: CanvasRenderingContext2D | null, gridCellWidth: number, gridCellHeight: number) {
+    private drawBulkhead(ctx: CanvasRenderingContext2D | null) {
         if (ctx) {
             ctx.beginPath();
             for (let i = 1; i < this._length; i++) {
 
-                let x0 = this._location.x * gridCellWidth;
-                let y0 = this._location.y * gridCellHeight;
+                let gcw: number = GameStore.getters.getGridCellWidth;
+                let gch: number = GameStore.getters.getGridCellHeight;
+
+                let x0 = this._location.x * gcw;
+                let y0 = this._location.y * gch;
 
                 if (this._type === ShipType.Horizontal) {
-                    ctx.moveTo(x0 + i * gridCellWidth, y0);
-                    ctx.lineTo(x0 + i * gridCellWidth, y0 + gridCellHeight);
+                    ctx.moveTo(x0 + i * gcw, y0);
+                    ctx.lineTo(x0 + i * gcw, y0 + gch);
                 }
                 else /* if (this._type === ShipType.Vertical) */ {
-                    ctx.moveTo(x0, y0 + i * gridCellHeight);
-                    ctx.lineTo(x0 + gridCellWidth, y0 + i * gridCellHeight);
+                    ctx.moveTo(x0, y0 + i * gch);
+                    ctx.lineTo(x0 + gcw, y0 + i * gch);
                 }
 
             };

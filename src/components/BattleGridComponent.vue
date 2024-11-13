@@ -18,6 +18,7 @@ import GameStore from '@/store/modules/GameStore';
 import GridType from '@/model/GridType';
 import Location from '@/model/Location';
 import Game from '@/model/Game';
+import OwnGridEventHandler from '@/model/OwnGridEventHandler';
 
 export default defineComponent({
 
@@ -39,56 +40,55 @@ export default defineComponent({
             "getCanvasHeight",
             "getGridCellWidth",
             "getGridCellHeight",
-            "getShipByLocation"
         ]),
     },
 
     methods: {
-        makeGrid(ctx: CanvasRenderingContext2D, thickness: number) {
-            ctx.save();
-            ctx.beginPath();
+        // makeGrid(ctx: CanvasRenderingContext2D, thickness: number) {
+        //     ctx.save();
+        //     ctx.beginPath();
 
-            ctx.lineWidth = thickness;
-            ctx.setLineDash([3, 3]);
+        //     ctx.lineWidth = thickness;
+        //     ctx.setLineDash([3, 3]);
 
-            for (let x = 0; x <= this.getCanvasWidth; x += this.getGridCellWidth) {
-                ctx.moveTo(x, 0);
-                ctx.lineTo(x, this.getCanvasHeight);
-            };
+        //     for (let x = 0; x <= this.getCanvasWidth; x += this.getGridCellWidth) {
+        //         ctx.moveTo(x, 0);
+        //         ctx.lineTo(x, this.getCanvasHeight);
+        //     };
 
-            for (let y = 0; y <= this.getCanvasHeight; y += this.getGridCellHeight) {
-                ctx.moveTo(0, y);
-                ctx.lineTo(this.getCanvasWidth, y);
-            };
+        //     for (let y = 0; y <= this.getCanvasHeight; y += this.getGridCellHeight) {
+        //         ctx.moveTo(0, y);
+        //         ctx.lineTo(this.getCanvasWidth, y);
+        //     };
 
-            ctx.stroke();
-            ctx.restore();
-        },
+        //     ctx.stroke();
+        //     ctx.restore();
+        // },
 
-        drawShips(ctx: CanvasRenderingContext2D) {
-            ctx.save();
-            ctx.clearRect(0, 0, this.getCanvasWidth, this.getCanvasHeight);
-            this.makeGrid(ctx, store.state.gridLineThickness);
-            GameStore.state.ships.forEach(ship => ship.draw(ctx, this.getGridCellWidth, this.getGridCellHeight));
-            ctx.restore();
-        },
+        // drawShips(ctx: CanvasRenderingContext2D) {
+        //     ctx.save();
+        //     ctx.clearRect(0, 0, this.getCanvasWidth, this.getCanvasHeight);
+        //     this.makeGrid(ctx, store.state.gridLineThickness);
+        //     // GameStore.state.ships.forEach(ship => ship.draw(ctx, this.getGridCellWidth, this.getGridCellHeight));
+        //     ctx.restore();
+        // },
 
-        onMouseDownEventHandler(event: MouseEvent) {
-            let canvas = <HTMLCanvasElement>this.$refs.canvas;
-            canvas.addEventListener('mousemove', this.onMouseMoveEventHandler);
+        // onMouseDownEventHandler(event: MouseEvent) {
+        //     let canvas = <HTMLCanvasElement>this.$refs.canvas;
+        //     canvas.addEventListener('mousemove', this.onMouseMoveEventHandler);
 
-            let loc: Location = Location.getLocationByOffsetXY(event.offsetX, event.offsetY, this.getGridCellWidth, this.getGridCellHeight);
-            this.$data.selectedShip = this.getShipByLocation(loc);
+        //     let loc: Location = Location.getLocationByOffsetXY(event.offsetX, event.offsetY);
+        //     this.$data.selectedShip = this.getShipByLocation(loc);
 
-            if (this.$data.selectedShip) {
-                console.log('(Mouse Down) Current location: ', loc);
-                console.log('(Mouse Down) Selected ship: ', this.$data.selectedShip);
-                // console.log('(Mouse Down) Locations: ', this.$data.selectedShip.getLocations());
-            }
-        },
+        //     if (this.$data.selectedShip) {
+        //         console.log('(Mouse Down) Current location: ', loc);
+        //         console.log('(Mouse Down) Selected ship: ', this.$data.selectedShip);
+        //         // console.log('(Mouse Down) Locations: ', this.$data.selectedShip.getLocations());
+        //     }
+        // },
 
         onMouseMoveEventHandler(event: MouseEvent) {
-            let loc: Location = Location.getLocationByOffsetXY(event.offsetX, event.offsetY, this.getGridCellWidth, this.getGridCellHeight);
+            let loc: Location = Location.getLocationByOffsetXY(event.offsetX, event.offsetY);
 
             if (this.$data.selectedShip) {
                 this.$data.selectedShip.location = loc;
@@ -96,13 +96,13 @@ export default defineComponent({
                 let canvas = <HTMLCanvasElement>this.$refs.canvas;
                 let ctx: CanvasRenderingContext2D | null = canvas.getContext("2d");
 
-                if (ctx)
-                    this.drawShips(ctx);
+                // if (ctx)
+                //     this.drawShips(ctx);
             }
         },
 
         onDblClickEventHandler(event: MouseEvent) {
-            let loc: Location = Location.getLocationByOffsetXY(event.offsetX, event.offsetY, this.getGridCellWidth, this.getGridCellHeight);
+            let loc: Location = Location.getLocationByOffsetXY(event.offsetX, event.offsetY);
 
             if (this.$data.selectedShip) {
                 this.$data.selectedShip.changeShipType();
@@ -110,31 +110,31 @@ export default defineComponent({
                 let canvas = <HTMLCanvasElement>this.$refs.canvas;
                 let ctx: CanvasRenderingContext2D | null = canvas.getContext("2d");
 
-                if (ctx)
-                    this.drawShips(ctx);
+                // if (ctx)
+                //     this.drawShips(ctx);
             }
 
             console.log('(Mouse DblClick) Current location: ', loc);
         },
 
-        onMouseUpEventHandler(event: MouseEvent) {
-            console.log('(Mouse Up)');
-            let canvas = <HTMLCanvasElement>this.$refs.canvas;
-            let ctx: CanvasRenderingContext2D | null = canvas.getContext("2d");
-            canvas.removeEventListener('mousemove', this.onMouseMoveEventHandler);
+        // onMouseUpEventHandler(event: MouseEvent) {
+        //     console.log('(Mouse Up)');
+        //     let canvas = <HTMLCanvasElement>this.$refs.canvas;
+        //     let ctx: CanvasRenderingContext2D | null = canvas.getContext("2d");
+        //     canvas.removeEventListener('mousemove', this.onMouseMoveEventHandler);
 
-            let res = Game.isArrangementCorrect(GameStore.state.ships);
-            console.log('Arrangement is correct:', Game.isArrangementCorrect(GameStore.state.ships));
+        //     let res = Game.isArrangementCorrect(Game.);
+        //     console.log('Arrangement is correct:', Game.isArrangementCorrect(GameStore.state.ships));
 
-            if (!res[0]) {
-                res[1]?.forEach(l => l.highlight(ctx, this.getGridCellWidth, this.getGridCellHeight));
-            }
-        },
+        //     if (!res[0]) {
+        //         res[1]?.forEach(l => l.highlight(ctx, this.getGridCellWidth, this.getGridCellHeight));
+        //     }
+        // },
 
         subscribeToEvents(ctx: CanvasRenderingContext2D) {
             console.log('addEventListeners...');
-            ctx.canvas.addEventListener('mousedown', this.onMouseDownEventHandler);
-            ctx.canvas.addEventListener('mouseup', this.onMouseUpEventHandler);
+            // ctx.canvas.addEventListener('mousedown', this.onMouseDownEventHandler);
+            // ctx.canvas.addEventListener('mouseup', this.onMouseUpEventHandler);
             ctx.canvas.addEventListener('dblclick', this.onDblClickEventHandler);
         },
     },
@@ -147,10 +147,13 @@ export default defineComponent({
             ctx.canvas.width = this.getCanvasWidth;
             ctx.canvas.height = this.getCanvasHeight;
 
-            this.makeGrid(ctx, store.state.gridLineThickness);
+             Game.makeGrid(ctx);
 
             if (this.gridType === GridType.Own) {
-                GameStore.state.ships.forEach(ship => ship.draw(ctx, this.getGridCellWidth, this.getGridCellHeight));
+                console.log('ctx123:', ctx);
+                console.log('can123:', ctx.canvas);
+                new OwnGridEventHandler(ctx).register();
+                Game.ships.forEach(ship => ship.draw(ctx));
                 this.subscribeToEvents(ctx);
             }
         };

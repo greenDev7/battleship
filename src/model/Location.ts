@@ -1,3 +1,5 @@
+import GameStore from "../store"
+
 export default class Location {
     private _x: number;
     private _y: number;
@@ -24,9 +26,13 @@ export default class Location {
     /**
      * Возвращает локацию по координате игрового поля
      */
-    public static getLocationByOffsetXY(offsetX: number, offsetY: number, cellWidth: number, cellHeight: number): Location {
-        let currentX = Math.floor(offsetX / cellWidth);
-        let currentY = Math.floor(offsetY / cellHeight);
+    public static getLocationByOffsetXY(offsetX: number, offsetY: number): Location {
+
+        let gcw: number = GameStore.getters.getGridCellWidth;
+        let gch: number = GameStore.getters.getGridCellHeight;
+
+        let currentX = Math.floor(offsetX / gcw);
+        let currentY = Math.floor(offsetY / gch);
 
         return new Location(currentX, currentY);
     };

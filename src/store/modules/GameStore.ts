@@ -11,8 +11,6 @@ export default createStore({
         canvasHeight: 300,
         numberOfCellsOnTheAxisX: 10,
         numberOfCellsOnTheAxisY: 10,
-
-        ships: Game.createInitialShips(),
     },
     getters: {
         getCanvasWidth(state) {
@@ -26,10 +24,7 @@ export default createStore({
         },
         getGridCellHeight(state) {
             return state.canvasHeight * state.scaleParameter / state.numberOfCellsOnTheAxisY;
-        },
-        getShipByLocation: (state) => (location: Location) => {
-            return state.ships.find(s => (s.location.x === location.x && s.location.y === location.y));
-        },
+        }
     },
     mutations: {
         updateScaleParameter(state, scaleParameter: number) {
@@ -37,7 +32,7 @@ export default createStore({
         }
     },
     actions: {
-        
+
     },
     modules: {
     },
