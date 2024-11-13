@@ -1,4 +1,5 @@
 import GameStore from "../store"
+import GridType from "./GridType";
 
 export default class Location {
     private _x: number;
@@ -40,15 +41,29 @@ export default class Location {
     /**
      * Подсвечивает на канвасе расположение данной локации
      */
-    public highlight(ctx: CanvasRenderingContext2D | null) {
+    public highlight(ctx: CanvasRenderingContext2D | null, gridType: GridType = GridType.Own) {
         if (ctx) {
-            
+
             let gcw: number = GameStore.getters.getGridCellWidth;
             let gch: number = GameStore.getters.getGridCellHeight;
 
             ctx.save();
-            ctx.fillStyle = "rgb(229 22 35)";
-            ctx.fillRect(this._x * gcw + 3, this._y * gch + 3, gcw - 6, gch - 6);
+
+            if (gridType === GridType.Own) {
+                ctx.fillStyle = "rgb(229 22 35)";
+                ctx.fillRect(this._x * gcw + 3, this._y * gch + 3, gcw - 6, gch - 6);
+            }
+            else {
+                console.log('123');
+                ctx.fillStyle = "rgb(33 22 235)";
+
+                const circle = new Path2D();
+                let sp = GameStore.state.scaleParameter;
+
+                circle.arc(this._x * gcw + 0.5 * gcw, this._y * gch + 0.5 * gch, 5 * sp, 0, 2 * Math.PI);
+                ctx.fill(circle);
+            }
+
             ctx.restore();
         }
     }

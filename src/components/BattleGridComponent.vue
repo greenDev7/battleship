@@ -46,9 +46,16 @@ export default defineComponent({
 
             if (ship) {
                 this.$data.selectedShip = ship;
-                console.log('(Mouse Down) Current location: ', loc);
-                console.log('(Mouse Down) Selected ship: ', this.$data.selectedShip);
+                // console.log('(Mouse Down) Current location: ', loc);
+                // console.log('(Mouse Down) Selected ship: ', this.$data.selectedShip);
             }
+        },
+
+        handleMouseDownHostile(event: MouseEvent) {
+            let loc: Location = Location.getLocationByOffsetXY(event.offsetX, event.offsetY);
+            loc.highlight(this.getContext(), GridType.Hostile);          
+
+            // console.log('(Mouse Down hostile) Current location: ', loc);
         },
 
         handleMouseMove(event: MouseEvent) {
@@ -100,10 +107,15 @@ export default defineComponent({
         },
 
         registerOwnGridHandlers(ctx: CanvasRenderingContext2D) {
-            console.log('addEventListeners...');
+            console.log('addEventListeners for own grid...');
             ctx.canvas.addEventListener('mousedown', this.handleMouseDown);
             ctx.canvas.addEventListener('mouseup', this.handleMouseUp);
             ctx.canvas.addEventListener('dblclick', this.handleDoubleClick);
+        },
+
+        registerHostileGridHandlers(ctx: CanvasRenderingContext2D) {
+            console.log('addEventListeners for hostile grid...');
+            ctx.canvas.addEventListener('mousedown', this.handleMouseDownHostile);
         },
     },
 
@@ -119,6 +131,8 @@ export default defineComponent({
             if (this.gridType === GridType.Own) {
                 Game.ships.forEach(ship => ship.draw(ctx));
                 this.registerOwnGridHandlers(ctx);
+            } else {
+                this.registerHostileGridHandlers(ctx);
             }
         };
 

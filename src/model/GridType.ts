@@ -1,7 +1,6 @@
 enum GridType {
     Own = "OWN",
-    Hostile = "HOSTILE",
-    Fleet = "FLEET"
+    Hostile = "HOSTILE"
 }
 
 export default GridType
