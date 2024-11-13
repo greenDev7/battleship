@@ -6,19 +6,13 @@
 
 
 <script lang="ts">
-
 import Ship from '@/model/Ship';
 import ShipType from '@/model/ShipType';
-import store from '@/store/modules/GameStore';
-
-
 import { defineComponent } from 'vue'
 import { mapGetters } from 'vuex';
-import GameStore from '@/store/modules/GameStore';
 import GridType from '@/model/GridType';
 import Location from '@/model/Location';
 import Game from '@/model/Game';
-import OwnGridEventHandler from '@/model/OwnGridEventHandler';
 
 export default defineComponent({
 
@@ -38,123 +32,93 @@ export default defineComponent({
         ...mapGetters([
             "getCanvasWidth",
             "getCanvasHeight",
-            "getGridCellWidth",
-            "getGridCellHeight",
         ]),
     },
 
-    methods: {
-        // makeGrid(ctx: CanvasRenderingContext2D, thickness: number) {
-        //     ctx.save();
-        //     ctx.beginPath();
+    methods: {       
 
-        //     ctx.lineWidth = thickness;
-        //     ctx.setLineDash([3, 3]);
+        handleMouseDown(event: MouseEvent) {
+            let canvas = <HTMLCanvasElement>this.$refs.canvas;
+            canvas.addEventListener('mousemove', this.handleMouseMove);
 
-        //     for (let x = 0; x <= this.getCanvasWidth; x += this.getGridCellWidth) {
-        //         ctx.moveTo(x, 0);
-        //         ctx.lineTo(x, this.getCanvasHeight);
-        //     };
+            let loc: Location = Location.getLocationByOffsetXY(event.offsetX, event.offsetY);            
+            let ship: Ship | undefined = Game.getShipByLocation(loc);
 
-        //     for (let y = 0; y <= this.getCanvasHeight; y += this.getGridCellHeight) {
-        //         ctx.moveTo(0, y);
-        //         ctx.lineTo(this.getCanvasWidth, y);
-        //     };
+            if (ship) {
+                this.$data.selectedShip = ship;
+                console.log('(Mouse Down) Current location: ', loc);
+                console.log('(Mouse Down) Selected ship: ', this.$data.selectedShip);
+            }
+        },
 
-        //     ctx.stroke();
-        //     ctx.restore();
-        // },
-
-        // drawShips(ctx: CanvasRenderingContext2D) {
-        //     ctx.save();
-        //     ctx.clearRect(0, 0, this.getCanvasWidth, this.getCanvasHeight);
-        //     this.makeGrid(ctx, store.state.gridLineThickness);
-        //     // GameStore.state.ships.forEach(ship => ship.draw(ctx, this.getGridCellWidth, this.getGridCellHeight));
-        //     ctx.restore();
-        // },
-
-        // onMouseDownEventHandler(event: MouseEvent) {
-        //     let canvas = <HTMLCanvasElement>this.$refs.canvas;
-        //     canvas.addEventListener('mousemove', this.onMouseMoveEventHandler);
-
-        //     let loc: Location = Location.getLocationByOffsetXY(event.offsetX, event.offsetY);
-        //     this.$data.selectedShip = this.getShipByLocation(loc);
-
-        //     if (this.$data.selectedShip) {
-        //         console.log('(Mouse Down) Current location: ', loc);
-        //         console.log('(Mouse Down) Selected ship: ', this.$data.selectedShip);
-        //         // console.log('(Mouse Down) Locations: ', this.$data.selectedShip.getLocations());
-        //     }
-        // },
-
-        onMouseMoveEventHandler(event: MouseEvent) {
+        handleMouseMove(event: MouseEvent) {
             let loc: Location = Location.getLocationByOffsetXY(event.offsetX, event.offsetY);
 
             if (this.$data.selectedShip) {
                 this.$data.selectedShip.location = loc;
 
-                let canvas = <HTMLCanvasElement>this.$refs.canvas;
-                let ctx: CanvasRenderingContext2D | null = canvas.getContext("2d");
+                let ctx: CanvasRenderingContext2D | null = this.getContext();
 
-                // if (ctx)
-                //     this.drawShips(ctx);
+                if (ctx)
+                    Game.drawShips(ctx);                
             }
         },
 
-        onDblClickEventHandler(event: MouseEvent) {
-            let loc: Location = Location.getLocationByOffsetXY(event.offsetX, event.offsetY);
+        getContext(): CanvasRenderingContext2D | null {
+            let canvas = <HTMLCanvasElement>this.$refs.canvas;
+            return canvas.getContext("2d");
+        },
 
+        handleDoubleClick(event: MouseEvent) {
             if (this.$data.selectedShip) {
                 this.$data.selectedShip.changeShipType();
 
-                let canvas = <HTMLCanvasElement>this.$refs.canvas;
-                let ctx: CanvasRenderingContext2D | null = canvas.getContext("2d");
+                let ctx: CanvasRenderingContext2D | null = this.getContext();
 
-                // if (ctx)
-                //     this.drawShips(ctx);
+                if (ctx) {
+                    Game.drawShips(ctx);
+                    this.checkArrangementAndHighlight(ctx);
+                }
             }
-
-            console.log('(Mouse DblClick) Current location: ', loc);
         },
 
-        // onMouseUpEventHandler(event: MouseEvent) {
-        //     console.log('(Mouse Up)');
-        //     let canvas = <HTMLCanvasElement>this.$refs.canvas;
-        //     let ctx: CanvasRenderingContext2D | null = canvas.getContext("2d");
-        //     canvas.removeEventListener('mousemove', this.onMouseMoveEventHandler);
+        handleMouseUp(event: MouseEvent) {
+            console.log('(Mouse Up)');
+            let canvas = <HTMLCanvasElement>this.$refs.canvas;
+            let ctx: CanvasRenderingContext2D | null = canvas.getContext("2d");
+            canvas.removeEventListener('mousemove', this.handleMouseMove);
 
-        //     let res = Game.isArrangementCorrect(Game.);
-        //     console.log('Arrangement is correct:', Game.isArrangementCorrect(GameStore.state.ships));
+            if (ctx)
+                this.checkArrangementAndHighlight(ctx);
+        },
 
-        //     if (!res[0]) {
-        //         res[1]?.forEach(l => l.highlight(ctx, this.getGridCellWidth, this.getGridCellHeight));
-        //     }
-        // },
+        checkArrangementAndHighlight(ctx: CanvasRenderingContext2D): void {
+            let res = Game.isArrangementCorrect(Game.ships);
+            if (!res[0]) {
+                res[1]?.forEach(l => l.highlight(ctx));
+            }
+        },
 
-        subscribeToEvents(ctx: CanvasRenderingContext2D) {
+        registerOwnGridHandlers(ctx: CanvasRenderingContext2D) {
             console.log('addEventListeners...');
-            // ctx.canvas.addEventListener('mousedown', this.onMouseDownEventHandler);
-            // ctx.canvas.addEventListener('mouseup', this.onMouseUpEventHandler);
-            ctx.canvas.addEventListener('dblclick', this.onDblClickEventHandler);
+            ctx.canvas.addEventListener('mousedown', this.handleMouseDown);
+            ctx.canvas.addEventListener('mouseup', this.handleMouseUp);
+            ctx.canvas.addEventListener('dblclick', this.handleDoubleClick);
         },
     },
 
     mounted() {
-        let canvas = <HTMLCanvasElement>this.$refs.canvas;
-        let ctx: CanvasRenderingContext2D | null = canvas.getContext("2d");
+        let ctx: CanvasRenderingContext2D | null = this.getContext();
 
         if (ctx) {
             ctx.canvas.width = this.getCanvasWidth;
             ctx.canvas.height = this.getCanvasHeight;
 
-             Game.makeGrid(ctx);
+            Game.makeGrid(ctx);
 
             if (this.gridType === GridType.Own) {
-                console.log('ctx123:', ctx);
-                console.log('can123:', ctx.canvas);
-                new OwnGridEventHandler(ctx).register();
                 Game.ships.forEach(ship => ship.draw(ctx));
-                this.subscribeToEvents(ctx);
+                this.registerOwnGridHandlers(ctx);
             }
         };
 

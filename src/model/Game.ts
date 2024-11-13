@@ -64,10 +64,16 @@ export default class Game {
         return [true, undefined];
     }
 
+    /**
+     * Возвращает корабль по его координатам
+     */
     public static getShipByLocation(location: Location): Ship | undefined {
         return Game.ships.find(s => (s.location.x === location.x && s.location.y === location.y));
     }
 
+    /**
+     * Рисует сетку на канвесе
+     */
     public static makeGrid(ctx: CanvasRenderingContext2D) {
         ctx.save();
         ctx.beginPath();
@@ -79,7 +85,6 @@ export default class Game {
         let ch: number = GameStore.getters.getCanvasHeight;
         let gcw: number = GameStore.getters.getGridCellWidth;
         let gch: number = GameStore.getters.getGridCellHeight;
-
 
         for (let x = 0; x <= cw; x += gcw) {
             ctx.moveTo(x, 0);
@@ -94,7 +99,10 @@ export default class Game {
         ctx.stroke();
         ctx.restore();
     }
-
+    
+    /**
+     * Рисует корабли на канвасе
+     */
     public static drawShips(ctx: CanvasRenderingContext2D): void {
         ctx.save();
 

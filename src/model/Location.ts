@@ -35,16 +35,20 @@ export default class Location {
         let currentY = Math.floor(offsetY / gch);
 
         return new Location(currentX, currentY);
-    };
+    }
 
     /**
      * Подсвечивает на канвасе расположение данной локации
      */
-    public highlight(ctx: CanvasRenderingContext2D | null, gridCellWidth: number, gridCellHeight: number) {
+    public highlight(ctx: CanvasRenderingContext2D | null) {
         if (ctx) {
+            
+            let gcw: number = GameStore.getters.getGridCellWidth;
+            let gch: number = GameStore.getters.getGridCellHeight;
+
             ctx.save();
             ctx.fillStyle = "rgb(229 22 35)";
-            ctx.fillRect(this._x * gridCellWidth + 3, this._y * gridCellHeight + 3, gridCellWidth - 6, gridCellHeight - 6);
+            ctx.fillRect(this._x * gcw + 3, this._y * gch + 3, gcw - 6, gch - 6);
             ctx.restore();
         }
     }
