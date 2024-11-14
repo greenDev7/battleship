@@ -1,40 +1,40 @@
 <template>
-    <table>
-        <tbody>
-            <tr>
-                <td>
-                    <BattleGridWithCaptionsComponent />
-                </td>
-                <td>
-                    <BattleGridWithCaptionsComponent :gridType=hostileGrid />
-                </td>
-            </tr>
-        </tbody>
-    </table>
+  <table>
+    <tbody>
+      <tr>
+        <td>
+          <BattleGridWithCaptionsComponent />
+        </td>
+        <td>
+          <BattleGridWithCaptionsComponent :gridType="hostileGrid" />
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </template>
 
 
 <script>
-import { defineComponent } from 'vue'
-import BattleGridWithCaptionsComponent from './BattleGridWithCaptionsComponent.vue';
-import GridType from '@/model/GridType';
+import { defineComponent } from "vue";
+import BattleGridWithCaptionsComponent from "./BattleGridWithCaptionsComponent.vue";
+import GridType from "@/model/GridType";
 
 export default defineComponent({
-    name: "BattleBoardComponent",
+  name: "BattleBoardComponent",
 
-    components: { BattleGridWithCaptionsComponent },
+  components: { BattleGridWithCaptionsComponent },
 
-    data() {
-        return {
-            hostileGrid: GridType.Hostile
-        }
-    }
-})
+  data() {
+    return {
+      hostileGrid: GridType.Hostile,
+    };
+  },
+});
 </script>
 
 
 <style lang="css" scoped>
 td {
-    padding-left: 15px;
+  padding-left: 15px;
 }
 </style>

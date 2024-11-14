@@ -54,7 +54,6 @@ export default class Location {
                 ctx.fillRect(this._x * gcw + 3, this._y * gch + 3, gcw - 6, gch - 6);
             }
             else {
-                console.log('123');
                 ctx.fillStyle = "rgb(33 22 235)";
 
                 const circle = new Path2D();

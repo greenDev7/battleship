@@ -1,124 +1,121 @@
 <template>
-    <table>
-        <tbody>
-            <tr>
-                <td></td>
-                <td :style="{ width: getCanvasWidth + 'px' }">
-                    <table id="alphabeticTable">
-                        <tbody>
-                            <tr>
-                                <td>а</td>
-                                <td>б</td>
-                                <td>в</td>
-                                <td>г</td>
-                                <td>д</td>
-                                <td>е</td>
-                                <td>ж</td>
-                                <td>з</td>
-                                <td>и</td>
-                                <td>к</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </td>
-            </tr>
-            <tr :style="{ height: getCanvasHeight + 'px' }">
-                <td id="digitCell">
-                    <table id="digitTable">
-                        <tbody>
-                            <tr>
-                                <td>1</td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                            </tr>
-                            <tr>
-                                <td>4</td>
-                            </tr>
-                            <tr>
-                                <td>5</td>
-                            </tr>
-                            <tr>
-                                <td>6</td>
-                            </tr>
-                            <tr>
-                                <td>7</td>
-                            </tr>
-                            <tr>
-                                <td>8</td>
-                            </tr>
-                            <tr>
-                                <td>9</td>
-                            </tr>
-                            <tr>
-                                <td>10</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </td>
-                <td>
-                    <BattleGridComponent :grid-type="gridType" />
-                </td>
-            </tr>
-        </tbody>
-    </table>
+  <table>
+    <tbody>
+      <tr>
+        <td></td>
+        <td :style="{ width: getCanvasWidth + 'px' }">
+          <table id="alphabeticTable">
+            <tbody>
+              <tr>
+                <td>а</td>
+                <td>б</td>
+                <td>в</td>
+                <td>г</td>
+                <td>д</td>
+                <td>е</td>
+                <td>ж</td>
+                <td>з</td>
+                <td>и</td>
+                <td>к</td>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+      <tr :style="{ height: getCanvasHeight + 'px' }">
+        <td id="digitCell">
+          <table id="digitTable">
+            <tbody>
+              <tr>
+                <td>1</td>
+              </tr>
+              <tr>
+                <td>2</td>
+              </tr>
+              <tr>
+                <td>3</td>
+              </tr>
+              <tr>
+                <td>4</td>
+              </tr>
+              <tr>
+                <td>5</td>
+              </tr>
+              <tr>
+                <td>6</td>
+              </tr>
+              <tr>
+                <td>7</td>
+              </tr>
+              <tr>
+                <td>8</td>
+              </tr>
+              <tr>
+                <td>9</td>
+              </tr>
+              <tr>
+                <td>10</td>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+        <td>
+          <BattleGridComponent :grid-type="gridType" />
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue'
+import { defineComponent, PropType } from "vue";
 import BattleGridComponent from "./BattleGridComponent.vue";
-import { mapGetters } from 'vuex';
-import GridType from '@/model/GridType';
+import { mapGetters } from "vuex";
+import GridType from "@/model/GridType";
 
 export default defineComponent({
-    name: "BattleGridWithCaptionsComponent",
+  name: "BattleGridWithCaptionsComponent",
 
-    components: { BattleGridComponent },
+  components: { BattleGridComponent },
 
-    props: {
-        gridType: { type: String, default: GridType.Own },
-    },
+  props: {
+    gridType: { type: String, default: GridType.Own },
+  },
 
-    computed: {
-        ...mapGetters([
-            "getCanvasWidth",
-            "getCanvasHeight"
-        ]),
-    }
-})
+  computed: {
+    ...mapGetters(["getCanvasWidth", "getCanvasHeight"]),
+  },
+});
 </script>
 
 <style lang="css" scoped>
 table,
 tr,
 td {
-    /* border: 1px solid blue; */
-    border-collapse: collapse;
-    padding: 0px;
+  /* border: 1px solid blue; */
+  border-collapse: collapse;
+  padding: 0px;
 }
 
-#digitTable>tbody>tr>td {
-    padding-top: 3px;
-    padding-right: 7px;
+#digitTable > tbody > tr > td {
+  padding-top: 3px;
+  padding-right: 7px;
 }
 
 #digitCell {
-    height: inherit;
+  height: inherit;
 }
 
 #digitTable {
-    height: 100%;
+  height: 100%;
 }
 
 #alphabeticTable {
-    width: 100%;
+  width: 100%;
 }
 
-#alphabeticTable>tbody>tr>td {
-    width: 10%;
-    padding-bottom: 5px;
+#alphabeticTable > tbody > tr > td {
+  width: 10%;
+  padding-bottom: 5px;
 }
 </style>

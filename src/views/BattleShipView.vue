@@ -1,21 +1,31 @@
 <template>
-    <BattleBoardComponent class="inline" />
+  <div id="container">
+    <BattleBoardComponent />
+    <button type="submit">Играть!</button>
+    <button type="submit">Сдаться</button>
+  </div>
 </template>
 
 <script lang="ts">
-import GameStore from '@/store';
-import BattleBoardComponent from '../components/BattleBoardComponent.vue'
-import { defineComponent } from 'vue'
+import BattleBoardComponent from "../components/BattleBoardComponent.vue";
+import { defineComponent } from "vue";
 
 export default defineComponent({
-    name: "BattleShipView",
+  name: "BattleShipView",
 
-    components: { BattleBoardComponent }
-})
+  components: { BattleBoardComponent },
+});
 </script>
 
 <style lang="css" scoped>
-.inline {
-    display: inline-block;
+#container {
+  width: fit-content;
+  text-align: center;
+}
+
+button {
+  width: 200px;
+  height: 50px;
+  margin: 50px 30px;
 }
 </style>
