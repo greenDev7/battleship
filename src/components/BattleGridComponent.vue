@@ -23,7 +23,9 @@ export default defineComponent({
 
   data() {
     return {
-      selectedShip: new Ship(1, ShipOrientation.Horizontal, new Location(0, 0)),
+      selectedShip: <Ship | null>(
+        new Ship(1, ShipOrientation.Horizontal, new Location(0, 0))
+      ),
     };
   },
 
@@ -107,6 +109,8 @@ export default defineComponent({
       let canvas = <HTMLCanvasElement>this.$refs.canvas;
       let ctx: CanvasRenderingContext2D | null = canvas.getContext("2d");
       canvas.removeEventListener("mousemove", this.handleMouseMove);
+
+      this.$data.selectedShip = null;
 
       if (ctx) this.checkArrangementAndHighlight(ctx);
     },
