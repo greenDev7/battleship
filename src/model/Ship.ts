@@ -1,14 +1,14 @@
 import GameStore from "@/store";
 import Location from "./Location";
-import ShipType from "./ShipType";
+import ShipOrientation from "./ShipOrientation";
 
 
 export default class Ship {
     private _length: number;
-    private _type: ShipType;
+    private _type: ShipOrientation;
     private _location: Location;
 
-    constructor(_length: number, _type: ShipType, _location: Location) {
+    constructor(_length: number, _type: ShipOrientation, _location: Location) {
         this._length = _length;
         this._type = _type;
         this._location = _location;
@@ -21,10 +21,10 @@ export default class Ship {
         this._length = v;
     };
 
-    public get type(): ShipType {
+    public get type(): ShipOrientation {
         return this._type;
     };
-    public set type(v: ShipType) {
+    public set type(v: ShipOrientation) {
         this._type = v;
     };
 
@@ -50,7 +50,7 @@ export default class Ship {
             let gcw: number = GameStore.getters.getGridCellWidth;
             let gch: number = GameStore.getters.getGridCellHeight;
 
-            if (this._type === ShipType.Horizontal) {
+            if (this._type === ShipOrientation.Horizontal) {
                 rw = this._length * gcw;
                 rh = gch;
 
@@ -79,7 +79,7 @@ export default class Ship {
                 let x0 = this._location.x * gcw;
                 let y0 = this._location.y * gch;
 
-                if (this._type === ShipType.Horizontal) {
+                if (this._type === ShipOrientation.Horizontal) {
                     ctx.moveTo(x0 + i * gcw, y0);
                     ctx.lineTo(x0 + i * gcw, y0 + gch);
                 }
@@ -95,11 +95,11 @@ export default class Ship {
     /**
      * Меняет тип корабля
      */
-    public changeShipType() {
-        if (this._type === ShipType.Horizontal)
-            this._type = ShipType.Vertical;
+    public changeOrientation() {
+        if (this._type === ShipOrientation.Horizontal)
+            this._type = ShipOrientation.Vertical;
         else
-            this._type = ShipType.Horizontal;
+            this._type = ShipOrientation.Horizontal;
     };
     /**
      * Возвращает множество координат (локаций), принадлежащих данному кораблю
@@ -109,7 +109,7 @@ export default class Ship {
         // т.к. она будет общей как для горизонтального, так и для вертикального корабля
         let locations: Location[] = [this._location];
 
-        if (this._type === ShipType.Horizontal)
+        if (this._type === ShipOrientation.Horizontal)
             for (let i = 1; i < this._length; i++)
                 locations.push(new Location(this._location.x + i, this._location.y));
         else

@@ -1,5 +1,5 @@
 import Ship from "./Ship";
-import ShipType from "./ShipType";
+import ShipOrientation from "./ShipOrientation";
 import Location from "./Location";
 import GameStore from "@/store";
 
@@ -16,19 +16,19 @@ export default class Game {
     */
     private static createInitialShips(): Ship[] {
         return [
-            new Ship(1, ShipType.Horizontal, new Location(8, 2)),
-            new Ship(1, ShipType.Horizontal, new Location(0, 9)),
-            new Ship(1, ShipType.Horizontal, new Location(7, 5)),
-            new Ship(1, ShipType.Horizontal, new Location(8, 8)),
+            new Ship(1, ShipOrientation.Horizontal, new Location(8, 2)),
+            new Ship(1, ShipOrientation.Horizontal, new Location(0, 9)),
+            new Ship(1, ShipOrientation.Horizontal, new Location(7, 5)),
+            new Ship(1, ShipOrientation.Horizontal, new Location(8, 8)),
 
-            new Ship(2, ShipType.Horizontal, new Location(0, 0)),
-            new Ship(2, ShipType.Vertical, new Location(4, 3)),
-            new Ship(2, ShipType.Vertical, new Location(1, 2)),
+            new Ship(2, ShipOrientation.Horizontal, new Location(0, 0)),
+            new Ship(2, ShipOrientation.Vertical, new Location(4, 3)),
+            new Ship(2, ShipOrientation.Vertical, new Location(1, 2)),
 
-            new Ship(3, ShipType.Horizontal, new Location(5, 0)),
-            new Ship(3, ShipType.Horizontal, new Location(4, 9)),
+            new Ship(3, ShipOrientation.Horizontal, new Location(5, 0)),
+            new Ship(3, ShipOrientation.Horizontal, new Location(4, 9)),
 
-            new Ship(4, ShipType.Vertical, new Location(2, 6))
+            new Ship(4, ShipOrientation.Vertical, new Location(2, 6))
         ]
     };
 

@@ -7,7 +7,7 @@
 
 <script lang="ts">
 import Ship from '@/model/Ship';
-import ShipType from '@/model/ShipType';
+import ShipOrientation from '@/model/ShipOrientation';
 import { defineComponent } from 'vue'
 import { mapGetters } from 'vuex';
 import GridType from '@/model/GridType';
@@ -24,7 +24,7 @@ export default defineComponent({
 
     data() {
         return {
-            selectedShip: new Ship(1, ShipType.Horizontal, new Location(0, 0))
+            selectedShip: new Ship(1, ShipOrientation.Horizontal, new Location(0, 0))
         }
     },
 
@@ -38,6 +38,8 @@ export default defineComponent({
     methods: {       
 
         handleMouseDown(event: MouseEvent) {
+            event.preventDefault();
+
             let canvas = <HTMLCanvasElement>this.$refs.canvas;
             canvas.addEventListener('mousemove', this.handleMouseMove);
 
@@ -46,14 +48,14 @@ export default defineComponent({
 
             if (ship) {
                 this.$data.selectedShip = ship;
-                // console.log('(Mouse Down) Current location: ', loc);
+                console.log('(Mouse Down) Current location: ', loc);
                 // console.log('(Mouse Down) Selected ship: ', this.$data.selectedShip);
             }
         },
 
         handleMouseDownHostile(event: MouseEvent) {
             let loc: Location = Location.getLocationByOffsetXY(event.offsetX, event.offsetY);
-            loc.highlight(this.getContext(), GridType.Hostile);          
+            loc.highlight(this.getContext(), GridType.Hostile);         
 
             // console.log('(Mouse Down hostile) Current location: ', loc);
         },
@@ -77,16 +79,21 @@ export default defineComponent({
         },
 
         handleDoubleClick(event: MouseEvent) {
-            if (this.$data.selectedShip) {
-                this.$data.selectedShip.changeShipType();
+            let loc: Location = Location.getLocationByOffsetXY(event.offsetX, event.offsetY);            
+            let ship: Ship | undefined = Game.getShipByLocation(loc);
 
+            if (ship) {
+                ship.changeOrientation();
+                
                 let ctx: CanvasRenderingContext2D | null = this.getContext();
 
                 if (ctx) {
                     Game.drawShips(ctx);
                     this.checkArrangementAndHighlight(ctx);
                 }
-            }
+
+                console.log('(Mouse double click) Current location: ', loc);
+            }            
         },
 
         handleMouseUp(event: MouseEvent) {
@@ -134,7 +141,7 @@ export default defineComponent({
             } else {
                 this.registerHostileGridHandlers(ctx);
             }
-        };
+        }
 
     }
 })
