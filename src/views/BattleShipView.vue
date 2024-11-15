@@ -1,8 +1,37 @@
 <template>
   <div id="container">
+    <table>
+      <tbody>
+        <tr>
+          <td>
+            <input type="text" name="fname" placeholder="Player" />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <button class="top-btn" type="submit">
+              Игра со случайным соперником
+            </button>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <button class="top-btn" type="submit">
+              Игра с другом
+            </button>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <button class="top-btn" type="submit">Игра с компьютером</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
     <BattleBoardComponent />
-    <button type="submit">Играть!</button>
-    <button type="submit">Сдаться</button>
+    <button class="btm-btn" type="submit">Играть</button>
+    <button class="btm-btn" type="submit">Завершить игру</button>
   </div>
 </template>
 
@@ -23,9 +52,23 @@ export default defineComponent({
   text-align: center;
 }
 
-button {
+table {
+  /* border: 1px solid; */
+  margin: 0px auto 20px auto;
+}
+
+table > tbody > tr > td {
+  padding: 0px 0px 15px 15px;
+}
+
+.btm-btn {
+  margin: 20px 0px 0px 20px;
   width: 200px;
   height: 50px;
-  margin: 50px 30px;
+}
+
+.top-btn {
+  width: 300px;
+  height: 50px;
 }
 </style>
