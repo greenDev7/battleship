@@ -9,16 +9,14 @@
         </tr>
         <tr>
           <td>
-            <button class="top-btn" type="submit">
+            <button class="top-btn" @click="clickRandomGameButtonHandle">
               Игра со случайным соперником
             </button>
           </td>
         </tr>
         <tr>
           <td>
-            <button class="top-btn" type="submit">
-              Игра с другом
-            </button>
+            <button class="top-btn" type="submit">Игра с другом</button>
           </td>
         </tr>
         <tr>
@@ -38,17 +36,29 @@
 <script lang="ts">
 import BattleBoardComponent from "../components/BattleBoardComponent.vue";
 import { defineComponent } from "vue";
+import { ActionStore } from "@/store";
 
 export default defineComponent({
   name: "BattleShipView",
 
   components: { BattleBoardComponent },
+
+  methods: {
+    clickRandomGameButtonHandle(event: MouseEvent) {
+      console.log("clickRandomGameButtonHandle");
+      ActionStore.dispatch("createUser", {
+        id: "6f3036fd-af70-45b6-be76-12cadc95f157",
+        dfname: "Player",
+        dfemail: "grrtsgs@gmail.com",
+      });
+    },
+  },
 });
 </script>
 
 <style lang="css" scoped>
 #container {
-  width: fit-content;
+  /* width: fit-content; */
   text-align: center;
 }
 

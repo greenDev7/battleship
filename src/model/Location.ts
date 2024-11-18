@@ -1,4 +1,4 @@
-import GameStore from "../store"
+import GameStore from "../store";
 import GridType from "./GridType";
 
 export default class Location {

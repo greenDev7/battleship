@@ -1,6 +1,3 @@
-import Game from '@/model/Game';
-import Location from "@/model/Location";
-import Ship from '@/model/Ship';
 import { createStore } from 'vuex';
 
 export default createStore({

@@ -13,6 +13,7 @@ import { mapGetters } from "vuex";
 import GridType from "@/model/GridType";
 import Location from "@/model/Location";
 import Game from "@/model/Game";
+import { ActionStore } from "@/store";
 
 export default defineComponent({
   name: "BattleGridComponent",
@@ -150,6 +151,8 @@ export default defineComponent({
       } else {
         this.registerHostileGridHandlers(ctx);
       }
+
+      ActionStore.dispatch('sayHello');
     }
   },
 });
