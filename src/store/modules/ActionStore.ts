@@ -5,7 +5,6 @@ import { createStore } from 'vuex';
 
 export default createStore({
     state: {
-        baseWebSocketUrl: "ws://127.0.0.1:5000/ws",
         ws: new WebSocket("ws://127.0.0.1:5000/ws")
     },
     getters: {

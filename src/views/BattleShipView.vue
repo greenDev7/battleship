@@ -49,7 +49,6 @@ export default defineComponent({
   data() {
     return {
       nickName: "Player",
-      // connection: new WebSocket(ActionStore.state.baseWebSocketUrl),
     };
   },
 
