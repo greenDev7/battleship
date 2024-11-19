@@ -3,8 +3,13 @@
     <table>
       <tbody>
         <tr>
-          <td>
-            <input type="text" name="fname" placeholder="Player" />
+          <td colspan="3">
+            <input
+              type="text"
+              name="fname"
+              :placeholder="nickName"
+              v-model="nickName"
+            />
           </td>
         </tr>
         <tr>
@@ -13,20 +18,16 @@
               Игра со случайным соперником
             </button>
           </td>
-        </tr>
-        <tr>
           <td>
             <button class="top-btn" type="submit">Игра с другом</button>
           </td>
-        </tr>
-        <tr>
           <td>
             <button class="top-btn" type="submit">Игра с компьютером</button>
           </td>
         </tr>
       </tbody>
     </table>
-
+    <InfoBoardComponent />
     <BattleBoardComponent />
     <button class="btm-btn" type="submit">Играть</button>
     <button class="btm-btn" type="submit">Завершить игру</button>
@@ -37,21 +38,50 @@
 import BattleBoardComponent from "../components/BattleBoardComponent.vue";
 import { defineComponent } from "vue";
 import { ActionStore } from "@/store";
+import GameType from "@/model/GameType";
+import InfoBoardComponent from "@/components/InfoBoardComponent.vue";
 
 export default defineComponent({
   name: "BattleShipView",
 
-  components: { BattleBoardComponent },
+  components: { BattleBoardComponent, InfoBoardComponent },
+
+  data() {
+    return {
+      nickName: "Player",
+      // connection: new WebSocket(ActionStore.state.baseWebSocketUrl),
+    };
+  },
 
   methods: {
     clickRandomGameButtonHandle(event: MouseEvent) {
-      console.log("clickRandomGameButtonHandle");
-      ActionStore.dispatch("createUser", {
-        id: "6f3036fd-af70-45b6-be76-12cadc95f157",
-        dfname: "Player",
-        dfemail: "grrtsgs@gmail.com",
-      });
+      if (
+        this.nickName === "" ||
+        this.nickName === null ||
+        this.nickName === undefined
+      ) {
+        alert("Для игры необходимо ввести ник!");
+        return;
+      }
+
+      const userRequestBody = {
+        nickName: this.nickName,
+        gameType: GameType.Random,
+      };
+
+      const ws = ActionStore.getters.getWebSocket;
+      ActionStore.dispatch("createUserWS", { ws, userRequestBody });
     },
+  },
+
+  created() {
+    ActionStore.state.ws.onopen = function (event) {
+      console.log("Successfully connected to the websocket server...");
+    };
+
+    ActionStore.state.ws.onclose = function(event) {
+      console.log("Successfully  disconnected from the websocket server...");
+    };
   },
 });
 </script>
