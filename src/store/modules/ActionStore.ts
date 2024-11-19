@@ -15,7 +15,7 @@ export default createStore({
         },
         async createUser(context, userRequestBody) {
             axiosInstance.post("/user/", userRequestBody)
-                .catch((reason) => console.log("createUser exeption:", reason));
+                .catch((reason) => console.log("createUser error:", reason));
         }
     },
     modules: {
