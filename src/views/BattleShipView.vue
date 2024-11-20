@@ -35,7 +35,7 @@
         </tr>
       </tbody>
     </table>
-    <InfoBoardComponent />
+    <InfoBoardComponent v-if="showInformComponent" />
     <BattleBoardComponent />
     <button class="btm-btn" type="submit">Играть</button>
     <button class="btm-btn" type="submit">Завершить игру</button>
@@ -58,6 +58,7 @@ export default defineComponent({
     return {
       nickName: "Player",
       topButtonDisabled: false,
+      showInformComponent: false
     };
   },
 
@@ -81,6 +82,7 @@ export default defineComponent({
 
       this.setupSocketConnectionAndCreateUser(ws, userRequestBody);
       this.topButtonDisabled = true;
+      this.showInformComponent = true;
     },
 
     setupSocketConnectionAndCreateUser(ws: WebSocket, userRequestBody: Object) {

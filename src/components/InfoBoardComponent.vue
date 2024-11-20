@@ -16,7 +16,6 @@
 
 
 <script lang="ts">
-import { GameStore } from "@/store/modules/GameStore";
 import { defineComponent } from "vue";
 import { mapGetters } from "vuex";
 
@@ -32,10 +31,6 @@ export default defineComponent({
       gameTimer: "01:23",
     };
   },
-
-  mounted() {
-    console.log(GameStore.state.gridLineThickness);
-  }
 });
 </script>
 

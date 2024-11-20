@@ -2,7 +2,7 @@ import axiosInstance from '@/helpers/axios';
 
 export const ActionStore = {
     state: {
-        enemyStatusCaption: 'Поиск соперника'
+        enemyStatusCaption: 'Поиск соперника...'
     },
     getters: {
         getEnemyStatusCaption(state: any) {

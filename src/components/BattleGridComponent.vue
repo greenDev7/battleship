@@ -124,14 +124,12 @@ export default defineComponent({
     },
 
     registerOwnGridHandlers(ctx: CanvasRenderingContext2D) {
-      console.log("addEventListeners for own grid...");
       ctx.canvas.addEventListener("mousedown", this.handleMouseDown);
       ctx.canvas.addEventListener("mouseup", this.handleMouseUp);
       ctx.canvas.addEventListener("dblclick", this.handleDoubleClick);
     },
 
     registerHostileGridHandlers(ctx: CanvasRenderingContext2D) {
-      console.log("addEventListeners for hostile grid...");
       ctx.canvas.addEventListener("mousedown", this.handleMouseDownHostile);
     },
   },
@@ -153,8 +151,6 @@ export default defineComponent({
       } else {
         this.registerHostileGridHandlers(ctx);
       }
-
-      ActionStore.dispatch("sayHello");
     }
   },
 });
