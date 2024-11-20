@@ -1,33 +1,28 @@
 import axiosInstance from '@/helpers/axios';
-// import ws from '@/websocket/ws';
-import axios from 'axios';
-import { createStore } from 'vuex';
 
-export default createStore({
+export const ActionStore = {
     state: {
-        ws: new WebSocket("ws://127.0.0.1:5000/ws")
+        enemyStatusCaption: 'Поиск соперника'
     },
     getters: {
-        getWebSocket(state) {
-            return state.ws;
+        getEnemyStatusCaption(state: any) {
+            return state.enemyStatusCaption;
         }
     },
     mutations: {
     },
     actions: {
-        async sayHello(context) {
+        async sayHello(context: any) {
             console.log('Hello! I am from Actions =)');
         },
-        async createUser(context, userRequestBody) {
+        async createUser(context: any, userRequestBody: any) {
             axiosInstance.post("/user/", userRequestBody)
                 .catch((reason) => console.log("createUser error:", reason));
         },
-        async createUserWS(context, payload) {
+        async createUserWS(context: any, payload: any) {
             const { ws, userRequestBody } = payload;
             console.log('sending ws request to create user for random game');
             ws.send(JSON.stringify(userRequestBody));
         }
-    },
-    modules: {
-    },
-})
+    }
+}

@@ -1,4 +1,4 @@
-import GameStore from "@/store";
+import GameStore from "@/store/index";
 import Location from "./Location";
 import ShipOrientation from "./ShipOrientation";
 

@@ -1,4 +1,4 @@
-import GameStore from "../store";
+import { GameStore } from "@/store/modules/GameStore";
 import GridType from "./GridType";
 
 export default class Location {
@@ -29,8 +29,9 @@ export default class Location {
      */
     public static getLocationByOffsetXY(offsetX: number, offsetY: number): Location {
 
-        let gcw: number = GameStore.getters.getGridCellWidth;
-        let gch: number = GameStore.getters.getGridCellHeight;
+        const st = GameStore.state;
+        let gcw: number = GameStore.getters.getGridCellWidth(st);
+        let gch: number = GameStore.getters.getGridCellHeight(st);
 
         let currentX = Math.floor(offsetX / gcw);
         let currentY = Math.floor(offsetY / gch);
@@ -44,8 +45,9 @@ export default class Location {
     public highlight(ctx: CanvasRenderingContext2D | null, gridType: GridType = GridType.Own) {
         if (ctx) {
 
-            let gcw: number = GameStore.getters.getGridCellWidth;
-            let gch: number = GameStore.getters.getGridCellHeight;
+            const st = GameStore.state;
+            let gcw: number = GameStore.getters.getGridCellWidth(st);
+            let gch: number = GameStore.getters.getGridCellHeight(st);
 
             ctx.save();
 

@@ -1,7 +1,7 @@
 import Ship from "./Ship";
 import ShipOrientation from "./ShipOrientation";
 import Location from "./Location";
-import GameStore from "@/store";
+import { GameStore } from "@/store/modules/GameStore";
 
 export default class Game {
 
@@ -81,10 +81,12 @@ export default class Game {
         ctx.lineWidth = GameStore.state.gridLineThickness;
         ctx.setLineDash([3, 3]);
 
-        let cw: number = GameStore.getters.getCanvasWidth;
-        let ch: number = GameStore.getters.getCanvasHeight;
-        let gcw: number = GameStore.getters.getGridCellWidth;
-        let gch: number = GameStore.getters.getGridCellHeight;
+        const st = GameStore.state;
+
+        let cw: number = GameStore.getters.getCanvasWidth(st);
+        let ch: number = GameStore.getters.getCanvasHeight(st);
+        let gcw: number = GameStore.getters.getGridCellWidth(st);
+        let gch: number = GameStore.getters.getGridCellHeight(st);
 
         for (let x = 0; x <= cw; x += gcw) {
             ctx.moveTo(x, 0);
@@ -99,15 +101,16 @@ export default class Game {
         ctx.stroke();
         ctx.restore();
     }
-    
+
     /**
      * Рисует корабли на канвасе
      */
     public static drawShips(ctx: CanvasRenderingContext2D): void {
         ctx.save();
 
-        let cw: number = GameStore.getters.getCanvasWidth;
-        let ch: number = GameStore.getters.getCanvasHeight;
+        const st = GameStore.state;
+        let cw: number = GameStore.getters.getCanvasWidth(st);
+        let ch: number = GameStore.getters.getCanvasHeight(st);
 
         ctx.clearRect(0, 0, cw, ch);
         this.makeGrid(ctx);

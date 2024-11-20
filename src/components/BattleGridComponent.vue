@@ -13,7 +13,7 @@ import { mapGetters } from "vuex";
 import GridType from "@/model/GridType";
 import Location from "@/model/Location";
 import Game from "@/model/Game";
-import { ActionStore } from "@/store";
+import ActionStore from "@/store/index";
 
 export default defineComponent({
   name: "BattleGridComponent",
@@ -146,13 +146,15 @@ export default defineComponent({
       Game.makeGrid(ctx);
 
       if (this.gridType === GridType.Own) {
-        Game.ships.forEach((ship) => ship.draw(ctx));
+        Game.ships.forEach((ship) => {
+          ship.draw(ctx);
+        });
         this.registerOwnGridHandlers(ctx);
       } else {
         this.registerHostileGridHandlers(ctx);
       }
 
-      ActionStore.dispatch('sayHello');
+      ActionStore.dispatch("sayHello");
     }
   },
 });

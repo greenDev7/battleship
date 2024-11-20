@@ -1,6 +1,4 @@
-import { createStore } from 'vuex';
-
-export default createStore({
+export const GameStore = {
     state: {
         scaleParameter: 0.8,
         gridLineThickness: 0.3,
@@ -9,17 +7,17 @@ export default createStore({
         numberOfCellsOnTheAxisX: 10,
         numberOfCellsOnTheAxisY: 10,
     },
-    getters: {
-        getCanvasWidth(state) {
+    getters: {             
+        getCanvasWidth(state: any) {
             return state.canvasWidth * state.scaleParameter;
         },
-        getCanvasHeight(state) {
+        getCanvasHeight(state: any) {
             return state.canvasHeight * state.scaleParameter;
         },
-        getGridCellWidth(state) {
+        getGridCellWidth(state: any) {
             return state.canvasWidth * state.scaleParameter / state.numberOfCellsOnTheAxisX;
         },
-        getGridCellHeight(state) {
+        getGridCellHeight(state: any) {
             return state.canvasHeight * state.scaleParameter / state.numberOfCellsOnTheAxisY;
         }
     },
@@ -27,7 +25,5 @@ export default createStore({
     },
     actions: {
 
-    },
-    modules: {
-    },
-})
+    }
+}

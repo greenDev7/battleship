@@ -7,22 +7,30 @@
             <input
               type="text"
               name="fname"
-              :placeholder="nickName"
               v-model="nickName"
+              :disabled="topButtonDisabled"
             />
           </td>
         </tr>
         <tr>
           <td>
-            <button class="top-btn" @click="clickRandomGameButtonHandle">
+            <button
+              class="top-btn"
+              @click="clickRandomGameButtonHandle"
+              :disabled="topButtonDisabled"
+            >
               Игра со случайным соперником
             </button>
           </td>
           <td>
-            <button class="top-btn" type="submit">Игра с другом</button>
+            <button class="top-btn" type="submit" :disabled="topButtonDisabled">
+              Игра с другом
+            </button>
           </td>
           <td>
-            <button class="top-btn" type="submit">Игра с компьютером</button>
+            <button class="top-btn" type="submit" :disabled="topButtonDisabled">
+              Игра с компьютером
+            </button>
           </td>
         </tr>
       </tbody>
@@ -37,7 +45,7 @@
 <script lang="ts">
 import BattleBoardComponent from "../components/BattleBoardComponent.vue";
 import { defineComponent } from "vue";
-import { ActionStore } from "@/store";
+import ActionStore from "@/store/index";
 import GameType from "@/model/GameType";
 import InfoBoardComponent from "@/components/InfoBoardComponent.vue";
 
@@ -49,6 +57,7 @@ export default defineComponent({
   data() {
     return {
       nickName: "Player",
+      topButtonDisabled: false,
     };
   },
 
@@ -68,19 +77,25 @@ export default defineComponent({
         gameType: GameType.Random,
       };
 
-      const ws = ActionStore.getters.getWebSocket;
-      ActionStore.dispatch("createUserWS", { ws, userRequestBody });
+      let ws: WebSocket = new WebSocket("ws://127.0.0.1:5000/ws");
+
+      this.setupSocketConnectionAndCreateUser(ws, userRequestBody);
+      this.topButtonDisabled = true;
     },
-  },
 
-  created() {
-    ActionStore.state.ws.onopen = function (event) {
-      console.log("Successfully connected to the websocket server...");
-    };
+    setupSocketConnectionAndCreateUser(ws: WebSocket, userRequestBody: Object) {
+      ws.onopen = function (event) {
+        console.log("Successfully connected to the websocket server...");
+        ActionStore.dispatch("createUserWS", {
+          ws,
+          userRequestBody,
+        });
+      };
 
-    ActionStore.state.ws.onclose = function(event) {
-      console.log("Successfully  disconnected from the websocket server...");
-    };
+      ws.onclose = function (event) {
+        console.log("Successfully  disconnected from the websocket server...");
+      };
+    },
   },
 });
 </script>
