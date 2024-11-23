@@ -21,8 +21,18 @@ export const ActionStore = {
         },
         async createUserWS(context: any, payload: any) {
             const { ws, userRequestBody } = payload;
-            console.log('sending ws request to create user for random game');
+            console.log('Sending ws request to create user for random game...');
             ws.send(JSON.stringify(userRequestBody));
+        },
+
+        async nickNameExists(context: any, nickName_: string) {
+
+            console.log('Checking nickname in DB...');
+
+            return axiosInstance.get('user/exists', {
+                params: { nick_name: nickName_ }
+            });
+
         }
     }
 }

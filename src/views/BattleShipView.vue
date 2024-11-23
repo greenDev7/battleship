@@ -48,6 +48,7 @@ import { defineComponent } from "vue";
 import ActionStore from "@/store/index";
 import GameType from "@/model/GameType";
 import InfoBoardComponent from "@/components/InfoBoardComponent.vue";
+import { v4 as uuidv4 } from "uuid";
 
 export default defineComponent({
   name: "BattleShipView",
@@ -58,44 +59,70 @@ export default defineComponent({
     return {
       nickName: "Player",
       topButtonDisabled: false,
-      showInformComponent: false
+      showInformComponent: false,
     };
   },
 
   methods: {
-    clickRandomGameButtonHandle(event: MouseEvent) {
+    nicknameIsNullOrEmpty() {
       if (
         this.nickName === "" ||
         this.nickName === null ||
         this.nickName === undefined
       ) {
+        return true;
+      }
+
+      return false;
+    },
+
+    clickRandomGameButtonHandle(event: MouseEvent) {
+      if (this.nicknameIsNullOrEmpty()) {
         alert("Для игры необходимо ввести ник!");
         return;
       }
 
-      const userRequestBody = {
-        nickName: this.nickName,
-        gameType: GameType.Random,
-      };
+      ActionStore.dispatch("nickNameExists", this.nickName)
+        .then((response) => {
+          if (response.data) {
+            console.log("response.data: ", response.data);
+            alert("Игрок с таким ником уже существует, придумайте другой ник!");
+          } else {
+            const userRequestBody = {
+              nickName: this.nickName,
+              gameType: GameType.Random,
+            };
 
-      let ws: WebSocket = new WebSocket("ws://127.0.0.1:5000/ws");
+            let clientUUID = uuidv4();
 
-      this.setupSocketConnectionAndCreateUser(ws, userRequestBody);
-      this.topButtonDisabled = true;
-      this.showInformComponent = true;
+            let ws: WebSocket = new WebSocket(
+              `ws://127.0.0.1:5000/client/${clientUUID}/ws`
+            );
+
+            this.setupSocketConnectionAndCreateUser(ws, userRequestBody);
+            this.topButtonDisabled = true;
+            this.showInformComponent = true;
+          }
+        })
+        .catch((error) => {
+          alert("Возникла ошибка при проверке ника в БД!");
+          console.log("Возникла ошибка при проверке ника в БД:", error);
+        });
     },
 
     setupSocketConnectionAndCreateUser(ws: WebSocket, userRequestBody: Object) {
       ws.onopen = function (event) {
         console.log("Successfully connected to the websocket server...");
-        ActionStore.dispatch("createUserWS", {
-          ws,
-          userRequestBody,
-        });
+
+        ActionStore.dispatch("createUserWS", { ws, userRequestBody });
       };
 
       ws.onclose = function (event) {
-        console.log("Successfully  disconnected from the websocket server...");
+        if (event.wasClean) {
+          console.log("Connection closed correctly");
+        } else {
+          console.error("The connection was broken");
+        }
       };
     },
   },
