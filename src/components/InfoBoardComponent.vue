@@ -5,10 +5,10 @@
         <td>{{ getEnemyStatusCaption }}</td>
       </tr>
       <tr>
-        <td>{{ gameTimer }}</td>
+        <td v-if="enemyFound">{{ gameTimer }}</td>
       </tr>
       <tr>
-        <td class="green">Игра началась: Ваш ход</td>
+        <td v-if="enemyFound" class="green">Игра началась: Ваш ход</td>
       </tr>
     </tbody>
   </table>
@@ -28,6 +28,7 @@ export default defineComponent({
 
   data() {
     return {
+      enemyFound: false,
       gameTimer: "01:23",
     };
   },
