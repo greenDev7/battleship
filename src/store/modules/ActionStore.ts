@@ -29,9 +29,7 @@ export const ActionStore = {
 
             console.log('Checking nickname in DB...');
 
-            return axiosInstance.get('user/exists', {
-                params: { nick_name: nickName_ }
-            });
+            return axiosInstance.get('user/exists', { params: { nick_name: nickName_ } });
 
         }
     }
