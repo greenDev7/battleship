@@ -47,8 +47,10 @@ import BattleBoardComponent from "../components/BattleBoardComponent.vue";
 import { defineComponent } from "vue";
 import ActionStore from "@/store/index";
 import GameType from "@/model/GameType";
+import MessageType from "@/model/MessageType";
 import InfoBoardComponent from "@/components/InfoBoardComponent.vue";
 import { v4 as uuidv4 } from "uuid";
+import WSDataTransfer from "@/model/WSDataTransfer";
 
 export default defineComponent({
   name: "BattleShipView",
@@ -58,6 +60,7 @@ export default defineComponent({
   data() {
     return {
       nickName: "Player",
+      enemyNickName: "",
       topButtonDisabled: false,
       showInformComponent: false,
     };
@@ -89,6 +92,7 @@ export default defineComponent({
             alert("Игрок с таким ником уже существует, придумайте другой ник!");
           } else {
             const userRequestBody = {
+              msg_type: MessageType.AU_RG_CREATION,
               nickName: this.nickName,
               gameType: GameType.Random,
             };
@@ -114,16 +118,43 @@ export default defineComponent({
       ws.onopen = function (event) {
         console.log("Successfully connected to the websocket server...");
 
-        ActionStore.dispatch("createUserWS", { ws, userRequestBody });
+        ActionStore.dispatch("createActiveUserWS", { ws, userRequestBody });
       };
 
-      ws.onclose = function (event) {
+      const processData = this.processDataFromServer;
+      ws.onmessage = function (event: MessageEvent<string>) {
+        console.log("Message from server: ", event.data);
+        processData(event.data);
+      };
+
+      ws.onerror = function (event: Event) {
+        console.log("Connection error");
+      };
+
+      ws.onclose = function (event: CloseEvent) {
         if (event.wasClean) {
           console.log("Connection closed correctly");
         } else {
           console.error("The connection was broken");
         }
       };
+    },
+
+    processDataFromServer(dataFromServer: string) {
+      let parsedData: WSDataTransfer = JSON.parse(dataFromServer);
+
+      switch (parsedData.msg_type) {
+        case MessageType.AU_RG_CREATION:
+          if (parsedData.status == "ok")
+            console.log("Игрок для рандомной игры успешно создан");
+          if (parsedData.data)
+
+
+          break;
+
+        default:
+          break;
+      }
     },
   },
 });

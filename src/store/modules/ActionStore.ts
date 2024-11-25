@@ -19,9 +19,9 @@ export const ActionStore = {
             axiosInstance.post("/user/", userRequestBody)
                 .catch((reason) => console.log("createUser error:", reason));
         },
-        async createUserWS(context: any, payload: any) {
+        async createActiveUserWS(context: any, payload: any) {
             const { ws, userRequestBody } = payload;
-            console.log('Sending ws request to create user for random game...');
+            console.log('Sending ws request to create active user for RANDOM game...');
             ws.send(JSON.stringify(userRequestBody));
         },
 

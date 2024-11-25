@@ -2,13 +2,13 @@
   <table>
     <tbody>
       <tr>
-        <td>{{ getEnemyStatusCaption }}</td>
+        <td>{{ getEnemyCaption() }}</td>
       </tr>
       <tr>
-        <td v-if="enemyFound">{{ gameTimer }}</td>
+        <td v-if="enemy">{{ gameTimer }}</td>
       </tr>
       <tr>
-        <td v-if="enemyFound" class="green">Игра началась: Ваш ход</td>
+        <td v-if="enemy" class="green">Игра началась: Ваш ход</td>
       </tr>
     </tbody>
   </table>
@@ -22,15 +22,26 @@ import { mapGetters } from "vuex";
 export default defineComponent({
   name: "InfoBoardComponent",
 
+  props: {
+    enemy: { type: String, default: "" },
+  },
+
   computed: {
     ...mapGetters(["getEnemyStatusCaption"]),
   },
 
   data() {
     return {
-      enemyFound: false,
       gameTimer: "01:23",
     };
+  },
+
+  methods: {
+    getEnemyCaption() {
+      if (this.enemy) {
+        return "Ваш соперник: " + this.enemy;
+      } else return "Поиск противника...";
+    },
   },
 });
 </script>
