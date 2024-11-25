@@ -35,7 +35,10 @@
         </tr>
       </tbody>
     </table>
-    <InfoBoardComponent v-if="showInformComponent" />
+    <EnemyInfoComponent
+      v-if="this.enemyNickName"
+      :enemyNickName="this.enemyNickName"
+    />
     <BattleBoardComponent />
     <button class="btm-btn" type="submit">Играть</button>
     <button class="btm-btn" type="submit">Завершить игру</button>
@@ -48,21 +51,20 @@ import { defineComponent } from "vue";
 import ActionStore from "@/store/index";
 import GameType from "@/model/GameType";
 import MessageType from "@/model/MessageType";
-import InfoBoardComponent from "@/components/InfoBoardComponent.vue";
+import EnemyInfoComponent from "@/components/EnemyInfoComponent.vue";
 import { v4 as uuidv4 } from "uuid";
-import WSDataTransfer from "@/model/WSDataTransfer";
+import WSDataTransferRoot from "@/model/WSDataTransferRoot";
 
 export default defineComponent({
   name: "BattleShipView",
 
-  components: { BattleBoardComponent, InfoBoardComponent },
+  components: { BattleBoardComponent, EnemyInfoComponent },
 
   data() {
     return {
       nickName: "Player",
       enemyNickName: "",
       topButtonDisabled: false,
-      showInformComponent: false,
     };
   },
 
@@ -104,8 +106,6 @@ export default defineComponent({
             );
 
             this.setupSocketConnectionAndCreateUser(ws, userRequestBody);
-            this.topButtonDisabled = true;
-            this.showInformComponent = true;
           }
         })
         .catch((error) => {
@@ -141,14 +141,22 @@ export default defineComponent({
     },
 
     processDataFromServer(dataFromServer: string) {
-      let parsedData: WSDataTransfer = JSON.parse(dataFromServer);
+      let parsedData: WSDataTransferRoot = JSON.parse(dataFromServer);
 
       switch (parsedData.msg_type) {
         case MessageType.AU_RG_CREATION:
-          if (parsedData.status == "ok")
-            console.log("Игрок для рандомной игры успешно создан");
-          if (parsedData.data)
-
+          if (parsedData.is_status_ok) {
+            if (parsedData.data.nick_name) {
+              console.log("Игрок для рандомной игры успешно создан");
+              this.enemyNickName = parsedData.data.nick_name;
+              this.topButtonDisabled = true;
+            } else
+              alert(
+                "К сожалению, соперник для случайной игры не найден. Пожалуйста, попробуйте позднее"
+              );
+          } else {
+            alert("Возникла ошибка при поиске случайного соперника");
+          }
 
           break;
 
