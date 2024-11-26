@@ -146,9 +146,9 @@ export default defineComponent({
       switch (parsedData.msg_type) {
         case MessageType.AU_RG_CREATION:
           if (parsedData.is_status_ok) {
-            if (parsedData.data.nick_name) {
+            if (parsedData.data.enemy_nick_name) {
               console.log("Игрок для рандомной игры успешно создан");
-              this.enemyNickName = parsedData.data.nick_name;
+              this.enemyNickName = parsedData.data.enemy_nick_name;
               this.topButtonDisabled = true;
             } else
               alert(
@@ -156,6 +156,7 @@ export default defineComponent({
               );
           } else {
             alert("Возникла ошибка при поиске случайного соперника");
+            console.log("Random enemy search error: ", parsedData.data);
           }
 
           break;
