@@ -42,7 +42,7 @@ export default defineComponent({
     getEnemyCaption() {
       if (this.enemyNickName) {
         return "Ваш противник: ";
-      } else return "Поиск противника...";
+      } else return "Ожидание противника...";
     },
   },
 });

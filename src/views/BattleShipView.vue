@@ -35,10 +35,7 @@
         </tr>
       </tbody>
     </table>
-    <EnemyInfoComponent
-      v-if="this.enemyNickName"
-      :enemyNickName="this.enemyNickName"
-    />
+    <EnemyInfoComponent v-if="infoComponentVisible" :enemyNickName="this.enemyNickName" />
     <BattleBoardComponent />
     <button class="btm-btn" type="submit">Играть</button>
     <button class="btm-btn" type="submit">Завершить игру</button>
@@ -49,7 +46,6 @@
 import BattleBoardComponent from "../components/BattleBoardComponent.vue";
 import { defineComponent } from "vue";
 import ActionStore from "@/store/index";
-import GameType from "@/model/GameType";
 import MessageType from "@/model/MessageType";
 import EnemyInfoComponent from "@/components/EnemyInfoComponent.vue";
 import { v4 as uuidv4 } from "uuid";
@@ -65,6 +61,7 @@ export default defineComponent({
       nickName: "Player",
       enemyNickName: "",
       topButtonDisabled: false,
+      infoComponentVisible: false
     };
   },
 
@@ -87,43 +84,33 @@ export default defineComponent({
         return;
       }
 
-      ActionStore.dispatch("nickNameExists", this.nickName)
-        .then((response) => {
-          if (response.data) {
-            console.log("response.data: ", response.data);
-            alert("Игрок с таким ником уже существует, придумайте другой ник!");
-          } else {
-            const userRequestBody = {
-              msg_type: MessageType.AU_RG_CREATION,
-              nickName: this.nickName,
-              gameType: GameType.Random,
-            };
+      const userRequestBody = {
+        msg_type: MessageType.RANDOM_GAME,
+        nickName: this.nickName,
+      };
 
-            let clientUUID = uuidv4();
+      let clientUUID = uuidv4();
 
-            let ws: WebSocket = new WebSocket(
-              `ws://127.0.0.1:5000/client/${clientUUID}/ws`
-            );
+      let ws: WebSocket = new WebSocket(
+        `ws://127.0.0.1:5000/client/${clientUUID}/ws`
+      );
 
-            this.setupSocketConnectionAndCreateUser(ws, userRequestBody);
-          }
-        })
-        .catch((error) => {
-          alert("Возникла ошибка при проверке ника в БД!");
-          console.log("Возникла ошибка при проверке ника в БД:", error);
-        });
+      this.setupSocketConnectionAndCreateRivalCouple(ws, userRequestBody);
+      this.topButtonDisabled = true;
+      this.infoComponentVisible = true;
     },
 
-    setupSocketConnectionAndCreateUser(ws: WebSocket, userRequestBody: Object) {
+    setupSocketConnectionAndCreateRivalCouple(
+      ws: WebSocket,
+      userRequestBody: Object
+    ) {
       ws.onopen = function (event) {
         console.log("Successfully connected to the websocket server...");
-
-        ActionStore.dispatch("createActiveUserWS", { ws, userRequestBody });
+        ActionStore.dispatch("createTeamPlayerWS", { ws, userRequestBody });
       };
 
       const processData = this.processDataFromServer;
       ws.onmessage = function (event: MessageEvent<string>) {
-        console.log("Message from server: ", event.data);
         processData(event.data);
       };
 
@@ -143,17 +130,15 @@ export default defineComponent({
     processDataFromServer(dataFromServer: string) {
       let parsedData: WSDataTransferRoot = JSON.parse(dataFromServer);
 
+      console.log("data from server:", parsedData);
+
       switch (parsedData.msg_type) {
-        case MessageType.AU_RG_CREATION:
+        case MessageType.RANDOM_GAME:
           if (parsedData.is_status_ok) {
-            if (parsedData.data.enemy_nick_name) {
-              console.log("Игрок для рандомной игры успешно создан");
-              this.enemyNickName = parsedData.data.enemy_nick_name;
-              this.topButtonDisabled = true;
-            } else
-              alert(
-                "К сожалению, соперник для случайной игры не найден. Пожалуйста, попробуйте позднее"
-              );
+            if (parsedData.data.enemy_nickname) {
+              console.log("Enemy for random game successfully created");
+              this.enemyNickName = parsedData.data.enemy_nickname;
+            }
           } else {
             alert("Возникла ошибка при поиске случайного соперника");
             console.log("Random enemy search error: ", parsedData.data);

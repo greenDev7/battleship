@@ -6,5 +6,5 @@ export default interface WSDataTransferRoot {
 
 
 interface TransferLevel2 {
-    enemy_nick_name: string;
+    enemy_nickname: string;
 };
