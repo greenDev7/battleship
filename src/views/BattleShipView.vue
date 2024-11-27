@@ -100,9 +100,7 @@ export default defineComponent({
 
     clickRandomGameButtonHandle(event: MouseEvent) {
       if (this.nicknameIsNullOrEmpty()) {
-        this.alertColor = "warning";
-        this.alertText = "Для игры необходимо ввести ник!";
-        this.alertVisible = true;
+        this.showAlert("Для игры необходимо ввести ник!", "warning");
         return;
       }
 
@@ -149,6 +147,12 @@ export default defineComponent({
       };
     },
 
+    showAlert(alertText: string, alertColor: string = "danger") {
+      this.alertColor = alertColor;
+      this.alertText = alertText;
+      this.alertVisible = true;
+    },
+
     processDataFromServer(dataFromServer: string) {
       let parsedData: WSDataTransferRoot = JSON.parse(dataFromServer);
 
@@ -162,8 +166,7 @@ export default defineComponent({
               this.enemyNickName = parsedData.data.enemy_nickname;
             }
           } else {
-            this.alertText = "Возникла ошибка при поиске случайного соперника";
-            this.alertVisible = true;
+            this.showAlert("Возникла ошибка при поиске случайного соперника");
             console.log("Random enemy search error: ", parsedData.data);
           }
 
@@ -171,9 +174,7 @@ export default defineComponent({
 
         case MessageType.DISCONNECTION:
           if (parsedData.is_status_ok) {
-            this.alertColor = "danger";
-            this.alertText = "Ваш соперник разорвал соединение и вышел из игры";
-            this.alertVisible = true;
+            this.showAlert("Ваш соперник разорвал соединение и вышел из игры");
           }
 
         default:
