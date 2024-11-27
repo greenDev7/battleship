@@ -1,6 +1,6 @@
 export const GameStore = {
     state: {
-        scaleParameter: 0.8,
+        scaleParameter: 1,
         gridLineThickness: 0.3,
         canvasWidth: 300,
         canvasHeight: 300,

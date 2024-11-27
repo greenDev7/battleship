@@ -35,10 +35,25 @@
         </tr>
       </tbody>
     </table>
-    <EnemyInfoComponent v-if="infoComponentVisible" :enemyNickName="this.enemyNickName" />
+    <EnemyInfoComponent
+      v-if="infoComponentVisible"
+      :enemyNickName="this.enemyNickName"
+    />
     <BattleBoardComponent />
     <button class="btm-btn" type="submit">Играть</button>
     <button class="btm-btn" type="submit">Завершить игру</button>
+    <CAlert
+      id="alert"
+      dismissible
+      :visible="alertVisible"
+      @close="
+        () => {
+          alertVisible = false;
+        }
+      "
+      :color="alertColor"
+      >{{ alertText }}
+    </CAlert>
   </div>
 </template>
 
@@ -50,18 +65,23 @@ import MessageType from "@/model/MessageType";
 import EnemyInfoComponent from "@/components/EnemyInfoComponent.vue";
 import { v4 as uuidv4 } from "uuid";
 import WSDataTransferRoot from "@/model/WSDataTransferRoot";
+import { CAlert } from "@coreui/vue";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 export default defineComponent({
   name: "BattleShipView",
 
-  components: { BattleBoardComponent, EnemyInfoComponent },
+  components: { BattleBoardComponent, EnemyInfoComponent, CAlert },
 
   data() {
     return {
       nickName: "Player",
       enemyNickName: "",
       topButtonDisabled: false,
-      infoComponentVisible: false
+      infoComponentVisible: false,
+      alertVisible: false,
+      alertText: "",
+      alertColor: "danger",
     };
   },
 
@@ -80,7 +100,9 @@ export default defineComponent({
 
     clickRandomGameButtonHandle(event: MouseEvent) {
       if (this.nicknameIsNullOrEmpty()) {
-        alert("Для игры необходимо ввести ник!");
+        this.alertColor = "warning";
+        this.alertText = "Для игры необходимо ввести ник!";
+        this.alertVisible = true;
         return;
       }
 
@@ -140,7 +162,8 @@ export default defineComponent({
               this.enemyNickName = parsedData.data.enemy_nickname;
             }
           } else {
-            alert("Возникла ошибка при поиске случайного соперника");
+            this.alertText = "Возникла ошибка при поиске случайного соперника";
+            this.alertVisible = true;
             console.log("Random enemy search error: ", parsedData.data);
           }
 
@@ -155,6 +178,13 @@ export default defineComponent({
 </script>
 
 <style lang="css" scoped>
+#alert {
+  width: 700px;
+  position: absolute;
+  left: 20px;
+  top: 20px;
+}
+
 #container {
   /* width: fit-content; */
   text-align: center;
