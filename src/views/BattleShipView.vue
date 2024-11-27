@@ -173,9 +173,10 @@ export default defineComponent({
           break;
 
         case MessageType.DISCONNECTION:
-          if (parsedData.is_status_ok) {
+          if (parsedData.is_status_ok)
             this.showAlert("Ваш соперник разорвал соединение и вышел из игры");
-          }
+
+          break;
 
         default:
           break;
@@ -194,8 +195,10 @@ export default defineComponent({
 }
 
 #container {
-  /* width: fit-content; */
-  text-align: center;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0px 30px 20px 30px;
 }
 
 table {
