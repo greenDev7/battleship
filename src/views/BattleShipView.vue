@@ -169,6 +169,13 @@ export default defineComponent({
 
           break;
 
+        case MessageType.DISCONNECTION:
+          if (parsedData.is_status_ok) {
+            this.alertColor = "danger";
+            this.alertText = "Ваш соперник разорвал соединение и вышел из игры";
+            this.alertVisible = true;
+          }
+
         default:
           break;
       }
