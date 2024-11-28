@@ -2,25 +2,34 @@ import axiosInstance from '@/helpers/axios';
 
 export const ActionStore = {
     state: {
-        enemyStatusCaption: 'Поиск соперника...'
+        clientUuid: "",
+        ws: WebSocket
     },
     getters: {
-        getEnemyStatusCaption(state: any) {
-            return state.enemyStatusCaption;
+        getWebSocket(state: any): WebSocket {
+            return state.ws;
+        },
+        getClientUuid(state: any): string {
+            return state.clientUuid;
         }
     },
     mutations: {
+        setWebSocket(state: any, ws: WebSocket) {
+            state.ws = ws;
+        },
+        setClientUuid(state: any, clientUuid: string) {
+            state.clientUuid = clientUuid;
+        }
     },
     actions: {
-        async sayHello(context: any) {
-            console.log('Hello! I am from Actions =)');
-        },
         async createUser(context: any, userRequestBody: any) {
             axiosInstance.post("/user/", userRequestBody)
                 .catch((reason) => console.log("createUser error:", reason));
         },
         async createTeamPlayerWS(context: any, payload: any) {
-            const { ws, userRequestBody } = payload;
+            const { ws, userRequestBody, clientUuid } = payload;
+            context.commit("setWebSocket", ws);
+            context.commit("setClientUuid", clientUuid);
             console.log('Sending WS request to find a suitable player...');
             ws.send(JSON.stringify(userRequestBody));
         },

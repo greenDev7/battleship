@@ -44,7 +44,9 @@
       :enemyState="this.enemyState"
     />
     <BattleBoardComponent class="auto" />
-    <button class="btm-btn" type="submit">Играть</button>
+    <button class="btm-btn" type="submit" @click="handlePlayButtonClick()">
+      Играть
+    </button>
     <button class="btm-btn" type="submit">Завершить игру</button>
     <CAlert
       id="alert"
@@ -120,18 +122,27 @@ export default defineComponent({
         `ws://127.0.0.1:5000/client/${clientUUID}/ws`
       );
 
-      this.setupSocketConnectionAndCreateRivalCouple(ws, userRequestBody);
+      this.setupSocketConnectionAndCreateRivalCouple(
+        ws,
+        userRequestBody,
+        clientUUID
+      );
       this.topButtonDisabled = true;
       this.infoComponentVisible = true;
     },
 
     setupSocketConnectionAndCreateRivalCouple(
       ws: WebSocket,
-      userRequestBody: Object
+      userRequestBody: Object,
+      clientUuid: string
     ) {
       ws.onopen = function (event) {
         console.log("Successfully connected to the websocket server...");
-        ActionStore.dispatch("createTeamPlayerWS", { ws, userRequestBody });
+        ActionStore.dispatch("createTeamPlayerWS", {
+          ws,
+          userRequestBody,
+          clientUuid,
+        });
       };
 
       const processData = this.processDataFromServer;
@@ -187,6 +198,12 @@ export default defineComponent({
         default:
           break;
       }
+    },
+
+    handlePlayButtonClick() {
+      console.log("ИГРАТЬ!");
+      console.log("ws: ", ActionStore.getters.getWebSocket);
+      console.log("client_uuid: ", ActionStore.getters.getClientUuid);
     },
   },
 });
