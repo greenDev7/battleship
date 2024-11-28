@@ -1,6 +1,6 @@
 <template>
-  <div id="container">
-    <table>
+  <div class="fit auto">
+    <table class="auto">
       <tbody>
         <tr>
           <td colspan="3">
@@ -35,11 +35,15 @@
         </tr>
       </tbody>
     </table>
+
     <EnemyInfoComponent
+      id="enemy-component"
+      class="fit auto"
       v-if="infoComponentVisible"
       :enemyNickName="this.enemyNickName"
+      :enemyState="this.enemyState"
     />
-    <BattleBoardComponent />
+    <BattleBoardComponent class="auto" />
     <button class="btm-btn" type="submit">Играть</button>
     <button class="btm-btn" type="submit">Завершить игру</button>
     <CAlert
@@ -77,6 +81,7 @@ export default defineComponent({
     return {
       nickName: "Player",
       enemyNickName: "",
+      enemyState: "",
       topButtonDisabled: false,
       infoComponentVisible: false,
       alertVisible: false,
@@ -164,6 +169,7 @@ export default defineComponent({
             if (parsedData.data.enemy_nickname) {
               console.log("Enemy for random game successfully created");
               this.enemyNickName = parsedData.data.enemy_nickname;
+              this.enemyState = "расставляет корабли";
             }
           } else {
             this.showAlert("Возникла ошибка при поиске случайного соперника");
@@ -194,16 +200,20 @@ export default defineComponent({
   top: 20px;
 }
 
-#container {
-  width: fit-content;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 0px 30px 20px 30px;
+#enemy-component {
+  border: 1px solid black;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  padding: 10px 20px 15px 20px;
 }
 
-table {
-  /* border: 1px solid; */
-  margin: 0px auto 20px auto;
+.fit {
+  width: fit-content;
+}
+
+.auto {
+  margin-left: auto;
+  margin-right: auto;
 }
 
 table > tbody > tr > td {

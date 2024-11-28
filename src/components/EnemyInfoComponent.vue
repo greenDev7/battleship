@@ -1,22 +1,16 @@
 <template>
-  <table>
-    <tbody>
-      <tr>
-        <td>
-          <span>{{ getEnemyCaption() }}</span>
-          <span class="darkred">{{ enemyNickName }}</span>
-        </td>
-      </tr>
-      <!-- <tr>
-        <td v-if="enemyNickName">{{ gameTimer }}</td>
-      </tr> -->
-      <tr>
-        <td v-if="enemyNickName" class="green">
-          Расставьте корабли и нажмите кнопку "Играть"
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div id="container">
+    <div class="larger" v-if="!this.enemyState">Ожидание противника...</div>
+    <div v-else>
+      <span class="larger">Ваш противник: </span>
+      <span class="darkred larger">{{ enemyNickName }}</span>
+      <p class="small">{{ enemyState }}</p>
+      <hr />
+    </div>
+    <div v-if="enemyNickName" class="green">
+      Расставьте корабли и нажмите кнопку "Играть"
+    </div>
+  </div>
 </template>
 
 
@@ -29,42 +23,33 @@ export default defineComponent({
 
   props: {
     enemyNickName: { type: String, default: "" },
-    enemyState: { type: String, default: "расставляет корабли..." },
+    enemyState: { type: String, default: "" },
   },
 
   data() {
-    return {
-      gameTimer: "01:23",
-    };
+    return {};
   },
 
-  methods: {
-    getEnemyCaption() {
-      if (this.enemyNickName) {
-        return "Ваш противник: ";
-      } else return "Ожидание противника...";
-    },
-  },
+  methods: {},
 });
 </script>
 
-<style lang="css"  scoped>
-table {
-  border: 2px solid;
-  border-collapse: collapse;
-}
-
-table > tbody > tr > td {
-  padding: 10px 15px 10px 15px;
-}
-
+<style lang="css" scoped>
 .green {
-  color: rgb(100, 220, 180);
+  color: rgb(66, 185, 131);
   font-weight: bold;
 }
 
 .darkred {
   color: rgb(146, 42, 38);
   font-weight: bold;
+}
+
+.small {
+  font-size: small;
+}
+
+.larger {
+  font-size: larger;
 }
 </style>
