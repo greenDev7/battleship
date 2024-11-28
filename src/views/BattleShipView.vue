@@ -44,10 +44,17 @@
       :enemyState="this.enemyState"
     />
     <BattleBoardComponent class="auto" />
-    <button class="btm-btn" type="submit" @click="handlePlayButtonClick()">
+    <button
+      class="btm-btn"
+      type="submit"
+      @click="handlePlayButtonClick"
+      :disabled="playButtonDisabled"
+    >
       Играть
     </button>
-    <button class="btm-btn" type="submit">Завершить игру</button>
+    <button class="btm-btn" type="submit" :disabled="endGameButtonDisabled">
+      Завершить игру
+    </button>
     <CAlert
       id="alert"
       dismissible
@@ -73,6 +80,7 @@ import { v4 as uuidv4 } from "uuid";
 import WSDataTransferRoot from "@/model/WSDataTransferRoot";
 import { CAlert } from "@coreui/vue";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { mapGetters } from "vuex";
 
 export default defineComponent({
   name: "BattleShipView",
@@ -89,7 +97,13 @@ export default defineComponent({
       alertVisible: false,
       alertText: "",
       alertColor: "danger",
+      playButtonDisabled: true,
+      endGameButtonDisabled: true,
     };
+  },
+
+  computed: {
+    ...mapGetters(["getWebSocket", "getClientUuid"]),
   },
 
   methods: {
@@ -181,6 +195,7 @@ export default defineComponent({
               console.log("Enemy for random game successfully created");
               this.enemyNickName = parsedData.data.enemy_nickname;
               this.enemyState = "расставляет корабли";
+              this.playButtonDisabled = false;
             }
           } else {
             this.showAlert("Возникла ошибка при поиске случайного соперника");
@@ -191,8 +206,16 @@ export default defineComponent({
 
         case MessageType.DISCONNECTION:
           if (parsedData.is_status_ok)
-            this.showAlert("Ваш соперник разорвал соединение и вышел из игры");
+            this.showAlert(
+              "К сожалению, ваш соперник разорвал соединение и вышел из игры"
+            );
 
+          this.setInitialInputElementState();
+          break;
+
+        case MessageType.PLAY:
+          if (parsedData.is_status_ok)
+            this.enemyState = "расставил корабли и готов играть";
           break;
 
         default:
@@ -200,10 +223,29 @@ export default defineComponent({
       }
     },
 
-    handlePlayButtonClick() {
-      console.log("ИГРАТЬ!");
-      console.log("ws: ", ActionStore.getters.getWebSocket);
-      console.log("client_uuid: ", ActionStore.getters.getClientUuid);
+    handlePlayButtonClick(event: Event) {
+      const clientUuid = this.getClientUuid;
+      if (!clientUuid) return;
+
+      const ws: WebSocket = this.getWebSocket;
+
+      ws.send(
+        JSON.stringify({
+          msg_type: MessageType.PLAY,
+        })
+      );
+
+      if (event) (<HTMLButtonElement>event.target).disabled = true;
+      this.endGameButtonDisabled = false;
+    },
+
+    setInitialInputElementState() {
+      this.enemyNickName = "";
+      this.enemyState = "";
+      this.topButtonDisabled = false;
+      this.infoComponentVisible = false;
+      this.playButtonDisabled = true;
+      this.endGameButtonDisabled = true;
     },
   },
 });

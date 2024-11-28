@@ -13,7 +13,6 @@ import { mapGetters } from "vuex";
 import GridType from "@/model/GridType";
 import Location from "@/model/Location";
 import Game from "@/model/Game";
-import ActionStore from "@/store/index";
 
 export default defineComponent({
   name: "BattleGridComponent",
