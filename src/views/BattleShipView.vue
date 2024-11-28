@@ -213,9 +213,14 @@ export default defineComponent({
           this.setInitialInputElementState();
           break;
 
-        case MessageType.PLAY:
+        case MessageType.SHIPS_ARE_ARRANGED:
           if (parsedData.is_status_ok)
             this.enemyState = "расставил корабли и готов играть";
+          break;
+
+        case MessageType.PLAY:
+          if (parsedData.is_status_ok)
+            this.showAlert("Игра началась", "success");
           break;
 
         default:
@@ -231,7 +236,7 @@ export default defineComponent({
 
       ws.send(
         JSON.stringify({
-          msg_type: MessageType.PLAY,
+          msg_type: MessageType.SHIPS_ARE_ARRANGED,
         })
       );
 
