@@ -11,7 +11,12 @@
       Расставьте корабли и нажмите кнопку "Играть"
     </div>
   </div>
-  <div v-else>{{ getEnemyStateCaption() }}</div>
+  <div v-else>
+    <span class="larger">{{ getEnemyStateCaption() }}</span>
+    <span :class="[isMyTurnToShoot ? 'green' : 'darkred', 'larger']">{{
+      isMyTurnToShoot ? "ваш ход" : "ход соперника"
+    }}</span>
+  </div>
 </template>
 
 
@@ -27,8 +32,9 @@ export default defineComponent({
     enemyNickName: { type: String, default: "" },
     enemyState: {
       type: Number as PropType<EnemyState>,
-      default: EnemyState.OUT_OF_GAME,
+      default: EnemyState.WAITING_FOR_ENEMY,
     },
+    isMyTurnToShoot: { type: Boolean, default: false },
   },
 
   data() {
@@ -43,7 +49,7 @@ export default defineComponent({
         case EnemyState.READY_TO_PLAY:
           return "расставил корабли и готов играть";
         case EnemyState.PLAYING:
-          return "Игра началась!";
+          return "Игра началась: ";
 
         default:
           return "Ожидание противника...";

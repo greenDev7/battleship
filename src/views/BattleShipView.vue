@@ -92,7 +92,7 @@ export default defineComponent({
     return {
       nickName: "Player",
       enemyNickName: "",
-      enemyState: EnemyState.OUT_OF_GAME,
+      enemyState: EnemyState.WAITING_FOR_ENEMY,
       topButtonDisabled: false,
       infoComponentVisible: false,
       alertVisible: false,
@@ -246,7 +246,7 @@ export default defineComponent({
 
     setInitialInputElementState() {
       this.enemyNickName = "";
-      this.enemyState = EnemyState.OUT_OF_GAME;
+      this.enemyState = EnemyState.WAITING_FOR_ENEMY;
       this.topButtonDisabled = false;
       this.infoComponentVisible = false;
       this.playButtonDisabled = true;
