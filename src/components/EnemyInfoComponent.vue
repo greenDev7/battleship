@@ -1,5 +1,5 @@
 <template>
-  <div id="container">
+  <div>
     <div class="larger" v-if="!this.enemyState">Ожидание противника...</div>
     <div v-else>
       <span class="larger">Ваш противник: </span>
@@ -7,7 +7,7 @@
       <p class="small">{{ enemyState }}</p>
       <hr />
     </div>
-    <div v-if="enemyNickName" class="green">
+    <div class="green" v-if="enemyNickName">
       Расставьте корабли и нажмите кнопку "Играть"
     </div>
   </div>

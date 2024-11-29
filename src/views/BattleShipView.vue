@@ -259,7 +259,7 @@ export default defineComponent({
 <style lang="css" scoped>
 #alert {
   width: 700px;
-  position: absolute;
+  position: fixed;
   left: 20px;
   top: 20px;
 }
