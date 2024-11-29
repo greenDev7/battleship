@@ -81,6 +81,7 @@ import WSDataTransferRoot from "@/model/WSDataTransferRoot";
 import { CAlert } from "@coreui/vue";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { mapGetters } from "vuex";
+import EnemyState from "@/model/EnemyState";
 
 export default defineComponent({
   name: "BattleShipView",
@@ -91,7 +92,7 @@ export default defineComponent({
     return {
       nickName: "Player",
       enemyNickName: "",
-      enemyState: "",
+      enemyState: EnemyState.OUT_OF_GAME,
       topButtonDisabled: false,
       infoComponentVisible: false,
       alertVisible: false,
@@ -194,7 +195,7 @@ export default defineComponent({
             if (parsedData.data.enemy_nickname) {
               console.log("Enemy for random game successfully created");
               this.enemyNickName = parsedData.data.enemy_nickname;
-              this.enemyState = "расставляет корабли";
+              this.enemyState = EnemyState.SHIPS_POSITIONING;
               this.playButtonDisabled = false;
             }
           } else {
@@ -215,12 +216,11 @@ export default defineComponent({
 
         case MessageType.SHIPS_ARE_ARRANGED:
           if (parsedData.is_status_ok)
-            this.enemyState = "расставил корабли и готов играть";
+            this.enemyState = EnemyState.READY_TO_PLAY;
           break;
 
         case MessageType.PLAY:
-          if (parsedData.is_status_ok)
-            this.showAlert("Игра началась", "success");
+          if (parsedData.is_status_ok) this.enemyState = EnemyState.PLAYING;
           break;
 
         default:
@@ -246,7 +246,7 @@ export default defineComponent({
 
     setInitialInputElementState() {
       this.enemyNickName = "";
-      this.enemyState = "";
+      this.enemyState = EnemyState.OUT_OF_GAME;
       this.topButtonDisabled = false;
       this.infoComponentVisible = false;
       this.playButtonDisabled = true;

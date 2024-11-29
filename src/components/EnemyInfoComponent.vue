@@ -1,36 +1,55 @@
 <template>
-  <div>
-    <div class="larger" v-if="!this.enemyState">Ожидание противника...</div>
-    <div v-else>
-      <span class="larger">Ваш противник: </span>
-      <span class="darkred larger">{{ enemyNickName }}</span>
-      <p class="small">{{ enemyState }}</p>
-      <hr />
-    </div>
+  <div class="larger" v-if="this.enemyState === 1">
+    {{ getEnemyStateCaption() }}
+  </div>
+  <div v-else-if="this.enemyState === 2 || this.enemyState === 3">
+    <span class="larger">Ваш противник: </span>
+    <span class="darkred larger">{{ enemyNickName }}</span>
+    <p class="small">{{ getEnemyStateCaption() }}</p>
+    <hr />
     <div class="green" v-if="enemyNickName">
       Расставьте корабли и нажмите кнопку "Играть"
     </div>
   </div>
+  <div v-else>{{ getEnemyStateCaption() }}</div>
 </template>
 
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { mapGetters } from "vuex";
+import type { PropType } from "vue";
+import EnemyState from "@/model/EnemyState";
 
 export default defineComponent({
   name: "InfoBoardComponent",
 
   props: {
     enemyNickName: { type: String, default: "" },
-    enemyState: { type: String, default: "" },
+    enemyState: {
+      type: Number as PropType<EnemyState>,
+      default: EnemyState.OUT_OF_GAME,
+    },
   },
 
   data() {
     return {};
   },
 
-  methods: {},
+  methods: {
+    getEnemyStateCaption(): string {
+      switch (this.enemyState) {
+        case EnemyState.SHIPS_POSITIONING:
+          return "расставляет корабли...";
+        case EnemyState.READY_TO_PLAY:
+          return "расставил корабли и готов играть";
+        case EnemyState.PLAYING:
+          return "Игра началась!";
+
+        default:
+          return "Ожидание противника...";
+      }
+    },
+  },
 });
 </script>
 
