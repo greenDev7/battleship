@@ -9,6 +9,7 @@
         </td>
         <td>
           <BattleGridWithCaptionsComponent
+            :class="{ 'no-pointer-events': getHostileGridDisabled }"
             @hostile-grid-click="(e) => $emit('hostile-grid-click', e)"
             :gridType="hostileGrid"
           />
@@ -33,7 +34,7 @@ export default defineComponent({
   components: { BattleGridWithCaptionsComponent },
 
   computed: {
-    ...mapGetters(["getOwnGridDisabled"]),
+    ...mapGetters(["getOwnGridDisabled", "getHostileGridDisabled"]),
   },
 
   data() {

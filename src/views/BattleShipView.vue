@@ -46,7 +46,7 @@
     />
     <BattleBoardComponent
       class="auto"
-      @hostile-grid-click="(loc) => console.log('loc:', loc)"
+      @hostile-grid-click="handleHostileGridClick"
     />
     <button
       class="btm-btn"
@@ -229,6 +229,10 @@ export default defineComponent({
           if (parsedData.is_status_ok) {
             this.enemyState = EnemyState.PLAYING;
             this.myTurnToShoot = parsedData.data.turn_to_shoot;
+            if (this.myTurnToShoot) {
+              // активируем "вражеский" грид для стрельбы
+              GameStore.commit("enableHostileGrid");
+            }
           }
           break;
 
@@ -261,6 +265,10 @@ export default defineComponent({
       this.infoComponentVisible = false;
       this.playButtonDisabled = true;
       this.endGameButtonDisabled = true;
+    },
+
+    handleHostileGridClick(eventArgs: Event) {
+      console.log("loc:", eventArgs);
     },
   },
 });
