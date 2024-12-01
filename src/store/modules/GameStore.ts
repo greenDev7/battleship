@@ -6,8 +6,9 @@ export const GameStore = {
         canvasHeight: 300,
         numberOfCellsOnTheAxisX: 10,
         numberOfCellsOnTheAxisY: 10,
+        isOwnGridDisabled: false
     },
-    getters: {             
+    getters: {
         getCanvasWidth(state: any) {
             return state.canvasWidth * state.scaleParameter;
         },
@@ -19,9 +20,15 @@ export const GameStore = {
         },
         getGridCellHeight(state: any) {
             return state.canvasHeight * state.scaleParameter / state.numberOfCellsOnTheAxisY;
+        },
+        getOwnGridDisabled(state: any) {
+            return state.isOwnGridDisabled;
         }
     },
     mutations: {
+        disableOwnGrid(state: any) {
+            state.isOwnGridDisabled = true;
+        },
     },
     actions: {
 

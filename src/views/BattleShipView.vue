@@ -42,6 +42,7 @@
       v-if="infoComponentVisible"
       :enemyNickName="this.enemyNickName"
       :enemyState="this.enemyState"
+      :isMyTurnToShoot="this.myTurnToShoot"
     />
     <BattleBoardComponent class="auto" />
     <button
@@ -82,6 +83,7 @@ import { CAlert } from "@coreui/vue";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { mapGetters } from "vuex";
 import EnemyState from "@/model/EnemyState";
+import GameStore from "@/store/index";
 
 export default defineComponent({
   name: "BattleShipView",
@@ -100,6 +102,7 @@ export default defineComponent({
       alertColor: "danger",
       playButtonDisabled: true,
       endGameButtonDisabled: true,
+      myTurnToShoot: false,
     };
   },
 
@@ -220,7 +223,10 @@ export default defineComponent({
           break;
 
         case MessageType.PLAY:
-          if (parsedData.is_status_ok) this.enemyState = EnemyState.PLAYING;
+          if (parsedData.is_status_ok) {
+            this.enemyState = EnemyState.PLAYING;
+            this.myTurnToShoot = parsedData.data.turn_to_shoot;
+          }
           break;
 
         default:
@@ -242,6 +248,7 @@ export default defineComponent({
 
       if (event) (<HTMLButtonElement>event.target).disabled = true;
       this.endGameButtonDisabled = false;
+      GameStore.commit("disableOwnGrid");
     },
 
     setInitialInputElementState() {

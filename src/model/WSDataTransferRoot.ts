@@ -7,4 +7,5 @@ export default interface WSDataTransferRoot {
 
 interface TransferLevel2 {
     enemy_nickname: string;
+    turn_to_shoot: boolean;
 };
