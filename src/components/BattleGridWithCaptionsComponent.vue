@@ -79,6 +79,8 @@ import GridType from "@/model/GridType";
 export default defineComponent({
   name: "BattleGridWithCaptionsComponent",
 
+  emits: ["hostile-grid-click"],
+
   components: { BattleGridComponent },
 
   props: {

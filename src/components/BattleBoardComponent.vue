@@ -28,6 +28,8 @@ import { mapGetters } from "vuex";
 export default defineComponent({
   name: "BattleBoardComponent",
 
+  emits: ["hostile-grid-click"],
+
   components: { BattleGridWithCaptionsComponent },
 
   computed: {

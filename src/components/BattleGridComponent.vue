@@ -17,6 +17,8 @@ import Game from "@/model/Game";
 export default defineComponent({
   name: "BattleGridComponent",
 
+  emits: ["hostile-grid-click"],
+
   props: {
     gridType: { type: String, default: GridType.Own },
   },
