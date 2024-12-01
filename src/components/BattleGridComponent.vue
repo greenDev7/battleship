@@ -130,6 +130,13 @@ export default defineComponent({
 
     registerHostileGridHandlers(ctx: CanvasRenderingContext2D) {
       ctx.canvas.addEventListener("mousedown", this.handleMouseDownHostile);
+
+      ctx.canvas.addEventListener("click", (event: MouseEvent) =>
+        this.$emit(
+          "hostile-grid-click",
+          Location.getLocationByOffsetXY(event.offsetX, event.offsetY)
+        )
+      );
     },
   },
 

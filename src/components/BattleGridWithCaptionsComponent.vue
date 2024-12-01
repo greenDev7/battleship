@@ -60,7 +60,10 @@
           </table>
         </td>
         <td>
-          <BattleGridComponent :grid-type="gridType" />
+          <BattleGridComponent
+            @hostile-grid-click="(e) => $emit('hostile-grid-click', e)"
+            :grid-type="gridType"
+          />
         </td>
       </tr>
     </tbody>

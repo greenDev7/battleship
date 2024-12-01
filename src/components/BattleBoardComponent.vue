@@ -8,7 +8,10 @@
           />
         </td>
         <td>
-          <BattleGridWithCaptionsComponent :gridType="hostileGrid" />
+          <BattleGridWithCaptionsComponent
+            @hostile-grid-click="(e) => $emit('hostile-grid-click', e)"
+            :gridType="hostileGrid"
+          />
         </td>
       </tr>
     </tbody>
@@ -16,7 +19,7 @@
 </template>
 
 
-<script>
+<script lang="ts">
 import { defineComponent } from "vue";
 import BattleGridWithCaptionsComponent from "./BattleGridWithCaptionsComponent.vue";
 import GridType from "@/model/GridType";

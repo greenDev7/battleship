@@ -44,7 +44,10 @@
       :enemyState="this.enemyState"
       :isMyTurnToShoot="this.myTurnToShoot"
     />
-    <BattleBoardComponent class="auto" />
+    <BattleBoardComponent
+      class="auto"
+      @hostile-grid-click="(loc) => console.log('loc:', loc)"
+    />
     <button
       class="btm-btn"
       type="submit"
