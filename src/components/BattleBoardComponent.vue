@@ -8,7 +8,9 @@
           </span>
         </td>
         <td class="small green">
-          <span v-show="turnOrderHintsVisible & isMyTurnToShoot">ваш ход</span>
+          <span v-show="turnOrderHintsVisible & isMyTurnToShoot" class="blink"
+            >ваш ход</span
+          >
         </td>
       </tr>
       <tr>
@@ -78,5 +80,22 @@ td {
 .darkred {
   color: rgb(146, 42, 38);
   font-weight: bold;
+}
+
+.blink {
+  animation: blink-animation 2s steps(5, start) infinite;
+  -webkit-animation: blink-animation 2s steps(5, start) infinite;
+}
+
+@keyframes blink-animation {
+  to {
+    visibility: hidden;
+  }
+}
+
+@-webkit-keyframes blink-animation {
+  to {
+    visibility: hidden;
+  }
 }
 </style>
