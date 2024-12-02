@@ -6,8 +6,7 @@ export const GameStore = {
         canvasHeight: 300,
         numberOfCellsOnTheAxisX: 10,
         numberOfCellsOnTheAxisY: 10,
-        isOwnGridDisabled: false,
-        isHostileGridDisabled: true
+        isOwnGridDisabled: false
     },
     getters: {
         getCanvasWidth(state: any) {
@@ -24,17 +23,11 @@ export const GameStore = {
         },
         getOwnGridDisabled(state: any) {
             return state.isOwnGridDisabled;
-        },
-        getHostileGridDisabled(state: any) {
-            return state.isHostileGridDisabled;
         }
     },
     mutations: {
         disableOwnGrid(state: any) {
             state.isOwnGridDisabled = true;
-        },
-        enableHostileGrid(state: any) {
-            state.isHostileGridDisabled = false;
         }
     },
     actions: {

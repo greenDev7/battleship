@@ -42,11 +42,12 @@
       v-if="infoComponentVisible"
       :enemyNickName="this.enemyNickName"
       :enemyState="this.enemyState"
-      :isMyTurnToShoot="this.myTurnToShoot"
     />
     <BattleBoardComponent
       class="auto"
       @hostile-grid-click="handleHostileGridClick"
+      :isMyTurnToShoot="this.myTurnToShoot"
+      :turnOrderHintsVisible="this.turnOrderHintsVisible"
     />
     <button
       class="btm-btn"
@@ -106,6 +107,7 @@ export default defineComponent({
       playButtonDisabled: true,
       endGameButtonDisabled: true,
       myTurnToShoot: false,
+      turnOrderHintsVisible: false,
     };
   },
 
@@ -229,10 +231,7 @@ export default defineComponent({
           if (parsedData.is_status_ok) {
             this.enemyState = EnemyState.PLAYING;
             this.myTurnToShoot = parsedData.data.turn_to_shoot;
-            if (this.myTurnToShoot) {
-              // активируем "вражеский" грид для стрельбы
-              GameStore.commit("enableHostileGrid");
-            }
+            this.turnOrderHintsVisible = true;
           }
           break;
 
