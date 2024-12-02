@@ -3,6 +3,7 @@ import axiosInstance from '@/helpers/axios';
 export const ActionStore = {
     state: {
         clientUuid: "",
+        enemyClientUuid: "",
         ws: WebSocket
     },
     getters: {
@@ -11,6 +12,9 @@ export const ActionStore = {
         },
         getClientUuid(state: any): string {
             return state.clientUuid;
+        },
+        getEnemyClientUuid(state: any) {
+            return state.enemyClientUuid;
         }
     },
     mutations: {
@@ -19,6 +23,9 @@ export const ActionStore = {
         },
         setClientUuid(state: any, clientUuid: string) {
             state.clientUuid = clientUuid;
+        },
+        setEnemyClientUuid(state: any, enemyClientUuid: string) {
+            state.enemyClientUuid = enemyClientUuid;
         }
     },
     actions: {

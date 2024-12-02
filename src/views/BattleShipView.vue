@@ -112,7 +112,7 @@ export default defineComponent({
   },
 
   computed: {
-    ...mapGetters(["getWebSocket", "getClientUuid"]),
+    ...mapGetters(["getWebSocket", "getClientUuid", "getEnemyClientUuid"]),
   },
 
   methods: {
@@ -223,8 +223,13 @@ export default defineComponent({
           break;
 
         case MessageType.SHIPS_ARE_ARRANGED:
-          if (parsedData.is_status_ok)
+          if (parsedData.is_status_ok) {
             this.enemyState = EnemyState.READY_TO_PLAY;
+            ActionStore.commit(
+              "setEnemyClientUuid",
+              parsedData.data.enemy_client_id
+            );
+          }
           break;
 
         case MessageType.PLAY:
@@ -232,6 +237,12 @@ export default defineComponent({
             this.enemyState = EnemyState.PLAYING;
             this.myTurnToShoot = parsedData.data.turn_to_shoot;
             this.turnOrderHintsVisible = true;
+          }
+          break;
+
+        case MessageType.FIRE:
+          if (parsedData.is_status_ok) {
+            let d = parsedData.data.shot_location;
           }
           break;
 
@@ -267,7 +278,21 @@ export default defineComponent({
     },
 
     handleHostileGridClick(eventArgs: Event) {
-      console.log("loc:", eventArgs);
+      const enemyClientUuid = this.getEnemyClientUuid;
+      if (!enemyClientUuid) {
+        console.log("Enemy client UUID is not found");
+        return;
+      }
+
+      const ws: WebSocket = this.getWebSocket;
+
+      ws.send(
+        JSON.stringify({
+          msg_type: MessageType.FIRE,
+          shot_location: eventArgs,
+          enemy_client_id: enemyClientUuid,
+        })
+      );
     },
   },
 });
