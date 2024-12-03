@@ -7,12 +7,14 @@
 
 <script lang="ts">
 import Ship from "@/model/Ship";
-import ShipOrientation from "@/model/ShipOrientation";
+import ShipOrientation from "@/model/enums/ShipOrientation";
 import { defineComponent } from "vue";
 import { mapGetters } from "vuex";
-import GridType from "@/model/GridType";
+import GridType from "@/model/enums/GridType";
 import Location from "@/model/Location";
 import Game from "@/model/Game";
+import GameStore from "@/store/index";
+import HighlightType from "@/model/enums/HighlightType";
 
 export default defineComponent({
   name: "BattleGridComponent",
@@ -62,9 +64,8 @@ export default defineComponent({
           event.offsetX,
           event.offsetY
         );
-        loc.highlight(this.getContext(), GridType.Hostile);
+        loc.highlight(this.getContext());
       }
-      // console.log('(Mouse Down hostile) Current location: ', loc);
     },
 
     handleMouseMove(event: MouseEvent) {
@@ -120,7 +121,7 @@ export default defineComponent({
     checkArrangementAndHighlight(ctx: CanvasRenderingContext2D): void {
       let res = Game.isArrangementCorrect(Game.ships);
       if (!res[0]) {
-        res[1]?.forEach((l) => l.highlight(ctx));
+        res[1]?.forEach((l) => l.highlight(ctx, HighlightType.SQUARE));
       }
     },
 
@@ -134,10 +135,12 @@ export default defineComponent({
       ctx.canvas.addEventListener("mousedown", this.handleMouseDownHostile);
 
       ctx.canvas.addEventListener("click", (event: MouseEvent) =>
-        this.$emit(
-          "hostile-grid-click",
-          Location.getLocationByOffsetXY(event.offsetX, event.offsetY)
-        )
+        this.$emit("hostile-grid-click", {
+          location: Location.getLocationByOffsetXY(
+            event.offsetX,
+            event.offsetY
+          ),
+        })
       );
     },
   },
@@ -156,6 +159,8 @@ export default defineComponent({
           ship.draw(ctx);
         });
         this.registerOwnGridHandlers(ctx);
+        // сохраняем ctx в глобальном Store для использования в родительских компонентах
+        GameStore.commit("setContext2D", ctx);
       } else {
         this.registerHostileGridHandlers(ctx);
       }

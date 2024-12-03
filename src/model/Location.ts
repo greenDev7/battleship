@@ -1,5 +1,6 @@
 import { GameStore } from "@/store/modules/GameStore";
-import GridType from "./GridType";
+import GridType from "./enums/GridType";
+import HighlightType from "./enums/HighlightType";
 
 export default class Location {
     private _x: number;
@@ -42,7 +43,7 @@ export default class Location {
     /**
      * Подсвечивает на канвасе расположение данной локации
      */
-    public highlight(ctx: CanvasRenderingContext2D | null, gridType: GridType = GridType.Own) {
+    public highlight(ctx: CanvasRenderingContext2D | null, highlightType: HighlightType = HighlightType.CIRCLE) {
         if (ctx) {
 
             const st = GameStore.state;
@@ -51,11 +52,11 @@ export default class Location {
 
             ctx.save();
 
-            if (gridType === GridType.Own) {
+            if (highlightType === HighlightType.SQUARE) {
                 ctx.fillStyle = "rgb(229 22 35)";
                 ctx.fillRect(this._x * gcw + 3, this._y * gch + 3, gcw - 6, gch - 6);
             }
-            else {
+            else if (highlightType === HighlightType.CIRCLE) {
                 ctx.fillStyle = "rgb(33 22 235)";
 
                 const circle = new Path2D();

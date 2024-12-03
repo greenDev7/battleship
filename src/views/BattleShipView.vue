@@ -79,15 +79,18 @@
 import BattleBoardComponent from "../components/BattleBoardComponent.vue";
 import { defineComponent } from "vue";
 import ActionStore from "@/store/index";
-import MessageType from "@/model/MessageType";
+import MessageType from "@/model/enums/MessageType";
 import EnemyInfoComponent from "@/components/EnemyInfoComponent.vue";
 import { v4 as uuidv4 } from "uuid";
 import WSDataTransferRoot from "@/model/WSDataTransferRoot";
 import { CAlert } from "@coreui/vue";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { mapGetters } from "vuex";
-import EnemyState from "@/model/EnemyState";
+import EnemyState from "@/model/enums/EnemyState";
 import GameStore from "@/store/index";
+import Location from "@/model/Location";
+import GridType from "@/model/enums/GridType";
+import HighlightType from "@/model/enums/HighlightType";
 
 export default defineComponent({
   name: "BattleShipView",
@@ -108,11 +111,17 @@ export default defineComponent({
       endGameButtonDisabled: true,
       myTurnToShoot: false,
       turnOrderHintsVisible: false,
+      ctx_: CanvasRenderingContext2D,
     };
   },
 
   computed: {
-    ...mapGetters(["getWebSocket", "getClientUuid", "getEnemyClientUuid"]),
+    ...mapGetters([
+      "getWebSocket",
+      "getClientUuid",
+      "getEnemyClientUuid",
+      "getContext2D",
+    ]),
   },
 
   methods: {
@@ -242,7 +251,13 @@ export default defineComponent({
 
         case MessageType.FIRE:
           if (parsedData.is_status_ok) {
-            let d = parsedData.data.shot_location;
+            let loc = parsedData.data.shot_location;
+
+            new Location(loc._x, loc._y).highlight(
+              this.ctx_ as unknown as CanvasRenderingContext2D
+            );
+
+            this.myTurnToShoot = true;
           }
           break;
 
@@ -277,7 +292,7 @@ export default defineComponent({
       this.endGameButtonDisabled = true;
     },
 
-    handleHostileGridClick(eventArgs: Event) {
+    handleHostileGridClick(eventArgs: { location: Location }) {
       const enemyClientUuid = this.getEnemyClientUuid;
       if (!enemyClientUuid) {
         console.log("Enemy client UUID is not found");
@@ -289,11 +304,17 @@ export default defineComponent({
       ws.send(
         JSON.stringify({
           msg_type: MessageType.FIRE,
-          shot_location: eventArgs,
+          shot_location: eventArgs.location,
           enemy_client_id: enemyClientUuid,
         })
       );
+
+      this.myTurnToShoot = false;
     },
+  },
+
+  mounted() {
+    this.ctx_ = this.getContext2D;
   },
 });
 </script>

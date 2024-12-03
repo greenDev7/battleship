@@ -6,7 +6,8 @@ export const GameStore = {
         canvasHeight: 300,
         numberOfCellsOnTheAxisX: 10,
         numberOfCellsOnTheAxisY: 10,
-        isOwnGridDisabled: false
+        isOwnGridDisabled: false,
+        context2x: CanvasRenderingContext2D
     },
     getters: {
         getCanvasWidth(state: any) {
@@ -23,11 +24,17 @@ export const GameStore = {
         },
         getOwnGridDisabled(state: any) {
             return state.isOwnGridDisabled;
+        },
+        getContext2D(state: any) {
+            return state.context2x;
         }
     },
     mutations: {
         disableOwnGrid(state: any) {
             state.isOwnGridDisabled = true;
+        },
+        setContext2D(state: any, ctx: any) {
+            state.context2x = ctx;
         }
     },
     actions: {

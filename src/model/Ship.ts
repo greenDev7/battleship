@@ -1,6 +1,6 @@
 import GameStore from "@/store/index";
 import Location from "./Location";
-import ShipOrientation from "./ShipOrientation";
+import ShipOrientation from "./enums/ShipOrientation";
 
 
 export default class Ship {

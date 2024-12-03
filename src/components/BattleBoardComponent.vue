@@ -35,7 +35,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import BattleGridWithCaptionsComponent from "./BattleGridWithCaptionsComponent.vue";
-import GridType from "@/model/GridType";
+import GridType from "@/model/enums/GridType";
 import { mapGetters } from "vuex";
 
 export default defineComponent({

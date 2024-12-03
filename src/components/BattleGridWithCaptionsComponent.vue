@@ -74,7 +74,7 @@
 import { defineComponent, PropType } from "vue";
 import BattleGridComponent from "./BattleGridComponent.vue";
 import { mapGetters } from "vuex";
-import GridType from "@/model/GridType";
+import GridType from "@/model/enums/GridType";
 
 export default defineComponent({
   name: "BattleGridWithCaptionsComponent",

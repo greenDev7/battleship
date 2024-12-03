@@ -20,7 +20,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import type { PropType } from "vue";
-import EnemyState from "@/model/EnemyState";
+import EnemyState from "@/model/enums/EnemyState";
 
 export default defineComponent({
   name: "InfoBoardComponent",
