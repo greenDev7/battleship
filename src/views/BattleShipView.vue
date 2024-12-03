@@ -48,6 +48,7 @@
       @hostile-grid-click="handleHostileGridClick"
       :isMyTurnToShoot="this.myTurnToShoot"
       :turnOrderHintsVisible="this.turnOrderHintsVisible"
+      :enemyShotHint="this.enemyShotHint"
     />
     <button
       class="btm-btn"
@@ -89,8 +90,6 @@ import { mapGetters } from "vuex";
 import EnemyState from "@/model/enums/EnemyState";
 import GameStore from "@/store/index";
 import Location from "@/model/Location";
-import GridType from "@/model/enums/GridType";
-import HighlightType from "@/model/enums/HighlightType";
 
 export default defineComponent({
   name: "BattleShipView",
@@ -112,6 +111,7 @@ export default defineComponent({
       myTurnToShoot: false,
       turnOrderHintsVisible: false,
       ctx_: CanvasRenderingContext2D,
+      enemyShotHint: "",
     };
   },
 
@@ -249,13 +249,15 @@ export default defineComponent({
           }
           break;
 
+        // ход соперника
         case MessageType.FIRE:
           if (parsedData.is_status_ok) {
-            let loc = parsedData.data.shot_location;
+            let locData = parsedData.data.shot_location;
 
-            new Location(loc._x, loc._y).highlight(
-              this.ctx_ as unknown as CanvasRenderingContext2D
-            );
+            let loc: Location = new Location(locData._x, locData._y);
+            loc.highlight(this.ctx_ as unknown as CanvasRenderingContext2D);
+
+            this.enemyShotHint = loc.toString();
 
             this.myTurnToShoot = true;
           }

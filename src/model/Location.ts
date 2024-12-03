@@ -1,6 +1,6 @@
 import { GameStore } from "@/store/modules/GameStore";
-import GridType from "./enums/GridType";
 import HighlightType from "./enums/HighlightType";
+import { letterDict } from "@/helpers/LetterDict";
 
 export default class Location {
     private _x: number;
@@ -69,4 +69,9 @@ export default class Location {
             ctx.restore();
         }
     }
+
+    /**
+     * Возвращает координату в ее текстовом представлении, например (к-7)
+     */
+    public toString = () => `(${letterDict[this._x]}-${this._y + 1})`;
 }

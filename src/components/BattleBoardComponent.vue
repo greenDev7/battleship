@@ -3,8 +3,8 @@
     <tbody>
       <tr>
         <td class="small darkred">
-          <span v-show="turnOrderHintsVisible & !isMyTurnToShoot">
-            <span>ход соперника </span><span>(к-9)</span>
+          <span v-show="turnOrderHintsVisible">
+            <span>ход соперника </span><span>{{ enemyShotHint }}</span>
           </span>
         </td>
         <td class="small green">
@@ -48,6 +48,7 @@ export default defineComponent({
   props: {
     isMyTurnToShoot: { type: Boolean, default: false },
     turnOrderHintsVisible: { type: Boolean, default: false },
+    enemyShotHint: { type: String, default: "" },
   },
 
   computed: {
