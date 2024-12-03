@@ -1,5 +1,5 @@
 import Ship from "./Ship";
-import ShipOrientation from "./ShipOrientation";
+import ShipOrientation from "./enums/ShipOrientation";
 import Location from "./Location";
 import { GameStore } from "@/store/modules/GameStore";
 
