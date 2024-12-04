@@ -15,13 +15,10 @@
       </tr>
       <tr>
         <td>
-          <BattleGridWithCaptionsComponent
-            :class="{ 'no-pointer-events': getOwnGridDisabled }"
-          />
+          <BattleGridWithCaptionsComponent />
         </td>
         <td>
           <BattleGridWithCaptionsComponent
-            :class="{ 'no-pointer-events': !isMyTurnToShoot }"
             @hostile-grid-click="(e) => $emit('hostile-grid-click', e)"
             :gridType="hostileGrid"
           />
@@ -36,7 +33,6 @@
 import { defineComponent } from "vue";
 import BattleGridWithCaptionsComponent from "./BattleGridWithCaptionsComponent.vue";
 import GridType from "@/model/enums/GridType";
-import { mapGetters } from "vuex";
 
 export default defineComponent({
   name: "BattleBoardComponent",
@@ -51,10 +47,6 @@ export default defineComponent({
     enemyShotHint: { type: String, default: "" },
   },
 
-  computed: {
-    ...mapGetters(["getOwnGridDisabled"]),
-  },
-
   data() {
     return {
       hostileGrid: GridType.Hostile,
@@ -67,10 +59,6 @@ export default defineComponent({
 <style lang="css" scoped>
 td {
   padding-left: 15px;
-}
-
-.no-pointer-events {
-  pointer-events: none;
 }
 
 .green {

@@ -6,8 +6,10 @@ export const GameStore = {
         canvasHeight: 300,
         numberOfCellsOnTheAxisX: 10,
         numberOfCellsOnTheAxisY: 10,
-        isOwnGridDisabled: false,
-        context2x: CanvasRenderingContext2D
+        context2x: CanvasRenderingContext2D,
+        mouseDownHandler: Function,
+        mouseUpHandler: Function,
+        doubleClickHandler: Function
     },
     getters: {
         getCanvasWidth(state: any) {
@@ -22,22 +24,28 @@ export const GameStore = {
         getGridCellHeight(state: any) {
             return state.canvasHeight * state.scaleParameter / state.numberOfCellsOnTheAxisY;
         },
-        getOwnGridDisabled(state: any) {
-            return state.isOwnGridDisabled;
-        },
         getContext2D(state: any) {
             return state.context2x;
         }
     },
     mutations: {
-        disableOwnGrid(state: any) {
-            state.isOwnGridDisabled = true;
-        },
         setContext2D(state: any, ctx: any) {
             state.context2x = ctx;
+        },
+        setHandlers(state: any, payload: any) {
+            const { mouseDownHandler, mouseUpHandler, doubleClickHandler } = payload;
+            state.mouseDownHandler = mouseDownHandler;
+            state.mouseUpHandler = mouseUpHandler;
+            state.doubleClickHandler = doubleClickHandler;
         }
     },
     actions: {
+        async removeOwnGridEventListeners({ state }: any) {
+            const canvas = (state.context2x as unknown as CanvasRenderingContext2D).canvas;
 
+            canvas.removeEventListener("mousedown", state.mouseDownHandler);
+            canvas.removeEventListener("mouseup", state.mouseUpHandler);
+            canvas.removeEventListener("dblclick", state.doubleClickHandler);
+        }
     }
 }

@@ -283,6 +283,8 @@ export default defineComponent({
       if (event) (<HTMLButtonElement>event.target).disabled = true;
       this.endGameButtonDisabled = false;
       GameStore.commit("disableOwnGrid");
+
+      GameStore.dispatch("removeOwnGridEventListeners");
     },
 
     setInitialInputElementState() {

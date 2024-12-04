@@ -51,7 +51,7 @@ export default defineComponent({
       let ship: Ship | undefined = Game.getShipByLocation(loc);
 
       if (ship) {
-        this.$data.selectedShip = ship;
+        this.selectedShip = ship;
         console.log("(Mouse Down) Current location: ", loc);
       }
     },
@@ -74,8 +74,8 @@ export default defineComponent({
         event.offsetY
       );
 
-      if (this.$data.selectedShip) {
-        this.$data.selectedShip.location = loc;
+      if (this.selectedShip) {
+        this.selectedShip.location = loc;
 
         let ctx: CanvasRenderingContext2D | null = this.getContext();
 
@@ -113,7 +113,7 @@ export default defineComponent({
       let ctx: CanvasRenderingContext2D | null = canvas.getContext("2d");
       canvas.removeEventListener("mousemove", this.handleMouseMove);
 
-      this.$data.selectedShip = null;
+      this.selectedShip = null;
 
       if (ctx) this.checkArrangementAndHighlight(ctx);
     },
@@ -129,6 +129,16 @@ export default defineComponent({
       ctx.canvas.addEventListener("mousedown", this.handleMouseDown);
       ctx.canvas.addEventListener("mouseup", this.handleMouseUp);
       ctx.canvas.addEventListener("dblclick", this.handleDoubleClick);
+
+      const mouseDownHandler = this.handleMouseDown;
+      const mouseUpHandler = this.handleMouseUp;
+      const doubleClickHandler = this.handleDoubleClick;
+
+      GameStore.commit("setHandlers", {
+        mouseDownHandler,
+        mouseUpHandler,
+        doubleClickHandler,
+      });
     },
 
     registerHostileGridHandlers(ctx: CanvasRenderingContext2D) {
