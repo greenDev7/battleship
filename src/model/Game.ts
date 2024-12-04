@@ -7,6 +7,8 @@ export default class Game {
 
     public static ships: Ship[] = Game.createInitialShips();
 
+    public static shotHistory: Location[] = [];
+
     constructor() {
         console.log('Game constructor invocation...');
     }
@@ -30,6 +32,18 @@ export default class Game {
 
             new Ship(4, ShipOrientation.Vertical, new Location(2, 6))
         ]
+    };
+
+    /**
+     * Возвращает true, если локация уже существует в истори выстрелов (shotHistory), иначе false
+     */
+    public static existsInShotHistory(location: Location): boolean {
+
+        for (const loc of Game.shotHistory)
+            if (loc.x === location.x && loc.y === location.y)
+                return true;
+
+        return false;
     };
 
     /**

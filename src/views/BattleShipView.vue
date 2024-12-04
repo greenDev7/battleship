@@ -89,6 +89,7 @@ import { mapGetters } from "vuex";
 import EnemyState from "@/model/enums/EnemyState";
 import GameStore from "@/store/index";
 import Location from "@/model/Location";
+import Game from "@/model/Game";
 
 export default defineComponent({
   name: "BattleShipView",
@@ -315,21 +316,31 @@ export default defineComponent({
         return;
       }
 
-      const ws: WebSocket = this.getWebSocket;
-
-      let location: Location = Location.getLocationByOffsetXY(
+      let shotLocation: Location = Location.getLocationByOffsetXY(
         event.offsetX,
         event.offsetY
       );
 
-      location.highlight(
+      if (Game.existsInShotHistory(shotLocation)) {
+        this.showAlert(
+          "Вы уже стреляли по этим координатам, выберите другие координаты для стрельбы",
+          "warning"
+        );
+        return;
+      }
+
+      Game.shotHistory.push(shotLocation);
+
+      const ws: WebSocket = this.getWebSocket;
+
+      shotLocation.highlight(
         this.hostileCtx_ as unknown as CanvasRenderingContext2D
       );
 
       ws.send(
         JSON.stringify({
           msg_type: MessageType.FIRE,
-          shot_location: location,
+          shot_location: shotLocation,
           enemy_client_id: enemyClientUuid,
         })
       );
