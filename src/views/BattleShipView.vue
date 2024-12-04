@@ -45,7 +45,6 @@
     />
     <BattleBoardComponent
       class="auto"
-      @hostile-grid-click="handleHostileGridClick"
       :isMyTurnToShoot="this.myTurnToShoot"
       :turnOrderHintsVisible="this.turnOrderHintsVisible"
       :enemyShotHint="this.enemyShotHint"
@@ -111,6 +110,7 @@ export default defineComponent({
       myTurnToShoot: false,
       turnOrderHintsVisible: false,
       ctx_: CanvasRenderingContext2D,
+      hostileCtx_: CanvasRenderingContext2D,
       enemyShotHint: "",
     };
   },
@@ -121,6 +121,7 @@ export default defineComponent({
       "getClientUuid",
       "getEnemyClientUuid",
       "getContext2D",
+      "getHostileContext2D",
     ]),
   },
 
@@ -201,6 +202,12 @@ export default defineComponent({
       this.alertVisible = true;
     },
 
+    subscribeToHostileGridClick() {
+      (
+        this.hostileCtx_ as unknown as CanvasRenderingContext2D
+      ).canvas.addEventListener("mousedown", this.handleHostileGridClick);
+    },
+
     processDataFromServer(dataFromServer: string) {
       let parsedData: WSDataTransferRoot = JSON.parse(dataFromServer);
 
@@ -246,6 +253,8 @@ export default defineComponent({
             this.enemyState = EnemyState.PLAYING;
             this.myTurnToShoot = parsedData.data.turn_to_shoot;
             this.turnOrderHintsVisible = true;
+
+            if (this.myTurnToShoot) this.subscribeToHostileGridClick();
           }
           break;
 
@@ -260,6 +269,9 @@ export default defineComponent({
             this.enemyShotHint = loc.toString();
 
             this.myTurnToShoot = true;
+
+            // после хода соперника опять подписываемся на событие mouseDown вражеского грида для возможности выстрела
+            this.subscribeToHostileGridClick();
           }
           break;
 
@@ -282,8 +294,8 @@ export default defineComponent({
 
       if (event) (<HTMLButtonElement>event.target).disabled = true;
       this.endGameButtonDisabled = false;
-      GameStore.commit("disableOwnGrid");
 
+      // Удаляем обработчики событий мыши, чтобы игрок не мог менять расстановку кораблей во время игры
       GameStore.dispatch("removeOwnGridEventListeners");
     },
 
@@ -296,7 +308,7 @@ export default defineComponent({
       this.endGameButtonDisabled = true;
     },
 
-    handleHostileGridClick(eventArgs: { location: Location }) {
+    handleHostileGridClick(event: MouseEvent) {
       const enemyClientUuid = this.getEnemyClientUuid;
       if (!enemyClientUuid) {
         console.log("Enemy client UUID is not found");
@@ -305,13 +317,28 @@ export default defineComponent({
 
       const ws: WebSocket = this.getWebSocket;
 
+      let location: Location = Location.getLocationByOffsetXY(
+        event.offsetX,
+        event.offsetY
+      );
+
+      location.highlight(
+        this.hostileCtx_ as unknown as CanvasRenderingContext2D
+      );
+
       ws.send(
         JSON.stringify({
           msg_type: MessageType.FIRE,
-          shot_location: eventArgs.location,
+          shot_location: location,
           enemy_client_id: enemyClientUuid,
         })
       );
+
+      // Сразу после выстрела удаляем обработчик события mouseDown с вражеского грида,
+      // чтобы игрок не мог осуществить несколько выстрелов подряд
+      (
+        this.hostileCtx_ as unknown as CanvasRenderingContext2D
+      ).canvas.removeEventListener("mousedown", this.handleHostileGridClick);
 
       this.myTurnToShoot = false;
     },
@@ -319,6 +346,7 @@ export default defineComponent({
 
   mounted() {
     this.ctx_ = this.getContext2D;
+    this.hostileCtx_ = this.getHostileContext2D;
   },
 });
 </script>

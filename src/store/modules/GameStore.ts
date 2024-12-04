@@ -7,9 +7,10 @@ export const GameStore = {
         numberOfCellsOnTheAxisX: 10,
         numberOfCellsOnTheAxisY: 10,
         context2x: CanvasRenderingContext2D,
+        hostileContext2D: CanvasRenderingContext2D,
         mouseDownHandler: Function,
         mouseUpHandler: Function,
-        doubleClickHandler: Function
+        doubleClickHandler: Function,
     },
     getters: {
         getCanvasWidth(state: any) {
@@ -26,11 +27,17 @@ export const GameStore = {
         },
         getContext2D(state: any) {
             return state.context2x;
+        },
+        getHostileContext2D(state: any) {
+            return state.hostileContext2D;
         }
     },
     mutations: {
         setContext2D(state: any, ctx: any) {
             state.context2x = ctx;
+        },
+        setContextHostile2D(state: any, ctx: any) {
+            state.hostileContext2D = ctx;
         },
         setHandlers(state: any, payload: any) {
             const { mouseDownHandler, mouseUpHandler, doubleClickHandler } = payload;

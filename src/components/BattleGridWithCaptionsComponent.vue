@@ -61,7 +61,6 @@
         </td>
         <td>
           <BattleGridComponent
-            @hostile-grid-click="(e) => $emit('hostile-grid-click', e)"
             :grid-type="gridType"
           />
         </td>
@@ -78,8 +77,6 @@ import GridType from "@/model/enums/GridType";
 
 export default defineComponent({
   name: "BattleGridWithCaptionsComponent",
-
-  emits: ["hostile-grid-click"],
 
   components: { BattleGridComponent },
 

@@ -19,8 +19,6 @@ import HighlightType from "@/model/enums/HighlightType";
 export default defineComponent({
   name: "BattleGridComponent",
 
-  emits: ["hostile-grid-click"],
-
   props: {
     gridType: { type: String, default: GridType.Own },
   },
@@ -53,18 +51,6 @@ export default defineComponent({
       if (ship) {
         this.selectedShip = ship;
         console.log("(Mouse Down) Current location: ", loc);
-      }
-    },
-
-    handleMouseDownHostile(event: MouseEvent) {
-      event.preventDefault();
-
-      if (event.button === 0) {
-        let loc: Location = Location.getLocationByOffsetXY(
-          event.offsetX,
-          event.offsetY
-        );
-        loc.highlight(this.getContext());
       }
     },
 
@@ -140,19 +126,6 @@ export default defineComponent({
         doubleClickHandler,
       });
     },
-
-    registerHostileGridHandlers(ctx: CanvasRenderingContext2D) {
-      ctx.canvas.addEventListener("mousedown", this.handleMouseDownHostile);
-
-      ctx.canvas.addEventListener("click", (event: MouseEvent) =>
-        this.$emit("hostile-grid-click", {
-          location: Location.getLocationByOffsetXY(
-            event.offsetX,
-            event.offsetY
-          ),
-        })
-      );
-    },
   },
 
   mounted() {
@@ -172,7 +145,7 @@ export default defineComponent({
         // сохраняем ctx в глобальном Store для использования в родительских компонентах
         GameStore.commit("setContext2D", ctx);
       } else {
-        this.registerHostileGridHandlers(ctx);
+        GameStore.commit("setContextHostile2D", ctx);
       }
     }
   },
