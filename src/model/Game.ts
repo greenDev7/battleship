@@ -6,8 +6,8 @@ import { GameStore } from "@/store/modules/GameStore";
 export default class Game {
 
     public static ships: Ship[] = Game.createInitialShips();
-
     public static shotHistory: Location[] = [];
+    private static allShipsLocations: Location[] = Game.getAllShipsLocations();
 
     constructor() {
         console.log('Game constructor invocation...');
@@ -32,26 +32,21 @@ export default class Game {
 
             new Ship(4, ShipOrientation.Vertical, new Location(2, 6))
         ]
-    };
+    }
 
     /**
      * Возвращает true, если локация уже существует в истори выстрелов (shotHistory), иначе false
      */
     public static existsInShotHistory(location: Location): boolean {
-
-        for (const loc of Game.shotHistory)
-            if (loc.x === location.x && loc.y === location.y)
-                return true;
-
-        return false;
-    };
+        return this.containsLocation(location, Game.shotHistory);
+    }
 
     /**
      * Расставляет случайным образом корабли на сетке
      */
     private static createInitialRandomShips() {
 
-    };
+    }
 
     /**
      * Возвращает true, если корабли расставлены корректно (ни один из них не пересекается со всеми другими),
@@ -130,5 +125,33 @@ export default class Game {
         this.makeGrid(ctx);
         Game.ships.forEach(ship => ship.draw(ctx));
         ctx.restore();
+    }
+
+    /**
+     * getAllShipsLocations
+     */
+    private static getAllShipsLocations(): Location[] {
+        let locations: Location[] = [];
+        for (const ship of Game.ships) {
+            locations.push(...ship.getLocations());
+        }
+        return locations;
+    }
+
+    /**
+    * Возвращает true, если массив locations содержит локацию loc, иначе false
+    */
+    private static containsLocation(loc: Location, locations: Location[]): boolean {
+        for (const l of locations)
+            if (l.x === loc.x && l.y === loc.y)
+                return true;
+        return false;
+    }
+
+    /**
+     * Возвращает true, если выстрел попал в цель, иначе false
+     */
+    public static gotHit(shot: Location): boolean {
+        return this.containsLocation(shot, Game.allShipsLocations);
     }
 }

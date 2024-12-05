@@ -91,6 +91,7 @@ import EnemyState from "@/model/enums/EnemyState";
 import GameStore from "@/store/index";
 import Location from "@/model/Location";
 import Game from "@/model/Game";
+import HighlightType from "@/model/enums/HighlightType";
 
 export default defineComponent({
   name: "BattleShipView",
@@ -265,10 +266,18 @@ export default defineComponent({
           if (parsedData.is_status_ok) {
             let locData = parsedData.data.shot_location;
 
-            let loc: Location = new Location(locData._x, locData._y);
-            loc.highlight(this.ctx_ as unknown as CanvasRenderingContext2D);
+            let shot: Location = new Location(locData._x, locData._y);
 
-            this.enemyShotHint = loc.toString();
+            let ht: HighlightType = HighlightType.CIRCLE;
+
+            if (Game.gotHit(shot)) ht = HighlightType.SQUARE;
+
+            shot.highlight(
+              this.ctx_ as unknown as CanvasRenderingContext2D,
+              ht
+            );
+
+            this.enemyShotHint = shot.toString();
 
             this.myTurnToShoot = true;
 
