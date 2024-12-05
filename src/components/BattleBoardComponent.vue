@@ -4,7 +4,12 @@
       <tr>
         <td class="small darkred">
           <span v-show="turnOrderHintsVisible">
-            <span>ход соперника </span><span>{{ enemyShotHint }}</span>
+            <span :class="{ blink: !isMyTurnToShoot }" v-show="!isMyTurnToShoot"
+              >ходит
+            </span>
+            <span :class="{ blink: !isMyTurnToShoot }">
+              {{ enemyNickname + " " }} </span
+            ><span v-show="isMyTurnToShoot">{{ enemyShotHint }}</span>
           </span>
         </td>
         <td class="small green">
@@ -18,9 +23,7 @@
           <BattleGridWithCaptionsComponent />
         </td>
         <td>
-          <BattleGridWithCaptionsComponent
-            :gridType="hostileGrid"
-          />
+          <BattleGridWithCaptionsComponent :gridType="hostileGrid" />
         </td>
       </tr>
     </tbody>
@@ -42,6 +45,7 @@ export default defineComponent({
     isMyTurnToShoot: { type: Boolean, default: false },
     turnOrderHintsVisible: { type: Boolean, default: false },
     enemyShotHint: { type: String, default: "" },
+    enemyNickname: { type: String, default: "" },
   },
 
   data() {

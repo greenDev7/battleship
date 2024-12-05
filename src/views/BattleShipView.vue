@@ -48,6 +48,7 @@
       :isMyTurnToShoot="this.myTurnToShoot"
       :turnOrderHintsVisible="this.turnOrderHintsVisible"
       :enemyShotHint="this.enemyShotHint"
+      :enemyNickname="this.enemyNickName"
     />
     <button
       class="btm-btn"
