@@ -92,6 +92,7 @@ import GameStore from "@/store/index";
 import Location from "@/model/Location";
 import Game from "@/model/Game";
 import HighlightType from "@/model/enums/HighlightType";
+import Ship from "@/model/Ship";
 
 export default defineComponent({
   name: "BattleShipView",
@@ -270,7 +271,16 @@ export default defineComponent({
 
             let ht: HighlightType = HighlightType.CIRCLE;
 
-            if (Game.gotHit(shot)) ht = HighlightType.SQUARE;
+            let ship: Ship | undefined = Game.getShipByLocation(shot);
+
+            if (ship) {
+              ht = HighlightType.CROSS;
+              ship.hitsNumber++;
+
+              // Нужно отметить диагональные точки
+            }
+
+            console.log("ships:", Game.ships);
 
             shot.highlight(
               this.ctx_ as unknown as CanvasRenderingContext2D,
@@ -278,7 +288,6 @@ export default defineComponent({
             );
 
             this.enemyShotHint = shot.toString();
-
             this.myTurnToShoot = true;
 
             // после хода соперника опять подписываемся на событие mouseDown вражеского грида для возможности выстрела

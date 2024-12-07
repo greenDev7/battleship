@@ -7,33 +7,43 @@ export default class Ship {
     private _length: number;
     private _type: ShipOrientation;
     private _location: Location;
+    private _hitsNumber: number;
 
     constructor(_length: number, _type: ShipOrientation, _location: Location) {
         this._length = _length;
         this._type = _type;
         this._location = _location;
-    };
+        this._hitsNumber = 0;
+    }
 
     public get length(): number {
         return this._length;
-    };
+    }
     public set length(v: number) {
         this._length = v;
-    };
+    }
 
     public get type(): ShipOrientation {
         return this._type;
-    };
+    }
     public set type(v: ShipOrientation) {
         this._type = v;
-    };
+    }
 
     public get location(): Location {
         return this._location;
-    };
+    }
     public set location(v: Location) {
         this._location = v;
-    };
+    }
+
+    public get hitsNumber(): number {
+        return this._hitsNumber;
+    }
+    public set hitsNumber(v: number) {
+        this._hitsNumber = v;
+    }
+
 
     /**
      * Рисует корабль

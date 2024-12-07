@@ -76,8 +76,22 @@ export default class Game {
     /**
      * Возвращает корабль по его координатам
      */
-    public static getShipByLocation(location: Location): Ship | undefined {
+    public static getShipByHeadLocation(location: Location): Ship | undefined {
         return Game.ships.find(s => (s.location.x === location.x && s.location.y === location.y));
+    }
+
+    /**
+     * Возвращает корабль по данной локации
+     */
+    public static getShipByLocation(location: Location): Ship | undefined {
+
+        let notDestroyedShips: Ship[] = Game.ships.filter(s => s.hitsNumber < s.length);
+
+        for (const ship of notDestroyedShips)
+            if (Game.containsLocation(location, ship.getLocations()))
+                return ship;
+
+        return undefined;
     }
 
     /**

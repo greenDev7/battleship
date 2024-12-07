@@ -46,7 +46,8 @@ export default defineComponent({
         event.offsetX,
         event.offsetY
       );
-      let ship: Ship | undefined = Game.getShipByLocation(loc);
+
+      let ship: Ship | undefined = Game.getShipByHeadLocation(loc);
 
       if (ship) {
         this.selectedShip = ship;
@@ -79,7 +80,7 @@ export default defineComponent({
         event.offsetX,
         event.offsetY
       );
-      let ship: Ship | undefined = Game.getShipByLocation(loc);
+      let ship: Ship | undefined = Game.getShipByHeadLocation(loc);
 
       if (ship) {
         ship.changeOrientation();
