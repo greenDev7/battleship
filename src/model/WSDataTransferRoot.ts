@@ -10,6 +10,7 @@ interface TransferLevel2 {
     turn_to_shoot: boolean;
     enemy_client_id: string;
     shot_location: Loc;
+    shot_result: number;
 };
 
 

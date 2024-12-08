@@ -92,6 +92,7 @@ import GameStore from "@/store/index";
 import Location from "@/model/Location";
 import Game from "@/model/Game";
 import HighlightType from "@/model/enums/HighlightType";
+import ShotResult from "@/model/enums/ShotResult";
 import Ship from "@/model/Ship";
 
 export default defineComponent({
@@ -116,6 +117,7 @@ export default defineComponent({
       ctx_: CanvasRenderingContext2D,
       hostileCtx_: CanvasRenderingContext2D,
       enemyShotHint: "",
+      currentShot: new Location(0, 0),
     };
   },
 
@@ -206,17 +208,25 @@ export default defineComponent({
       this.alertVisible = true;
     },
 
-    subscribeToHostileGridClick() {
+    disableShooting() {
+      (
+        this.hostileCtx_ as unknown as CanvasRenderingContext2D
+      ).canvas.removeEventListener("mousedown", this.handleHostileGridClick);
+
+      this.myTurnToShoot = false;
+    },
+
+    enableShooting() {
       (
         this.hostileCtx_ as unknown as CanvasRenderingContext2D
       ).canvas.addEventListener("mousedown", this.handleHostileGridClick);
+
+      this.myTurnToShoot = true;
     },
 
     processDataFromServer(dataFromServer: string) {
       let parsedData: WSDataTransferRoot = JSON.parse(dataFromServer);
-
-      console.log("data from server:", parsedData);
-
+      
       switch (parsedData.msg_type) {
         case MessageType.RANDOM_GAME:
           if (parsedData.is_status_ok) {
@@ -258,12 +268,12 @@ export default defineComponent({
             this.myTurnToShoot = parsedData.data.turn_to_shoot;
             this.turnOrderHintsVisible = true;
 
-            if (this.myTurnToShoot) this.subscribeToHostileGridClick();
+            if (this.myTurnToShoot) this.enableShooting();
           }
           break;
 
-        // ход соперника
-        case MessageType.FIRE:
+        // действия на своем гриде
+        case MessageType.FIRE_REQUEST:
           if (parsedData.is_status_ok) {
             let locData = parsedData.data.shot_location;
 
@@ -272,25 +282,60 @@ export default defineComponent({
             let ship: Ship | undefined = Game.getShipByLocation(shot);
 
             let ctx = this.ctx_ as unknown as CanvasRenderingContext2D;
+            let shotResult = ShotResult.MISS;
 
             if (ship) {
               ht = HighlightType.CROSS;
               ship.hitsNumber++;
 
               // Отмечаем диагональные точки вокруг подбитой локации на своем гриде
-              for (const loc of Game.getDiagonalLocations(shot)) {
+              for (const loc of Game.getDiagonalLocations(shot))
                 loc.highlight(ctx);
-                Game.shotHistory.push(loc);
-              }
-            }
+
+              shotResult = ShotResult.HIT;
+              this.disableShooting();
+            } else this.enableShooting();
 
             shot.highlight(ctx, ht);
 
-            this.enemyShotHint = shot.toString();
-            this.myTurnToShoot = true;
+            // Отправляем сопернику информацию о попадании (мимо/ранил/убил)
+            // с типом сообщения FIRE_RESPONSE
 
-            // после хода соперника опять подписываемся на событие mouseDown вражеского грида для возможности выстрела
-            this.subscribeToHostileGridClick();
+            const ws: WebSocket = this.getWebSocket;
+
+            ws.send(
+              JSON.stringify({
+                msg_type: MessageType.FIRE_RESPONSE,
+                shot_result: shotResult,
+                enemy_client_id: this.getEnemyClientUuid,
+              })
+            );
+
+            this.enemyShotHint = shot.toString();
+          }
+          break;
+
+        // действия на гриде соперника
+        case MessageType.FIRE_RESPONSE:
+          if (parsedData.is_status_ok) {            
+
+            let hostileCtx = this
+              .hostileCtx_ as unknown as CanvasRenderingContext2D;
+
+            if (parsedData.data.shot_result === ShotResult.MISS) {
+              this.currentShot.highlight(hostileCtx);
+              this.enemyShotHint = "";
+              this.disableShooting();
+            } else {
+              this.currentShot.highlight(hostileCtx, HighlightType.CROSS);
+              let diagonalLocs = Game.getDiagonalLocations(
+                this.currentShot as Location
+              );
+              for (const loc of diagonalLocs) {
+                loc.highlight(hostileCtx);
+                Game.shotHistory.push(loc);
+              }
+            }
           }
           break;
 
@@ -348,28 +393,17 @@ export default defineComponent({
       }
 
       Game.shotHistory.push(shotLocation);
+      this.currentShot = shotLocation;
 
       const ws: WebSocket = this.getWebSocket;
 
-      shotLocation.highlight(
-        this.hostileCtx_ as unknown as CanvasRenderingContext2D
-      );
-
       ws.send(
         JSON.stringify({
-          msg_type: MessageType.FIRE,
+          msg_type: MessageType.FIRE_REQUEST,
           shot_location: shotLocation,
           enemy_client_id: enemyClientUuid,
         })
       );
-
-      // Сразу после выстрела удаляем обработчик события mouseDown с вражеского грида,
-      // чтобы игрок не мог осуществить несколько выстрелов подряд
-      (
-        this.hostileCtx_ as unknown as CanvasRenderingContext2D
-      ).canvas.removeEventListener("mousedown", this.handleHostileGridClick);
-
-      this.myTurnToShoot = false;
     },
   },
 

@@ -3,7 +3,8 @@ enum MessageType {
     DISCONNECTION = "disconnection",
     SHIPS_ARE_ARRANGED = "ships_are_arranged",
     PLAY = "play",
-    FIRE = "fire"
+    FIRE_REQUEST = "fire_request",
+    FIRE_RESPONSE = "fire_response"
 }
 
 export default MessageType

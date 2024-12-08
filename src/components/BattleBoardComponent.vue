@@ -3,13 +3,13 @@
     <tbody>
       <tr>
         <td class="small darkred">
-          <span v-show="turnOrderHintsVisible">
-            <span :class="{ blink: !isMyTurnToShoot }" v-show="!isMyTurnToShoot"
-              >ходит
-            </span>
-            <span :class="{ blink: !isMyTurnToShoot }">
-              {{ enemyNickname + " " }} </span
-            ><span v-show="isMyTurnToShoot">{{ enemyShotHint }}</span>
+          <span
+            v-show="turnOrderHintsVisible"
+            :class="{ blink: !isMyTurnToShoot }"
+          >
+            <span v-show="!isMyTurnToShoot">ходит </span>
+            <span> {{ enemyNickname + " " }} </span
+            ><span v-show="enemyShotHint">{{ enemyShotHint }}</span>
           </span>
         </td>
         <td class="small green">
@@ -46,6 +46,7 @@ export default defineComponent({
     turnOrderHintsVisible: { type: Boolean, default: false },
     enemyShotHint: { type: String, default: "" },
     enemyNickname: { type: String, default: "" },
+    // shotHintVisible: { type: Boolean, default: false },
   },
 
   data() {
