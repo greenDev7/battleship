@@ -168,4 +168,28 @@ export default class Game {
     public static gotHit(shot: Location): boolean {
         return this.containsLocation(shot, Game.allShipsLocations);
     }
+
+    /**
+     * Возвращает соседние диагональные локации по отношению к данной
+     */
+    public static getDiagonalLocations(location: Location): Location[] {
+
+        let diagonalLocs: Location[] = [];
+
+        for (let i = -1; i <= 1; i++) {
+            for (let j = -1; j <= 1; j++) {
+
+                let neighborX = location.x + i;
+                let neighborY = location.y + j;
+
+                if (i === 0 || j === 0 || neighborX < 0 || neighborY < 0 || neighborX === 10 || neighborY === 10)
+                    continue;
+
+                diagonalLocs.push(new Location(neighborX, neighborY));
+            }
+        }
+
+        console.log('diagonal locs: ', diagonalLocs);
+        return diagonalLocs;
+    }
 }

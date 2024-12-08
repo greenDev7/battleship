@@ -268,24 +268,23 @@ export default defineComponent({
             let locData = parsedData.data.shot_location;
 
             let shot: Location = new Location(locData._x, locData._y);
-
             let ht: HighlightType = HighlightType.CIRCLE;
-
             let ship: Ship | undefined = Game.getShipByLocation(shot);
+
+            let ctx = this.ctx_ as unknown as CanvasRenderingContext2D;
 
             if (ship) {
               ht = HighlightType.CROSS;
               ship.hitsNumber++;
 
-              // Нужно отметить диагональные точки
+              // Отмечаем диагональные точки вокруг подбитой локации на своем гриде
+              for (const loc of Game.getDiagonalLocations(shot)) {
+                loc.highlight(ctx);
+                Game.shotHistory.push(loc);
+              }
             }
 
-            console.log("ships:", Game.ships);
-
-            shot.highlight(
-              this.ctx_ as unknown as CanvasRenderingContext2D,
-              ht
-            );
+            shot.highlight(ctx, ht);
 
             this.enemyShotHint = shot.toString();
             this.myTurnToShoot = true;
