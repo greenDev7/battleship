@@ -224,9 +224,20 @@ export default defineComponent({
       this.myTurnToShoot = true;
     },
 
+    highlightDiagonalsAndPushToHistory(
+      ctx: CanvasRenderingContext2D,
+      shot: Location,
+      pushToHistory: boolean = false
+    ) {
+      for (const loc of Game.getDiagonalLocations(shot)) {
+        loc.highlight(ctx);
+        if (pushToHistory) Game.shotHistory.push(loc);
+      }
+    },
+
     processDataFromServer(dataFromServer: string) {
       let parsedData: WSDataTransferRoot = JSON.parse(dataFromServer);
-      
+
       switch (parsedData.msg_type) {
         case MessageType.RANDOM_GAME:
           if (parsedData.is_status_ok) {
@@ -275,9 +286,13 @@ export default defineComponent({
         // действия на своем гриде
         case MessageType.FIRE_REQUEST:
           if (parsedData.is_status_ok) {
-            let locData = parsedData.data.shot_location;
+            console.log("Определяем, попал ли соперник");
 
-            let shot: Location = new Location(locData._x, locData._y);
+            let shot: Location = new Location(
+              parsedData.data.shot_location._x,
+              parsedData.data.shot_location._y
+            );
+
             let ht: HighlightType = HighlightType.CIRCLE;
             let ship: Ship | undefined = Game.getShipByLocation(shot);
 
@@ -287,11 +302,7 @@ export default defineComponent({
             if (ship) {
               ht = HighlightType.CROSS;
               ship.hitsNumber++;
-
-              // Отмечаем диагональные точки вокруг подбитой локации на своем гриде
-              for (const loc of Game.getDiagonalLocations(shot))
-                loc.highlight(ctx);
-
+              this.highlightDiagonalsAndPushToHistory(ctx, shot);
               shotResult = ShotResult.HIT;
               this.disableShooting();
             } else this.enableShooting();
@@ -303,6 +314,7 @@ export default defineComponent({
 
             const ws: WebSocket = this.getWebSocket;
 
+            console.log("Отправляем сопернику информацию о попадании/промахе");
             ws.send(
               JSON.stringify({
                 msg_type: MessageType.FIRE_RESPONSE,
@@ -317,24 +329,25 @@ export default defineComponent({
 
         // действия на гриде соперника
         case MessageType.FIRE_RESPONSE:
-          if (parsedData.is_status_ok) {            
-
+          if (parsedData.is_status_ok) {
             let hostileCtx = this
               .hostileCtx_ as unknown as CanvasRenderingContext2D;
 
+            Game.shotHistory.push(this.currentShot as Location);
+
             if (parsedData.data.shot_result === ShotResult.MISS) {
+              // Если промахнулись
               this.currentShot.highlight(hostileCtx);
               this.enemyShotHint = "";
               this.disableShooting();
             } else {
+              // иначе
               this.currentShot.highlight(hostileCtx, HighlightType.CROSS);
-              let diagonalLocs = Game.getDiagonalLocations(
-                this.currentShot as Location
+              this.highlightDiagonalsAndPushToHistory(
+                hostileCtx,
+                this.currentShot as Location,
+                true
               );
-              for (const loc of diagonalLocs) {
-                loc.highlight(hostileCtx);
-                Game.shotHistory.push(loc);
-              }
             }
           }
           break;
@@ -392,7 +405,6 @@ export default defineComponent({
         return;
       }
 
-      Game.shotHistory.push(shotLocation);
       this.currentShot = shotLocation;
 
       const ws: WebSocket = this.getWebSocket;
