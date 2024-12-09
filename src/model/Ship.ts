@@ -128,6 +128,52 @@ export default class Ship {
 
         return locations;
     };
+
+    /**
+     * Возвращает торцевые локации корабля. В случае потопления корабля их необходимо подсветить
+     */
+    public getFrontAndBackLocations(): Location[] {
+        let locs: Location[] = [];
+
+        if (this._length === 1) {
+            // если корабль однопалубный, то возвращаем четыре смежные (недиагональные) локации
+            for (let i = -1; i <= 1; i++) {
+                for (let j = -1; j <= 1; j++) {
+
+                    let neighborX = this._location.x + i;
+                    let neighborY = this._location.y + j;
+
+                    // проверка, что локации НЕ диагональные
+                    if ((i * i + j * j !== 1) || neighborX < 0 || neighborY < 0 || neighborX > 9 || neighborY > 9)
+                        continue;
+
+                    locs.push(new Location(neighborX, neighborY));
+                }
+            }
+        }
+        else {
+
+            if (this._type === ShipOrientation.Horizontal) {
+                let leftLoc = new Location(this._location.x - 1, this._location.y);
+                let rightLoc = new Location(this._location.x + this._length, this._location.y);
+
+                if (leftLoc.x >= 0) locs.push(leftLoc);
+                if (rightLoc.x <= 9) locs.push(rightLoc);
+            }
+            else {
+                let topLoc = new Location(this._location.x, this._location.y - 1);
+                let bottomLoc = new Location(this._location.x, this._location.y + this._length);
+
+                if (topLoc.y >= 0) locs.push(topLoc);
+                if (bottomLoc.y <= 9) locs.push(bottomLoc);
+            }
+        }
+
+        console.log('end locations:', locs);
+
+        return locs;
+    }
+
     /**
      * Возвращает true и координаты пересечений обоих кораблей, если данный корабль пересекается с кораблем ship, иначе возвращает false
      */

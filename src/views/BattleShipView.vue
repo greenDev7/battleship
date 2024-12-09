@@ -301,9 +301,23 @@ export default defineComponent({
 
             if (ship) {
               ht = HighlightType.CROSS;
-              ship.hitsNumber++;
               this.highlightDiagonalsAndPushToHistory(ctx, shot);
-              shotResult = ShotResult.HIT;
+              ship.hitsNumber++;
+
+              if (ship.hitsNumber < ship.length) {
+                // корабль ранен
+                console.log("Корабль ранен");
+                shotResult = ShotResult.HIT;
+              } else {
+                // корабль потоплен
+                console.log("Корабль потоплен");
+                shotResult = ShotResult.SUNK;
+                // Отмечаем кружочком торцевые локации корабля
+                for (const loc of ship.getFrontAndBackLocations())
+                  loc.highlight(ctx);
+                // Наверное, нужно их отправить сопернику, чтобы тот отметил их у себя
+              }
+
               this.disableShooting();
             } else this.enableShooting();
 
