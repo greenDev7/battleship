@@ -159,14 +159,13 @@ export default class Game {
                 let neighborX = location.x + i;
                 let neighborY = location.y + j;
 
-                if (i === 0 || j === 0 || neighborX < 0 || neighborY < 0 || neighborX === 10 || neighborY === 10)
+                if (i === 0 || j === 0 || neighborX < 0 || neighborY < 0 || neighborX > 9 || neighborY > 9)
                     continue;
 
                 diagonalLocs.push(new Location(neighborX, neighborY));
             }
         }
 
-        console.log('diagonal locs: ', diagonalLocs);
         return diagonalLocs;
     }
 }
