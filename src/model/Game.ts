@@ -7,11 +7,6 @@ export default class Game {
 
     public static ships: Ship[] = Game.createInitialShips();
     public static shotHistory: Location[] = [];
-    private static allShipsLocations: Location[] = Game.getAllShipsLocations();
-
-    constructor() {
-        console.log('Game constructor invocation...');
-    }
 
     /**
      * createDefaultShips
@@ -142,17 +137,6 @@ export default class Game {
     }
 
     /**
-     * getAllShipsLocations
-     */
-    private static getAllShipsLocations(): Location[] {
-        let locations: Location[] = [];
-        for (const ship of Game.ships) {
-            locations.push(...ship.getLocations());
-        }
-        return locations;
-    }
-
-    /**
     * Возвращает true, если массив locations содержит локацию loc, иначе false
     */
     private static containsLocation(loc: Location, locations: Location[]): boolean {
@@ -160,13 +144,6 @@ export default class Game {
             if (l.x === loc.x && l.y === loc.y)
                 return true;
         return false;
-    }
-
-    /**
-     * Возвращает true, если выстрел попал в цель, иначе false
-     */
-    public static gotHit(shot: Location): boolean {
-        return this.containsLocation(shot, Game.allShipsLocations);
     }
 
     /**
