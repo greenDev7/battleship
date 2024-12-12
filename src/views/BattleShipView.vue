@@ -83,7 +83,10 @@ import ActionStore from "@/store/index";
 import MessageType from "@/model/enums/MessageType";
 import EnemyInfoComponent from "@/components/EnemyInfoComponent.vue";
 import { v4 as uuidv4 } from "uuid";
-import WSDataTransferRoot from "@/model/WSDataTransferRoot";
+import {
+  WSDataTransferRootType,
+  FireResponseType,
+} from "@/model/WSDataTransferRoot";
 import { CAlert } from "@coreui/vue";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { mapGetters } from "vuex";
@@ -186,6 +189,7 @@ export default defineComponent({
 
       const processData = this.processDataFromServer;
       ws.onmessage = function (event: MessageEvent<string>) {
+        console.log("data from server:", event.data);
         processData(event.data);
       };
 
@@ -236,7 +240,7 @@ export default defineComponent({
     },
 
     processDataFromServer(dataFromServer: string) {
-      let parsedData: WSDataTransferRoot = JSON.parse(dataFromServer);
+      let parsedData: WSDataTransferRootType = JSON.parse(dataFromServer);
 
       switch (parsedData.msg_type) {
         case MessageType.RANDOM_GAME:
@@ -286,8 +290,6 @@ export default defineComponent({
         // действия на своем гриде
         case MessageType.FIRE_REQUEST:
           if (parsedData.is_status_ok) {
-            console.log("Определяем, попал ли соперник");
-
             let shot: Location = new Location(
               parsedData.data.shot_location._x,
               parsedData.data.shot_location._y
@@ -297,7 +299,13 @@ export default defineComponent({
             let ship: Ship | undefined = Game.getShipByLocation(shot);
 
             let ctx = this.ctx_ as unknown as CanvasRenderingContext2D;
-            let shotResult = ShotResult.MISS;
+
+            let fireResponse: FireResponseType = {
+              msg_type: MessageType.FIRE_RESPONSE,
+              shot_result: ShotResult.MISS,
+              enemy_client_id: this.getEnemyClientUuid,
+              edgeLocs: [],
+            };
 
             if (ship) {
               ht = HighlightType.CROSS;
@@ -305,17 +313,15 @@ export default defineComponent({
               ship.hitsNumber++;
 
               if (ship.hitsNumber < ship.length) {
-                // корабль ранен
-                console.log("Корабль ранен");
-                shotResult = ShotResult.HIT;
+                fireResponse.shot_result = ShotResult.HIT;
               } else {
-                // корабль потоплен
-                console.log("Корабль потоплен");
-                shotResult = ShotResult.SUNK;
+                fireResponse.shot_result = ShotResult.SUNK;
                 // Отмечаем кружочком торцевые локации корабля
-                for (const loc of ship.getFrontAndBackLocations())
+                let edgeLocs = ship.getFrontAndBackLocations();
+                for (const loc of edgeLocs) {
                   loc.highlight(ctx);
-                // Наверное, нужно их отправить сопернику, чтобы тот отметил их у себя
+                  fireResponse.edgeLocs.push({ _x: loc.x, _y: loc.y });
+                }
               }
 
               this.disableShooting();
@@ -323,19 +329,11 @@ export default defineComponent({
 
             shot.highlight(ctx, ht);
 
-            // Отправляем сопернику информацию о попадании (мимо/ранил/убил)
+            // Отправляем сопернику информацию о попадании (мимо/ранил/потоплен)
             // с типом сообщения FIRE_RESPONSE
 
             const ws: WebSocket = this.getWebSocket;
-
-            console.log("Отправляем сопернику информацию о попадании/промахе");
-            ws.send(
-              JSON.stringify({
-                msg_type: MessageType.FIRE_RESPONSE,
-                shot_result: shotResult,
-                enemy_client_id: this.getEnemyClientUuid,
-              })
-            );
+            ws.send(JSON.stringify(fireResponse));
 
             this.enemyShotHint = shot.toString();
           }
@@ -362,6 +360,15 @@ export default defineComponent({
                 this.currentShot as Location,
                 true
               );
+              // если от соперника пришла информация, что корабль потоплен
+              if (parsedData.data.shot_result === ShotResult.SUNK) {
+                for (const el of parsedData.data.edgeLocs) {
+                  let loc = new Location(el._x, el._y);
+                  if (!Game.containsLocation(loc, Game.shotHistory))
+                    Game.shotHistory.push(loc);
+                  loc.highlight(hostileCtx);
+                }
+              }
             }
           }
           break;

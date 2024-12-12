@@ -130,26 +130,25 @@ export default class Ship {
     };
 
     /**
-     * Возвращает торцевые локации корабля. В случае потопления корабля их необходимо подсветить
+     * Возвращает торцевые локации корабля (в случае потопления корабля их необходимо подсветить)
      */
     public getFrontAndBackLocations(): Location[] {
         let locs: Location[] = [];
 
         if (this._length === 1) {
-            // если корабль однопалубный, то возвращаем четыре смежные (недиагональные) локации
-            for (let i = -1; i <= 1; i++) {
+            // если корабль однопалубный, то возвращаем смежные (недиагональные) локации
+            for (let i = -1; i <= 1; i++)
                 for (let j = -1; j <= 1; j++) {
 
                     let neighborX = this._location.x + i;
                     let neighborY = this._location.y + j;
 
-                    // проверка, что локации НЕ диагональные
+                    // проверка, что локации НЕдиагональные и не выходят за рамки грида
                     if ((i * i + j * j !== 1) || neighborX < 0 || neighborY < 0 || neighborX > 9 || neighborY > 9)
                         continue;
 
                     locs.push(new Location(neighborX, neighborY));
                 }
-            }
         }
         else {
 
@@ -168,9 +167,6 @@ export default class Ship {
                 if (bottomLoc.y <= 9) locs.push(bottomLoc);
             }
         }
-
-        console.log('end locations:', locs);
-
         return locs;
     }
 

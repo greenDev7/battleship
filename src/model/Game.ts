@@ -139,7 +139,7 @@ export default class Game {
     /**
     * Возвращает true, если массив locations содержит локацию loc, иначе false
     */
-    private static containsLocation(loc: Location, locations: Location[]): boolean {
+    public static containsLocation(loc: Location, locations: Location[]): boolean {
         for (const l of locations)
             if (l.x === loc.x && l.y === loc.y)
                 return true;
