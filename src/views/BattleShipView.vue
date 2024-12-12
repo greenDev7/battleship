@@ -189,7 +189,6 @@ export default defineComponent({
 
       const processData = this.processDataFromServer;
       ws.onmessage = function (event: MessageEvent<string>) {
-        console.log("data from server:", event.data);
         processData(event.data);
       };
 
@@ -379,6 +378,11 @@ export default defineComponent({
     },
 
     handlePlayButtonClick(event: Event) {
+      if (!Game.isArrangementCorrect()[0]) {
+        this.showAlert("Корабли расставлены некорректно!");
+        return;
+      }
+
       const clientUuid = this.getClientUuid;
       if (!clientUuid) return;
 
