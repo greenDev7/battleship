@@ -44,7 +44,6 @@ export default class Ship {
         this._hitsNumber = v;
     }
 
-
     /**
      * Рисует корабль
      */
@@ -74,7 +73,7 @@ export default class Ship {
             ctx.strokeRect(this._location.x * gcw + 1, this._location.y * gch + 1, rw - 2, rh - 2);
             ctx.restore();
         }
-    };
+    }
     /**
      * Рисует перемычки корабля
      */
@@ -101,7 +100,7 @@ export default class Ship {
             };
             ctx.stroke();
         }
-    };
+    }
     /**
      * Меняет тип корабля
      */
@@ -110,7 +109,7 @@ export default class Ship {
             this._type = ShipOrientation.Vertical;
         else
             this._type = ShipOrientation.Horizontal;
-    };
+    }
     /**
      * Возвращает множество координат (локаций), принадлежащих данному кораблю
      */
@@ -127,8 +126,7 @@ export default class Ship {
                 locations.push(new Location(this._location.x, this._location.y + i));
 
         return locations;
-    };
-
+    }
     /**
      * Возвращает торцевые локации корабля (в случае потопления корабля их необходимо подсветить)
      */
@@ -169,7 +167,6 @@ export default class Ship {
         }
         return locs;
     }
-
     /**
      * Возвращает true и координаты пересечений обоих кораблей, если данный корабль пересекается с кораблем ship, иначе возвращает false
      */

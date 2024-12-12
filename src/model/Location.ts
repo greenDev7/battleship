@@ -10,21 +10,20 @@ export default class Location {
     constructor(_x: number, _y: number) {
         this._x = _x;
         this._y = _y;
-    };
-
+    }
+    
     public get x(): number {
         return this._x;
-    };
+    }
     public set x(v: number) {
         this._x = v;
-    };
-
+    }
     public get y(): number {
         return this._y;
-    };
+    }
     public set y(v: number) {
         this._y = v;
-    };
+    }
 
     /**
      * Возвращает локацию по координате игрового поля
@@ -40,7 +39,6 @@ export default class Location {
 
         return new Location(currentX, currentY);
     }
-
     /**
      * Подсвечивает на канвасе расположение данной локации
      */
@@ -74,7 +72,6 @@ export default class Location {
             ctx.restore();
         }
     }
-
     /**
      * Возвращает координату в ее текстовом представлении, например (к-7)
      */

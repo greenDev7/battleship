@@ -28,21 +28,18 @@ export default class Game {
             new Ship(4, ShipOrientation.Vertical, new Location(2, 6))
         ]
     }
-
     /**
      * Возвращает true, если локация уже существует в истори выстрелов (shotHistory), иначе false
      */
     public static existsInShotHistory(location: Location): boolean {
         return this.containsLocation(location, Game.shotHistory);
     }
-
     /**
      * Расставляет случайным образом корабли на сетке
      */
     private static createInitialRandomShips() {
 
     }
-
     /**
      * Возвращает true, если корабли расставлены корректно (ни один из них не пересекается со всеми другими),
      * иначе возвращает false и массив с координатами пересечений
@@ -67,14 +64,12 @@ export default class Game {
 
         return [true, undefined];
     }
-
     /**
      * Возвращает корабль по его координатам
      */
     public static getShipByHeadLocation(location: Location): Ship | undefined {
         return Game.ships.find(s => (s.location.x === location.x && s.location.y === location.y));
     }
-
     /**
      * Возвращает корабль по данной локации
      */
@@ -88,7 +83,6 @@ export default class Game {
 
         return undefined;
     }
-
     /**
      * Рисует сетку на канвесе
      */
@@ -119,7 +113,6 @@ export default class Game {
         ctx.stroke();
         ctx.restore();
     }
-
     /**
      * Рисует корабли на канвасе
      */
@@ -135,7 +128,6 @@ export default class Game {
         Game.ships.forEach(ship => ship.draw(ctx));
         ctx.restore();
     }
-
     /**
     * Возвращает true, если массив locations содержит локацию loc, иначе false
     */
@@ -145,7 +137,6 @@ export default class Game {
                 return true;
         return false;
     }
-
     /**
      * Возвращает соседние диагональные локации по отношению к данной
      */
