@@ -44,15 +44,15 @@ export default class Game {
      * Возвращает true, если корабли расставлены корректно (ни один из них не пересекается со всеми другими),
      * иначе возвращает false и массив с координатами пересечений
      */
-    public static isArrangementCorrect(ships: Ship[]): [boolean, Location[] | undefined] {
+    public static isArrangementCorrect(): [boolean, Location[] | undefined] {
 
         let intersections: Location[] = [];
 
-        for (let i = 0; i < ships.length - 1; i++) {
-            const outerShip = ships[i];
+        for (let i = 0; i < Game.ships.length - 1; i++) {
+            const outerShip = Game.ships[i];
 
-            for (let j = i + 1; j < ships.length; j++) {
-                const innerShip = ships[j];
+            for (let j = i + 1; j < Game.ships.length; j++) {
+                const innerShip = Game.ships[j];
                 const res = outerShip.isIntersect(innerShip);
                 if (res[0])
                     Array.prototype.push.apply(intersections, [res[1], res[2]]);

@@ -106,7 +106,7 @@ export default defineComponent({
     },
 
     checkArrangementAndHighlight(ctx: CanvasRenderingContext2D): void {
-      let res = Game.isArrangementCorrect(Game.ships);
+      let res = Game.isArrangementCorrect();
       if (!res[0]) {
         res[1]?.forEach((l) => l.highlight(ctx, HighlightType.SQUARE));
       }
