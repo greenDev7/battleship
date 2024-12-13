@@ -54,7 +54,35 @@ export default defineComponent({
       }
     },
 
+    crossesBorderWithBackLocation(
+      selectedShip: Ship,
+      currentLocation: Location,
+      isDoubleClickEvent: boolean = false
+    ): boolean {
+      // Создадим временный корабль
+
+      // при проверке на двойной клик - временный корабль нужно создавать
+      // c вертикальной ориентацией, иначе - берем ту, которая передана в метод
+      let orientation = isDoubleClickEvent
+        ? ShipOrientation.Vertical
+        : selectedShip.type;
+
+      let tempShip: Ship = new Ship(
+        selectedShip.length,
+        orientation,
+        currentLocation /* в качетсве локации передаем текущую */
+      );
+
+      // получим конечную локацию этого временного корабля
+      let allShipLocs = tempShip.getLocations();
+      let endLocation = allShipLocs[allShipLocs.length - 1];
+
+      // возвращаем результат метода outsideTheGrid()
+      return endLocation.outsideTheGrid();
+    },
+
     handleMouseMove(event: MouseEvent) {
+      // получаем текущую локацию
       let loc: Location = Location.getLocationByOffsetXY(
         event.offsetX,
         event.offsetY
@@ -65,20 +93,9 @@ export default defineComponent({
       if (loc.outsideTheGrid()) return;
 
       if (this.selectedShip) {
-        // Теперь проверим, что конечная локация выбранного корабля также не выходит за границы грида.
-        // Делать это нужно с помощью временного корабля, чтобы не трогать this.selectedShip
-
-        // Создадим временный корабль
-        let tempShip: Ship = new Ship(
-          this.selectedShip.length,
-          this.selectedShip.type,
-          loc /* в качетсве локации передаем текущую */
-        );
-        // получим конечную локацию этого временного корабля
-        let allShipLocs = tempShip.getLocations();
-        let endLocation = allShipLocs[allShipLocs.length - 1];
-        // если конечная локация временного корабля вышла за границы сетки - выходим из метода
-        if (endLocation.outsideTheGrid()) return;
+        // Если корабль пересек границу своей конечной локацией (кормой) - тоже выходим из метода
+        if (this.crossesBorderWithBackLocation(this.selectedShip as Ship, loc))
+          return;
 
         // Если ни головная, ни конечная локации не вышли за границы сетки,
         // то присваиваем выбранному кораблю новую локацию и далее прорисовываем его
@@ -101,6 +118,13 @@ export default defineComponent({
       let ship: Ship | undefined = Game.getShipByHeadLocation(loc);
 
       if (ship) {
+        if (this.crossesBorderWithBackLocation(ship, loc, true)) {
+          window.alert(
+            "При изменении положения - этот корабль выйдет за границы сетки. Переместите корабль подальше от границы"
+          );
+          return;
+        }
+
         ship.changeOrientation();
 
         let ctx: CanvasRenderingContext2D | null = this.getContext();
@@ -120,7 +144,7 @@ export default defineComponent({
       this.selectedShip = null;
 
       if (ctx) this.checkArrangementAndHighlight(ctx);
-      console.log("ships:", Game.ships);
+      // console.log("ships:", Game.ships);
     },
 
     checkArrangementAndHighlight(ctx: CanvasRenderingContext2D): void {
