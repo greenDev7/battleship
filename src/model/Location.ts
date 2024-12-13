@@ -11,7 +11,7 @@ export default class Location {
         this._x = _x;
         this._y = _y;
     }
-    
+
     public get x(): number {
         return this._x;
     }
@@ -71,6 +71,12 @@ export default class Location {
 
             ctx.restore();
         }
+    }
+    /**
+     * Возвращает true, если локация находится за пределами сетки, иначе false
+     */
+    public outsideTheGrid(): boolean {
+        return this._x < 0 || this._x > 9 || this._y < 0 || this._y > 9
     }
     /**
      * Возвращает координату в ее текстовом представлении, например (к-7)

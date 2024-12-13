@@ -49,7 +49,7 @@ export default class Ship {
      */
     public draw(ctx: CanvasRenderingContext2D | null) {
 
-        let rw, rh: number;
+        let rectangleWidth, rectangleHeight: number;
 
         if (ctx) {
             ctx.save();
@@ -60,17 +60,17 @@ export default class Ship {
             let gch: number = GameStore.getters.getGridCellHeight;
 
             if (this._type === ShipOrientation.Horizontal) {
-                rw = this._length * gcw;
-                rh = gch;
+                rectangleWidth = this._length * gcw;
+                rectangleHeight = gch;
 
             } else {
-                rw = gcw;
-                rh = this._length * gch;
+                rectangleWidth = gcw;
+                rectangleHeight = this._length * gch;
             };
 
             this.drawBulkhead(ctx);
 
-            ctx.strokeRect(this._location.x * gcw + 1, this._location.y * gch + 1, rw - 2, rh - 2);
+            ctx.strokeRect(this._location.x * gcw + 1, this._location.y * gch + 1, rectangleWidth - 2, rectangleHeight - 2);
             ctx.restore();
         }
     }

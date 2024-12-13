@@ -40,7 +40,6 @@ export default defineComponent({
       event.preventDefault();
 
       let canvas = <HTMLCanvasElement>this.$refs.canvas;
-      canvas.addEventListener("mousemove", this.handleMouseMove);
 
       let loc: Location = Location.getLocationByOffsetXY(
         event.offsetX,
@@ -51,7 +50,7 @@ export default defineComponent({
 
       if (ship) {
         this.selectedShip = ship;
-        console.log("(Mouse Down) Current location: ", loc);
+        canvas.addEventListener("mousemove", this.handleMouseMove);
       }
     },
 
@@ -61,11 +60,30 @@ export default defineComponent({
         event.offsetY
       );
 
+      // Если головная локация корабля вышла за рамки грида, то просто выходим из метода
+      // и не перемещаем корабль
+      if (loc.outsideTheGrid()) return;
+
       if (this.selectedShip) {
+        // Теперь проверим, что конечная локация выбранного корабля также не выходит за границы грида.
+        // Делать это нужно с помощью временного корабля, чтобы не трогать this.selectedShip
+
+        // Создадим временный корабль
+        let tempShip: Ship = new Ship(
+          this.selectedShip.length,
+          this.selectedShip.type,
+          loc /* в качетсве локации передаем текущую */
+        );
+        // получим конечную локацию этого временного корабля
+        let allShipLocs = tempShip.getLocations();
+        let endLocation = allShipLocs[allShipLocs.length - 1];
+        // если конечная локация временного корабля вышла за границы сетки - выходим из метода
+        if (endLocation.outsideTheGrid()) return;
+
+        // Если ни головная, ни конечная локации не вышли за границы сетки,
+        // то присваиваем выбранному кораблю новую локацию и далее прорисовываем его
         this.selectedShip.location = loc;
-
         let ctx: CanvasRenderingContext2D | null = this.getContext();
-
         if (ctx) Game.drawShips(ctx);
       }
     },
@@ -95,7 +113,6 @@ export default defineComponent({
     },
 
     handleMouseUp(event: MouseEvent) {
-      console.log("(Mouse Up)");
       let canvas = <HTMLCanvasElement>this.$refs.canvas;
       let ctx: CanvasRenderingContext2D | null = canvas.getContext("2d");
       canvas.removeEventListener("mousemove", this.handleMouseMove);
@@ -103,6 +120,7 @@ export default defineComponent({
       this.selectedShip = null;
 
       if (ctx) this.checkArrangementAndHighlight(ctx);
+      console.log("ships:", Game.ships);
     },
 
     checkArrangementAndHighlight(ctx: CanvasRenderingContext2D): void {
