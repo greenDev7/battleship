@@ -1,34 +1,41 @@
 <template>
   <div class="fit auto">
-    <table class="auto">
+    <input
+      id="nickNameInput"
+      class="form-control form-control-lg auto"
+      placeholder="Player"
+      type="text"
+      v-model="nickName"
+      :disabled="topButtonDisabled"
+    />
+    <table id="btnTable" class="auto">
       <tbody>
         <tr>
-          <td colspan="3">
-            <input
-              type="text"
-              name="fname"
-              v-model="nickName"
-              :disabled="topButtonDisabled"
-            />
-          </td>
-        </tr>
-        <tr>
-          <td>
+          <td id="randomButtonCell">
             <button
-              class="top-btn"
+              class="top-btn btn btn-lg btn btn-dark"
+              type="button"
               @click="clickRandomGameButtonHandle"
               :disabled="topButtonDisabled"
             >
               Игра со случайным соперником
             </button>
           </td>
-          <td>
-            <button class="top-btn" type="submit" :disabled="topButtonDisabled">
+          <td id="friendButtonCell">
+            <button
+              class="top-btn btn btn-lg btn-dark"
+              type="button"
+              :disabled="topButtonDisabled"
+            >
               Игра с другом
             </button>
           </td>
-          <td>
-            <button class="top-btn" type="submit" :disabled="topButtonDisabled">
+          <td id="computerButtonCell">
+            <button
+              class="top-btn btn btn-lg btn-dark"
+              type="button"
+              :disabled="topButtonDisabled"
+            >
               Игра с компьютером
             </button>
           </td>
@@ -44,6 +51,7 @@
       :enemyState="this.enemyState"
     />
     <BattleBoardComponent
+      id="battleBoardComponent"
       class="auto"
       :isMyTurnToShoot="this.myTurnToShoot"
       :turnOrderHintsVisible="this.turnOrderHintsVisible"
@@ -51,14 +59,18 @@
       :enemyNickname="this.enemyNickName"
     />
     <button
-      class="btm-btn"
-      type="submit"
+      class="btm-btn btn btn-lg btn btn-success"
+      type="button"
       @click="handlePlayButtonClick"
       :disabled="playButtonDisabled"
     >
       Играть
     </button>
-    <button class="btm-btn" type="submit" :disabled="endGameButtonDisabled">
+    <button
+      class="btm-btn btn btn-lg btn btn-outline-danger"
+      type="button"
+      :disabled="endGameButtonDisabled"
+    >
       Завершить игру
     </button>
     <CAlert
@@ -468,6 +480,11 @@ export default defineComponent({
 </script>
 
 <style lang="css" scoped>
+#nickNameInput {
+  width: 300px;
+  margin-bottom: 30px;
+}
+
 #alert {
   width: 700px;
   position: fixed;
@@ -482,6 +499,10 @@ export default defineComponent({
   padding: 10px 20px 15px 20px;
 }
 
+#battleBoardComponent {
+  margin-bottom: 20px;
+}
+
 .fit {
   width: fit-content;
 }
@@ -491,18 +512,40 @@ export default defineComponent({
   margin-right: auto;
 }
 
-table > tbody > tr > td {
-  padding: 0px 0px 15px 15px;
+#btnTable {
+  width: 1300px;
+  margin-bottom: 30px;
+}
+
+tr {
+  margin-top: 20px;
+  height: 70px;
+}
+
+tr > td {
+  width: 33.3%;
+}
+
+#randomButtonCell {
+  padding: 0px 15px 0px 0px;
+}
+
+#friendButtonCell {
+  padding: 0px 15px 0px 15px;
+}
+
+#computerButtonCell {
+  padding: 0px 0px 0px 15px;
 }
 
 .btm-btn {
   margin: 20px 0px 0px 20px;
-  width: 200px;
-  height: 50px;
+  width: 250px;
+  height: 60px;
 }
 
 .top-btn {
-  width: 300px;
-  height: 50px;
+  width: -webkit-fill-available;
+  height: 60px;
 }
 </style>
