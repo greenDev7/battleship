@@ -2,13 +2,13 @@
   <div class="fit auto">
     <input
       id="nickNameInput"
-      class="form-control form-control-lg auto"
+      class="form-control form-control-lg auto mrg-btm"
       placeholder="Введите ник"
       type="text"
       v-model="nickName"
       :disabled="topButtonDisabled"
     />
-    <table id="btnTable" class="auto">
+    <table id="btnTable" class="mrg-btm auto">
       <tbody>
         <tr>
           <td id="randomButtonCell">
@@ -45,21 +45,22 @@
 
     <EnemyInfoComponent
       id="enemy-component"
-      class="fit auto"
+      class="fit auto mrg-btm"
       v-if="infoComponentVisible"
       :enemyNickName="this.enemyNickName"
       :enemyState="this.enemyState"
     />
+    <GameOverInfoComponent class="fit auto mrg-btm" v-if="true" />
+
     <BattleBoardComponent
-      id="battleBoardComponent"
-      class="auto"
+      class="auto mrg-btm"
       :isMyTurnToShoot="this.myTurnToShoot"
       :turnOrderHintsVisible="this.turnOrderHintsVisible"
       :enemyShotHint="this.enemyShotHint"
       :enemyNickname="this.enemyNickName"
     />
     <button
-      class="btm-btn btn btn-lg btn btn-success"
+      class="btm-btn mrr mrg-top btn btn-lg btn btn-success"
       type="button"
       @click="handlePlayButtonClick"
       :disabled="playButtonDisabled"
@@ -67,7 +68,7 @@
       Играть
     </button>
     <button
-      class="btm-btn btn btn-lg btn btn-outline-danger"
+      class="btm-btn mrl mrg-top btn btn-lg btn btn-outline-danger"
       type="button"
       :disabled="endGameButtonDisabled"
     >
@@ -86,6 +87,7 @@
 
 <script lang="ts">
 import BattleBoardComponent from "../components/BattleBoardComponent.vue";
+import GameOverInfoComponent from "../components/GameOverInfoComponent.vue";
 import { defineComponent } from "vue";
 import ActionStore from "@/store/index";
 import MessageType from "@/model/enums/MessageType";
@@ -110,7 +112,12 @@ import { serverHost, serverPort } from "@/helpers/axios";
 export default defineComponent({
   name: "BattleShipView",
 
-  components: { BattleBoardComponent, EnemyInfoComponent, CAlert },
+  components: {
+    BattleBoardComponent,
+    EnemyInfoComponent,
+    CAlert,
+    GameOverInfoComponent,
+  },
 
   data() {
     return {
@@ -127,6 +134,7 @@ export default defineComponent({
       hostileCtx_: CanvasRenderingContext2D,
       enemyShotHint: "",
       currentShot: new Location(0, 0),
+      gameOverInfoIsVisible: false,
     };
   },
 
@@ -335,10 +343,7 @@ export default defineComponent({
                 // Если все корабли потоплены, даем знать об этом противнику. Игра окончена!
                 if (Game.allShipsAreSunk()) {
                   fireResponse.gameIsOver = true;
-                  this.showAlert(
-                    "Ваш соперник оказался сильнее! Но не отчаивайтесь, попробуйте еще раз!",
-                    "secondary"
-                  );
+                  this.gameOverInfoIsVisible = true;
                   this.turnOrderHintsVisible = false;
                 }
               }
@@ -389,10 +394,8 @@ export default defineComponent({
                 }
 
                 if (parsedData.data.gameIsOver) {
-                  this.showAlert(
-                    "Поздравляю! Противник повержен! Вы выиграли этот бой!",
-                    "success"
-                  );
+                  this.infoComponentVisible = false;
+                  this.gameOverInfoIsVisible = true;
                   this.disableShooting();
                   this.turnOrderHintsVisible = false;
                 }
@@ -435,6 +438,7 @@ export default defineComponent({
       this.enemyState = EnemyState.WAITING_FOR_ENEMY;
       this.topButtonDisabled = false;
       this.infoComponentVisible = false;
+      this.gameOverInfoIsVisible = false;
       this.playButtonDisabled = true;
       this.endGameButtonDisabled = true;
     },
@@ -483,7 +487,6 @@ export default defineComponent({
 <style lang="css" scoped>
 #nickNameInput {
   width: 300px;
-  margin-bottom: 30px;
 }
 
 #alert {
@@ -493,14 +496,8 @@ export default defineComponent({
   top: 20px;
 }
 
-#enemy-component {
-  margin-top: 30px;
+.mrg-btm {
   margin-bottom: 30px;
-  padding: 10px 20px 15px 20px;
-}
-
-#battleBoardComponent {
-  margin-bottom: 20px;
 }
 
 .fit {
@@ -514,7 +511,6 @@ export default defineComponent({
 
 #btnTable {
   width: 1300px;
-  margin-bottom: 30px;
 }
 
 tr {
@@ -538,8 +534,19 @@ tr > td {
   padding: 0px 0px 0px 15px;
 }
 
+.mrg-top {
+  margin-top: 15px;
+}
+
+.mrl {
+  margin-left: 15px;
+}
+
+.mrr {
+  margin-right: 15px;
+}
+
 .btm-btn {
-  margin: 20px 0px 0px 20px;
   width: 250px;
   height: 60px;
 }
