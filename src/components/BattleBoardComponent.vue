@@ -46,7 +46,6 @@ export default defineComponent({
     turnOrderHintsVisible: { type: Boolean, default: false },
     enemyShotHint: { type: String, default: "" },
     enemyNickname: { type: String, default: "" },
-    // shotHintVisible: { type: Boolean, default: false },
   },
 
   data() {

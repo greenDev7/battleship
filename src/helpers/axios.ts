@@ -1,8 +1,10 @@
 import axios, { AxiosInstance } from "axios";
 
+export const serverHost = "192.168.0.14";
+export const serverPort = 5000;
 
 const axiosInstance: AxiosInstance = axios.create({
-    baseURL: 'http://127.0.0.1:5000',
+    baseURL: `http://${serverHost}/:${serverPort}`,
     timeout: 5000,
     // headers: {'X-Custom-Header': 'foobar'}
 });

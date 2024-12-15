@@ -105,6 +105,7 @@ import Game from "@/model/Game";
 import HighlightType from "@/model/enums/HighlightType";
 import ShotResult from "@/model/enums/ShotResult";
 import Ship from "@/model/Ship";
+import { serverHost, serverPort } from "@/helpers/axios";
 
 export default defineComponent({
   name: "BattleShipView",
@@ -171,7 +172,7 @@ export default defineComponent({
       let clientUUID = uuidv4();
 
       let ws: WebSocket = new WebSocket(
-        `ws://127.0.0.1:5000/client/${clientUUID}/ws`
+        `ws://${serverHost}:${serverPort}/client/${clientUUID}/ws`
       );
 
       this.setupSocketConnectionAndCreateRivalCouple(
