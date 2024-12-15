@@ -1,6 +1,7 @@
 import { createStore } from 'vuex'
 import { ActionStore } from './modules/ActionStore'
 import { GameStore } from './modules/GameStore'
+import { CaptionStore } from './modules/CaptionStore'
 
 export default createStore({
     state: {},
@@ -8,6 +9,6 @@ export default createStore({
     mutations: {},
     actions: {},
     modules: {
-        ActionStore, GameStore
+        ActionStore, GameStore, CaptionStore
     }
 })
