@@ -300,6 +300,7 @@ export default defineComponent({
               shot_result: ShotResult.MISS,
               enemy_client_id: this.getEnemyClientUuid,
               edgeLocs: [],
+              gameIsOver: false,
             };
 
             if (ship) {
@@ -316,6 +317,16 @@ export default defineComponent({
                 for (const loc of edgeLocs) {
                   loc.highlight(ctx);
                   fireResponse.edgeLocs.push({ _x: loc.x, _y: loc.y });
+                }
+
+                // Если все корабли потоплены, даем знать об этом противнику. Игра окончена!
+                if (Game.allShipsAreSunk()) {
+                  fireResponse.gameIsOver = true;
+                  this.showAlert(
+                    "Ваш соперник оказался сильнее! Но не отчаивайтесь, попробуйте еще раз!",
+                    "secondary"
+                  );
+                  this.turnOrderHintsVisible = false;
                 }
               }
 
@@ -362,6 +373,15 @@ export default defineComponent({
                   if (!Game.containsLocation(loc, Game.shotHistory))
                     Game.shotHistory.push(loc);
                   loc.highlight(hostileCtx);
+                }
+
+                if (parsedData.data.gameIsOver) {
+                  this.showAlert(
+                    "Поздравляю! Противник повержен! Вы выиграли этот бой!",
+                    "success"
+                  );
+                  this.disableShooting();
+                  this.turnOrderHintsVisible = false;
                 }
               }
             }

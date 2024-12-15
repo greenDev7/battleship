@@ -15,17 +15,17 @@ export default class Game {
         return [
             new Ship(1, ShipOrientation.Horizontal, new Location(8, 2)),
             new Ship(1, ShipOrientation.Horizontal, new Location(0, 9)),
-            new Ship(1, ShipOrientation.Horizontal, new Location(7, 5)),
-            new Ship(1, ShipOrientation.Horizontal, new Location(8, 8)),
+            // new Ship(1, ShipOrientation.Horizontal, new Location(7, 5)),
+            // new Ship(1, ShipOrientation.Horizontal, new Location(8, 8)),
 
-            new Ship(2, ShipOrientation.Horizontal, new Location(0, 0)),
-            new Ship(2, ShipOrientation.Vertical, new Location(4, 3)),
-            new Ship(2, ShipOrientation.Vertical, new Location(1, 2)),
+            // new Ship(2, ShipOrientation.Horizontal, new Location(0, 0)),
+            // new Ship(2, ShipOrientation.Vertical, new Location(4, 3)),
+            // new Ship(2, ShipOrientation.Vertical, new Location(1, 2)),
 
             new Ship(3, ShipOrientation.Horizontal, new Location(5, 0)),
-            new Ship(3, ShipOrientation.Horizontal, new Location(4, 9)),
+            // new Ship(3, ShipOrientation.Horizontal, new Location(4, 9)),
 
-            new Ship(4, ShipOrientation.Vertical, new Location(2, 6))
+            // new Ship(4, ShipOrientation.Vertical, new Location(2, 6))
         ]
     }
     /**
@@ -158,5 +158,11 @@ export default class Game {
         }
 
         return diagonalLocs;
+    }
+    /**
+     * Возвращает true, если все корабли потоплены, иначе false
+     */
+    public static allShipsAreSunk(): boolean {
+        return Game.ships.every(ship => ship.length === ship.hitsNumber);
     }
 }

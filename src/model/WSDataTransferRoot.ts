@@ -11,6 +11,7 @@ interface FireResponse extends MsgType {
     shot_result: number;
     enemy_client_id: string;
     edgeLocs: Array<Loc>;
+    gameIsOver: boolean
 };
 
 interface TransferLevel2 extends FireResponse {
