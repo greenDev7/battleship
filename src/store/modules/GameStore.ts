@@ -11,6 +11,11 @@ export const GameStore = {
         mouseDownHandler: Function,
         mouseUpHandler: Function,
         doubleClickHandler: Function,
+        alert: {
+            alertVisible: false,
+            alertText: "sdgsdg",
+            alertColor: "danger",
+        }
     },
     getters: {
         getCanvasWidth(state: any) {
@@ -30,6 +35,9 @@ export const GameStore = {
         },
         getHostileContext2D(state: any) {
             return state.hostileContext2D;
+        },
+        getAlert(state: any) {
+            return state.alert;
         }
     },
     mutations: {
@@ -44,6 +52,14 @@ export const GameStore = {
             state.mouseDownHandler = mouseDownHandler;
             state.mouseUpHandler = mouseUpHandler;
             state.doubleClickHandler = doubleClickHandler;
+        },
+        setAlert(state: any, { alertText, alertColor }: any) {
+            state.alert.alertVisible = true;
+            state.alert.alertColor = alertColor;
+            state.alert.alertText = alertText;
+        },
+        hideAlert(state: any) {
+            state.alert.alertVisible = false;
         }
     },
     actions: {

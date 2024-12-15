@@ -119,9 +119,11 @@ export default defineComponent({
 
       if (ship) {
         if (this.crossesBorderWithBackLocation(ship, loc, true)) {
-          window.alert(
-            "При изменении положения - этот корабль выйдет за границы сетки. Переместите корабль подальше от границы"
-          );
+          GameStore.commit("setAlert", {
+            alertText:
+              "При изменении положения - этот корабль выйдет за границы сетки. Переместите корабль подальше от границы",
+            alertColor: "danger",
+          });
           return;
         }
 

@@ -64,14 +64,10 @@
     <CAlert
       id="alert"
       dismissible
-      :visible="alertVisible"
-      @close="
-        () => {
-          alertVisible = false;
-        }
-      "
-      :color="alertColor"
-      >{{ alertText }}
+      :visible="getAlert.alertVisible"
+      @close="hideAlert"
+      :color="getAlert.alertColor"
+      >{{ getAlert.alertText }}
     </CAlert>
   </div>
 </template>
@@ -110,9 +106,6 @@ export default defineComponent({
       enemyState: EnemyState.WAITING_FOR_ENEMY,
       topButtonDisabled: false,
       infoComponentVisible: false,
-      alertVisible: false,
-      alertText: "",
-      alertColor: "danger",
       playButtonDisabled: true,
       endGameButtonDisabled: true,
       myTurnToShoot: false,
@@ -131,10 +124,15 @@ export default defineComponent({
       "getEnemyClientUuid",
       "getContext2D",
       "getHostileContext2D",
+      "getAlert",
     ]),
   },
 
   methods: {
+    hideAlert() {
+      GameStore.commit("hideAlert");
+    },
+
     nicknameIsNullOrEmpty() {
       if (
         this.nickName === "" ||
@@ -206,9 +204,7 @@ export default defineComponent({
     },
 
     showAlert(alertText: string, alertColor: string = "danger") {
-      this.alertColor = alertColor;
-      this.alertText = alertText;
-      this.alertVisible = true;
+      GameStore.commit("setAlert", { alertText, alertColor });
     },
 
     disableShooting() {
