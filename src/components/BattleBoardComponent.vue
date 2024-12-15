@@ -72,21 +72,4 @@ td {
   color: rgb(146, 42, 38);
   font-weight: bold;
 }
-
-.blink {
-  animation: blink-animation 2s steps(5, start) infinite;
-  -webkit-animation: blink-animation 2s steps(5, start) infinite;
-}
-
-@keyframes blink-animation {
-  to {
-    visibility: hidden;
-  }
-}
-
-@-webkit-keyframes blink-animation {
-  to {
-    visibility: hidden;
-  }
-}
 </style>
