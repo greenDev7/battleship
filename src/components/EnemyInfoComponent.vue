@@ -39,7 +39,7 @@ import EnemyState from "@/model/enums/EnemyState";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 export default defineComponent({
-  name: "InfoBoardComponent",
+  name: "EnemyInfoComponent",
 
   props: {
     enemyNickName: { type: String, default: "" },
@@ -78,13 +78,5 @@ export default defineComponent({
 <style lang="css" scoped>
 .darkred {
   color: rgb(146, 42, 38);
-}
-
-.bld {
-  font-weight: bold;
-}
-
-.larger {
-  font-size: larger;
 }
 </style>
