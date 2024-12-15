@@ -2,15 +2,30 @@
   <div class="larger" v-if="this.enemyState === 1">
     {{ getEnemyStateCaption() }}
   </div>
-  <div v-else-if="this.enemyState === 2 || this.enemyState === 3">
-    <span class="larger">Ваш противник: </span>
-    <span class="darkred larger">{{ enemyNickName }}</span>
-    <p class="small">{{ getEnemyStateCaption() }}</p>
-    <hr />
-    <div class="green" v-if="enemyNickName">
-      Расставьте корабли и нажмите кнопку "Играть"
+  <!-- -------------- -->
+  <div v-else-if="isEnemyStateBeforePlaying()">
+    <div class="card border-success" style="width: 40rem">
+      <div class="card-body text-success">
+        <h5 class="card-title">
+          Ваш соперник:
+          <strong class="darkred">{{ enemyNickName }}</strong>
+        </h5>
+        <p
+          class="card-text text-dark"
+          :class="{ blink: isEnemyStateBeforePlaying }"
+        >
+          {{ getEnemyStateCaption() }}
+        </p>
+      </div>
+      <div
+        v-if="enemyNickName"
+        class="card-footer bg-transparent border-success text-success larger bld"
+      >
+        Расставьте корабли и нажмите кнопку "Играть"
+      </div>
     </div>
   </div>
+  <!-- -------------- -->
   <div v-else>
     <span class="larger">{{ getEnemyStateCaption() }}</span>
   </div>
@@ -21,6 +36,7 @@
 import { defineComponent } from "vue";
 import type { PropType } from "vue";
 import EnemyState from "@/model/enums/EnemyState";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 export default defineComponent({
   name: "InfoBoardComponent",
@@ -38,6 +54,10 @@ export default defineComponent({
   },
 
   methods: {
+    isEnemyStateBeforePlaying(): boolean {
+      return this.enemyState === 2 || this.enemyState === 3;
+    },
+
     getEnemyStateCaption(): string {
       switch (this.enemyState) {
         case EnemyState.SHIPS_POSITIONING:
@@ -56,18 +76,12 @@ export default defineComponent({
 </script>
 
 <style lang="css" scoped>
-.green {
-  color: rgb(66, 185, 131);
-  font-weight: bold;
-}
-
 .darkred {
   color: rgb(146, 42, 38);
-  font-weight: bold;
 }
 
-.small {
-  font-size: small;
+.bld {
+  font-weight: bold;
 }
 
 .larger {

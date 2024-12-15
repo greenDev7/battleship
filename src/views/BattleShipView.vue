@@ -3,7 +3,7 @@
     <input
       id="nickNameInput"
       class="form-control form-control-lg auto"
-      placeholder="Player"
+      placeholder="Введите ник"
       type="text"
       v-model="nickName"
       :disabled="topButtonDisabled"
@@ -493,7 +493,6 @@ export default defineComponent({
 }
 
 #enemy-component {
-  border: 1px solid black;
   margin-top: 30px;
   margin-bottom: 30px;
   padding: 10px 20px 15px 20px;
