@@ -1,66 +1,53 @@
 <template>
-  <div class="fit auto">
+  <div class="ds-container m-container">
     <input
       id="nickNameInput"
-      class="form-control form-control-lg auto mrg-btm"
+      class="form-control form-control-lg mb-5"
       placeholder="Введите ник"
       type="text"
       v-model="nickName"
       :disabled="topButtonDisabled"
     />
-    <table id="btnTable" class="mrg-btm auto">
-      <tbody>
-        <tr>
-          <td id="randomButtonCell">
-            <button
-              class="top-btn btn btn-lg btn btn-dark"
-              type="button"
-              @click="clickRandomGameButtonHandle"
-              :disabled="topButtonDisabled"
-            >
-              Игра со случайным соперником
-            </button>
-          </td>
-          <td id="friendButtonCell">
-            <button
-              class="top-btn btn btn-lg btn-dark"
-              type="button"
-              :disabled="topButtonDisabled"
-            >
-              Игра с другом
-            </button>
-          </td>
-          <td id="computerButtonCell">
-            <button
-              class="top-btn btn btn-lg btn-dark"
-              type="button"
-              :disabled="topButtonDisabled"
-            >
-              Игра с компьютером
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
+    <div class="mfc dsfc mb-5">
+      <button
+        class="btn btn-lg btn-dark p-3 dsfi"
+        type="button"
+        @click="clickRandomGameButtonHandle"
+        :disabled="topButtonDisabled"
+      >
+        Игра со случайным соперником
+      </button>
+      <button
+        class="btn btn-lg btn-dark p-3 dsfi"
+        type="button"
+        :disabled="topButtonDisabled"
+      >
+        Игра с другом
+      </button>
+      <button
+        class="btn btn-lg btn-dark p-3 dsfi"
+        type="button"
+        :disabled="topButtonDisabled"
+      >
+        Игра с компьютером
+      </button>
+    </div>
     <EnemyInfoComponent
       id="enemy-component"
-      class="fit auto mrg-btm"
       v-if="infoComponentVisible"
       :enemyNickName="this.enemyNickName"
       :enemyState="this.enemyState"
     />
-    <GameOverInfoComponent class="fit auto mrg-btm" v-if="true" />
+    <GameOverInfoComponent v-if="true" />
 
     <BattleBoardComponent
-      class="auto mrg-btm"
       :isMyTurnToShoot="this.myTurnToShoot"
       :turnOrderHintsVisible="this.turnOrderHintsVisible"
       :enemyShotHint="this.enemyShotHint"
       :enemyNickname="this.enemyNickName"
     />
     <button
-      class="btm-btn mrr mrg-top btn btn-lg btn btn-success"
+      class="btn btn-lg btn-success"
       type="button"
       @click="handlePlayButtonClick"
       :disabled="playButtonDisabled"
@@ -68,21 +55,21 @@
       Играть
     </button>
     <button
-      class="btm-btn mrl mrg-top btn btn-lg btn btn-outline-danger"
+      class="btn btn-lg btn-outline-danger"
       type="button"
       :disabled="endGameButtonDisabled"
     >
       Завершить игру
     </button>
-    <CAlert
-      id="alert"
-      dismissible
-      :visible="getAlert.alertVisible"
-      @close="hideAlert"
-      :color="getAlert.alertColor"
-      >{{ getAlert.alertText }}
-    </CAlert>
   </div>
+  <CAlert
+    id="alert"
+    dismissible
+    :visible="getAlert.alertVisible"
+    @close="hideAlert"
+    :color="getAlert.alertColor"
+    >{{ getAlert.alertText }}
+  </CAlert>
 </template>
 
 <script lang="ts">
@@ -485,74 +472,38 @@ export default defineComponent({
 </script>
 
 <style lang="css" scoped>
-#nickNameInput {
-  width: 300px;
+@media only screen and (width <= 1000px) {
+  .m-container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  .mfc {
+    max-width: 100%;
+    min-height: 15rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 
-#alert {
-  width: 700px;
-  position: fixed;
-  left: 20px;
-  top: 20px;
-}
+@media only screen and (width > 1000px) {
+  .ds-container {
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+  }
 
-.mrg-btm {
-  margin-bottom: 30px;
-}
+  .dsfc {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
 
-.fit {
-  width: fit-content;
-}
-
-.auto {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-#btnTable {
-  width: 1300px;
-}
-
-tr {
-  margin-top: 20px;
-  height: 70px;
-}
-
-tr > td {
-  width: 33.3%;
-}
-
-#randomButtonCell {
-  padding: 0px 15px 0px 0px;
-}
-
-#friendButtonCell {
-  padding: 0px 15px 0px 15px;
-}
-
-#computerButtonCell {
-  padding: 0px 0px 0px 15px;
-}
-
-.mrg-top {
-  margin-top: 15px;
-}
-
-.mrl {
-  margin-left: 15px;
-}
-
-.mrr {
-  margin-right: 15px;
-}
-
-.btm-btn {
-  width: 250px;
-  height: 60px;
-}
-
-.top-btn {
-  width: -webkit-fill-available;
-  height: 60px;
+  .dsfi {
+    min-width: 350px;
+  }
 }
 </style>

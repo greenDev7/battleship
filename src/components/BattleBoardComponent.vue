@@ -58,7 +58,7 @@ export default defineComponent({
 
 
 <style lang="css" scoped>
-td {
+/* td {
   padding-left: 15px;
 }
 
@@ -70,5 +70,5 @@ td {
 .darkred {
   color: rgb(146, 42, 38);
   font-weight: bold;
-}
+} */
 </style>
