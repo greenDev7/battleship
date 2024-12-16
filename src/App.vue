@@ -1,40 +1,22 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link> |
-    <router-link to="/battle">BattleShip</router-link>
+  <nav class="navbar navbar-expand navbar-dark bg-dark mb-5">
+    <div class="navbar-nav container">
+      <router-link class="nav-item nav-link" to="/battle"
+        >Морской бой</router-link
+      >
+      <router-link class="nav-item nav-link" to="/about"
+        >Статистика</router-link
+      >
+      <router-link class="nav-item nav-link" to="/">Помощь проекту</router-link>
+    </div>
   </nav>
   <router-view />
 </template>
 
+
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-nav {
-  padding: 30px;
-}
-
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-nav a.router-link-exact-active {
-  color: #42b983;
-}
-
-.bld {
-  font-weight: bold;
-}
-
-.larger {
-  font-size: larger;
+  box-sizing: border-box;
 }
 
 .blink {
