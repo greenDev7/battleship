@@ -1,33 +1,65 @@
 <template>
-  <table>
+  <div class="container">
+    <div
+      class="d-flex flex-row flex-wrap justify-content-lg-center justify-content-sm-between text-center"
+    >
+      <div class="me-lg-2">
+        <table>
+          <tbody>
+            <tr>
+              <td>
+                <span
+                  v-show="turnOrderHintsVisible"
+                  :class="{ blink: !isMyTurnToShoot }"
+                >
+                  <span v-show="!isMyTurnToShoot">ходит </span>
+                  <span> {{ enemyNickname + " " }} </span
+                  ><span v-show="enemyShotHint">{{ enemyShotHint }}</span>
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td><BattleGridWithCaptionsComponent /></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="ms-lg-2">
+        <table>
+          <tbody>
+            <tr>
+              <td>
+                <span
+                  v-show="turnOrderHintsVisible & isMyTurnToShoot"
+                  class="blink"
+                  >ваш ход</span
+                >
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <BattleGridWithCaptionsComponent :gridType="hostileGrid" />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- <table>
     <tbody>
       <tr>
-        <td class="small darkred">
-          <span
-            v-show="turnOrderHintsVisible"
-            :class="{ blink: !isMyTurnToShoot }"
-          >
-            <span v-show="!isMyTurnToShoot">ходит </span>
-            <span> {{ enemyNickname + " " }} </span
-            ><span v-show="enemyShotHint">{{ enemyShotHint }}</span>
-          </span>
-        </td>
-        <td class="small green">
-          <span v-show="turnOrderHintsVisible & isMyTurnToShoot" class="blink"
-            >ваш ход</span
-          >
-        </td>
+        <td class="small darkred"></td>
+        <td class="small green"></td>
       </tr>
       <tr>
-        <td>
-          <BattleGridWithCaptionsComponent />
-        </td>
-        <td>
-          <BattleGridWithCaptionsComponent :gridType="hostileGrid" />
-        </td>
+        <td></td>
+        <td></td>
       </tr>
     </tbody>
-  </table>
+  </table> -->
 </template>
 
 
@@ -58,17 +90,4 @@ export default defineComponent({
 
 
 <style lang="css" scoped>
-/* td {
-  padding-left: 15px;
-}
-
-.green {
-  color: rgb(66, 185, 131);
-  font-weight: bold;
-}
-
-.darkred {
-  color: rgb(146, 42, 38);
-  font-weight: bold;
-} */
 </style>
