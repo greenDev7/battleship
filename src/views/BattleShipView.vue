@@ -1,13 +1,13 @@
 <template>
   <div class="container">
     <input
-      class="form-control form-control-lg mb-5"
+      class="form-control form-control-lg mb-4"
       placeholder="Введите ник"
       type="text"
       v-model="nickName"
       :disabled="topButtonDisabled"
     />
-    <div class="d-flex flex-row flex-wrap mb-4 justify-content-center justify-content-lg-between">
+    <div class="d-flex flex-row flex-wrap mb-3 justify-content-center justify-content-lg-between">
       <div class="w-100 mw-400 pb-3">
         <button
           class="btn btn-lg btn-dark p-3 w-100 text-nowrap"

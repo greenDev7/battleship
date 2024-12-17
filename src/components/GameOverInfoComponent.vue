@@ -1,13 +1,10 @@
 <template>
-  <div
-    class="card gold-brd"
-    style="max-width: 35rem;"
-  >
-    <div class="card-header bg-transparent bld larger">
+  <div class="card gold text-center mb-4">
+    <div class="card-header bg-transparent larger fs-4">
       {{ getCaptions.winnerHeader }}
     </div>
     <div class="card-body">
-      <p class="card-text">
+      <p class="card-text fw-bold">
         {{ getCaptions.winnerText }}
       </p>
     </div>
@@ -38,8 +35,12 @@ export default defineComponent({
 </script>
 
 <style lang="css" scoped>
+.gold {
+  border: 3px solid rgb(128, 115, 66);
+  background-color: rgb(212, 200, 108);
+}
 
-.gold-brd {
-  border: 3px solid rgb(212, 200, 108);
+.mw {
+  max-width: 35rem;
 }
 </style>
