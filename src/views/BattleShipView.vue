@@ -477,42 +477,6 @@ export default defineComponent({
 </script>
 
 <style lang="css" scoped>
-/* @media only screen and (width <= 1000px) {
-  .m-container {
-    padding-left: 2rem;
-    padding-right: 2rem;
-  }
-
-  .mfc {
-    max-width: 100%;
-    min-height: 15rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    margin-left: auto;
-    margin-right: auto;
-  }
-}
-
-@media only screen and (width > 1000px) {
-  .ds-container {
-    width: 60%;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .dsfc {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-  }
-
-  .dsfi {
-    min-width: 350px;
-  }
-} */
-
-
  .mw-400 {
   max-width: 400px;
  }
