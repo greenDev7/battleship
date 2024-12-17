@@ -1,34 +1,35 @@
 <template>
-  <div class="larger" v-if="this.enemyState === 1">
+  <p class="text-center fs-5 blink" v-if="this.enemyState === 1">
     {{ getEnemyStateCaption() }}
-  </div>
+  </p>
   <!-- -------------- -->
-  <div v-else-if="isEnemyStateBeforePlaying()">
-    <div class="card border-success" style="width: 40rem">
-      <div class="card-body text-success">
-        <h5 class="card-title">
-          Ваш соперник:
-          <strong class="darkred">{{ enemyNickName }}</strong>
-        </h5>
-        <p
-          class="card-text text-dark"
-          :class="{ blink: isEnemyStateBeforePlaying }"
-        >
-          {{ getEnemyStateCaption() }}
-        </p>
-      </div>
-      <div
-        v-if="enemyNickName"
-        class="card-footer bg-transparent border-success text-success larger bld"
+  <div
+    v-else-if="isEnemyStateBeforePlaying()"
+    class="card border-success text-center mb-4"
+  >
+    <div class="card-body text-success">
+      <h5 class="card-title">
+        Ваш соперник:
+        <strong class="darkred">{{ enemyNickName }}</strong>
+      </h5>
+      <p
+        class="card-text text-dark"
+        :class="{ blink: isEnemyStateBeforePlaying }"
       >
-        Расставьте корабли и нажмите кнопку "Играть"
-      </div>
+        {{ getEnemyStateCaption() }}
+      </p>
+    </div>
+    <div
+      v-if="enemyNickName"
+      class="card-footer bg-transparent border-success text-success larger bld"
+    >
+      Расставьте корабли и нажмите кнопку "Играть"
     </div>
   </div>
   <!-- -------------- -->
-  <div v-else>
-    <span class="larger">{{ getEnemyStateCaption() }}</span>
-  </div>
+  <p v-else class="larger text-center mb-4">
+    {{ getEnemyStateCaption() }}
+  </p>
 </template>
 
 

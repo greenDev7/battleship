@@ -7,7 +7,9 @@
       v-model="nickName"
       :disabled="topButtonDisabled"
     />
-    <div class="d-flex flex-row flex-wrap mb-3 justify-content-center justify-content-lg-between">
+    <div
+      class="d-flex flex-row flex-wrap mb-3 justify-content-center justify-content-lg-between"
+    >
       <div class="w-100 mw-400 pb-3">
         <button
           class="btn btn-lg btn-dark p-3 w-100 text-nowrap"
@@ -43,7 +45,7 @@
       :enemyNickName="this.enemyNickName"
       :enemyState="this.enemyState"
     />
-    <GameOverInfoComponent v-if="true" />
+    <GameOverInfoComponent v-if="gameOverInfoIsVisible" />
 
     <BattleBoardComponent
       :isMyTurnToShoot="this.myTurnToShoot"
@@ -477,7 +479,7 @@ export default defineComponent({
 </script>
 
 <style lang="css" scoped>
- .mw-400 {
+.mw-400 {
   max-width: 400px;
- }
+}
 </style>
