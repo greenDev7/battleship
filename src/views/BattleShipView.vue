@@ -1,36 +1,41 @@
 <template>
-  <div class="ds-container m-container">
+  <div class="container">
     <input
-      id="nickNameInput"
       class="form-control form-control-lg mb-5"
       placeholder="Введите ник"
       type="text"
       v-model="nickName"
       :disabled="topButtonDisabled"
     />
-    <div class="mfc dsfc mb-5">
-      <button
-        class="btn btn-lg btn-dark p-3 dsfi"
-        type="button"
-        @click="clickRandomGameButtonHandle"
-        :disabled="topButtonDisabled"
-      >
-        Игра со случайным соперником
-      </button>
-      <button
-        class="btn btn-lg btn-dark p-3 dsfi"
-        type="button"
-        :disabled="topButtonDisabled"
-      >
-        Игра с другом
-      </button>
-      <button
-        class="btn btn-lg btn-dark p-3 dsfi"
-        type="button"
-        :disabled="topButtonDisabled"
-      >
-        Игра с компьютером
-      </button>
+    <div class="d-flex flex-row flex-wrap mb-4 justify-content-center justify-content-lg-between">
+      <div class="w-100 mw-400 pb-3">
+        <button
+          class="btn btn-lg btn-dark p-3 w-100 text-nowrap"
+          type="button"
+          @click="clickRandomGameButtonHandle"
+          :disabled="topButtonDisabled"
+        >
+          Игра со случайным соперником
+        </button>
+      </div>
+      <div class="w-100 mw-400 pb-3">
+        <button
+          class="btn btn-lg btn-dark p-3 w-100 text-nowrap"
+          type="button"
+          :disabled="topButtonDisabled"
+        >
+          Игра с другом
+        </button>
+      </div>
+      <div class="w-100 mw-400 pb-3">
+        <button
+          class="btn btn-lg btn-dark p-3 w-100 text-nowrap"
+          type="button"
+          :disabled="topButtonDisabled"
+        >
+          Игра с компьютером
+        </button>
+      </div>
     </div>
     <EnemyInfoComponent
       id="enemy-component"
@@ -472,7 +477,7 @@ export default defineComponent({
 </script>
 
 <style lang="css" scoped>
-@media only screen and (width <= 1000px) {
+/* @media only screen and (width <= 1000px) {
   .m-container {
     padding-left: 2rem;
     padding-right: 2rem;
@@ -505,5 +510,10 @@ export default defineComponent({
   .dsfi {
     min-width: 350px;
   }
-}
+} */
+
+
+ .mw-400 {
+  max-width: 400px;
+ }
 </style>
