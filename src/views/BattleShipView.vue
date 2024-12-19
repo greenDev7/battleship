@@ -1,6 +1,23 @@
 <template>
   <div class="container">
+    <div class="position-fixed alpos">
+      <div
+        class="alert alert-dismissible fade show"
+        :class="`alert-${getAlert.alertColor}`"
+        role="alert"
+        v-show="getAlert.alertVisible"
+      >
+        {{ getAlert.alertText }}
+        <button
+          type="button"
+          class="btn-close"
+          aria-label="Close"
+          @click="hideAlert"
+        ></button>
+      </div>
+    </div>
     <input
+      ref="nickNameInput"
       class="form-control form-control-lg mb-4"
       placeholder="Введите ник"
       type="text"
@@ -98,6 +115,7 @@ import HighlightType from "@/model/enums/HighlightType";
 import ShotResult from "@/model/enums/ShotResult";
 import Ship from "@/model/Ship";
 import { serverHost, serverPort } from "@/helpers/axios";
+import { Alert } from "bootstrap";
 
 export default defineComponent({
   name: "BattleShipView",
@@ -110,7 +128,7 @@ export default defineComponent({
 
   data() {
     return {
-      nickName: "Player",
+      nickName: "",
       enemyNickName: "",
       enemyState: EnemyState.WAITING_FOR_ENEMY,
       topButtonDisabled: false,
@@ -142,6 +160,7 @@ export default defineComponent({
   methods: {
     hideAlert() {
       GameStore.commit("hideAlert");
+      (this.$refs.nickNameInput as HTMLElement).focus();
     },
 
     nicknameIsNullOrEmpty() {
@@ -216,6 +235,14 @@ export default defineComponent({
 
     showAlert(alertText: string, alertColor: string = "danger") {
       GameStore.commit("setAlert", { alertText, alertColor });
+
+      let d = Alert.getOrCreateInstance("#myAlert");
+
+      // var alert = bootstrap.Alert.getInstance(alertNode);
+
+      // let alertNode = document.getElementById("myAlert");
+      // console.log("alert node: ", d);
+      // let alert = new Alert()
     },
 
     disableShooting() {
@@ -267,7 +294,7 @@ export default defineComponent({
         case MessageType.DISCONNECTION:
           if (parsedData.is_status_ok)
             this.showAlert(
-              "К сожалению, ваш соперник разорвал соединение и вышел из игры"
+              "К сожалению, ваш соперник разорвал соединение и вышел из игры. Обновите страницу для новой игры"
             );
 
           this.setInitialInputElementState();
@@ -473,11 +500,17 @@ export default defineComponent({
   mounted() {
     this.ctx_ = this.getContext2D;
     this.hostileCtx_ = this.getHostileContext2D;
+    (this.$refs.nickNameInput as HTMLElement).focus();
   },
 });
 </script>
 
 <style lang="css" scoped>
+.alpos {
+  top: 1rem;
+  left: 1rem;
+}
+
 .maxw-400 {
   max-width: 25rem;
 }

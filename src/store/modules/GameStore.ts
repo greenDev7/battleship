@@ -13,7 +13,7 @@ export const GameStore = {
         doubleClickHandler: Function,
         alert: {
             alertVisible: false,
-            alertText: "sdgsdg",
+            alertText: "",
             alertColor: "danger",
         }
     },

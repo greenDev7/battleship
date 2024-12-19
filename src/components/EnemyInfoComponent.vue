@@ -37,7 +37,6 @@
 import { defineComponent } from "vue";
 import type { PropType } from "vue";
 import EnemyState from "@/model/enums/EnemyState";
-import "bootstrap/dist/css/bootstrap.min.css";
 
 export default defineComponent({
   name: "EnemyInfoComponent",
