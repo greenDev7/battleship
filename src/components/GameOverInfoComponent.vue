@@ -1,11 +1,14 @@
 <template>
-  <div class="card gold text-center mb-4">
+  <div
+    class="card text-center mb-4"
+    :class="[isWinner ? 'gold' : 'text-white bg-secondary grey-border']"
+  >
     <div class="card-header bg-transparent fs-4">
-      {{ getCaptions.winnerHeader }}
+      {{ isWinner ? getCaptions.winnerHeader : getCaptions.loserHeader }}
     </div>
     <div class="card-body">
       <p class="card-text fw-bold">
-        {{ getCaptions.winnerText }}
+        {{ isWinner ? getCaptions.winnerText : getCaptions.loserText }}
       </p>
     </div>
   </div>
@@ -38,5 +41,9 @@ export default defineComponent({
 .gold {
   border: 3px solid rgb(128, 115, 66);
   background-color: rgb(212, 200, 108);
+}
+
+.grey-border {
+  border: 3px solid rgb(82, 88, 94);
 }
 </style>

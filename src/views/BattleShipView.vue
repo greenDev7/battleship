@@ -45,7 +45,7 @@
       :enemyNickName="this.enemyNickName"
       :enemyState="this.enemyState"
     />
-    <GameOverInfoComponent v-if="gameOverInfoIsVisible" />
+    <GameOverInfoComponent v-if="gameOverInfoIsVisible" :isWinner="isWinner" />
 
     <BattleBoardComponent
       :isMyTurnToShoot="this.myTurnToShoot"
@@ -135,6 +135,7 @@ export default defineComponent({
       enemyShotHint: "",
       currentShot: new Location(0, 0),
       gameOverInfoIsVisible: false,
+      isWinner: false,
     };
   },
 
@@ -342,6 +343,7 @@ export default defineComponent({
 
                 // Если все корабли потоплены, даем знать об этом противнику. Игра окончена!
                 if (Game.allShipsAreSunk()) {
+                  this.infoComponentVisible = false;
                   fireResponse.gameIsOver = true;
                   this.gameOverInfoIsVisible = true;
                   this.turnOrderHintsVisible = false;
@@ -393,11 +395,13 @@ export default defineComponent({
                   loc.highlight(hostileCtx);
                 }
 
+                // если от соперника пришел ответ, что все корабли потоплены
                 if (parsedData.data.gameIsOver) {
                   this.infoComponentVisible = false;
                   this.gameOverInfoIsVisible = true;
                   this.disableShooting();
                   this.turnOrderHintsVisible = false;
+                  this.isWinner = true;
                 }
               }
             }
