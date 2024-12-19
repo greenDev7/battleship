@@ -115,7 +115,6 @@ import HighlightType from "@/model/enums/HighlightType";
 import ShotResult from "@/model/enums/ShotResult";
 import Ship from "@/model/Ship";
 import { serverHost, serverPort } from "@/helpers/axios";
-import { Alert } from "bootstrap";
 
 export default defineComponent({
   name: "BattleShipView",
@@ -235,14 +234,6 @@ export default defineComponent({
 
     showAlert(alertText: string, alertColor: string = "danger") {
       GameStore.commit("setAlert", { alertText, alertColor });
-
-      let d = Alert.getOrCreateInstance("#myAlert");
-
-      // var alert = bootstrap.Alert.getInstance(alertNode);
-
-      // let alertNode = document.getElementById("myAlert");
-      // console.log("alert node: ", d);
-      // let alert = new Alert()
     },
 
     disableShooting() {
