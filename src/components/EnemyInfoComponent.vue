@@ -21,13 +21,13 @@
     </div>
     <div
       v-if="enemyNickName"
-      class="card-footer bg-transparent border-success text-success larger bld"
+      class="card-footer bg-transparent border-success text-success"
     >
       Расставьте корабли и нажмите кнопку "Играть"
     </div>
   </div>
   <!-- -------------- -->
-  <p v-else class="larger text-center mb-4">
+  <p v-else class="text-center mb-lg-4 mb-5">
     {{ getEnemyStateCaption() }}
   </p>
 </template>
@@ -77,7 +77,4 @@ export default defineComponent({
 </script>
 
 <style lang="css" scoped>
-.darkred {
-  color: rgb(146, 42, 38);
-}
 </style>

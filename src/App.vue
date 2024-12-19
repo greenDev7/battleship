@@ -24,6 +24,14 @@
   -webkit-animation: blink-animation 2s steps(5, start) infinite;
 }
 
+.darkred {
+  color: rgb(146, 42, 38);
+}
+
+.green {
+  color: rgb(66, 185, 131);
+}
+
 @keyframes blink-animation {
   to {
     visibility: hidden;

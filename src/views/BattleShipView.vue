@@ -8,9 +8,9 @@
       :disabled="topButtonDisabled"
     />
     <div
-      class="d-flex flex-row flex-wrap mb-3 justify-content-center justify-content-lg-between"
+      class="d-flex flex-row flex-wrap mb-4 justify-content-center justify-content-lg-between"
     >
-      <div class="w-100 mw-400 pb-3">
+      <div class="w-100 maxw-400 pb-3">
         <button
           class="btn btn-lg btn-dark p-3 w-100 text-nowrap"
           type="button"
@@ -20,7 +20,7 @@
           Игра со случайным соперником
         </button>
       </div>
-      <div class="w-100 mw-400 pb-3">
+      <div class="w-100 maxw-400 pb-3">
         <button
           class="btn btn-lg btn-dark p-3 w-100 text-nowrap"
           type="button"
@@ -29,7 +29,7 @@
           Игра с другом
         </button>
       </div>
-      <div class="w-100 mw-400 pb-3">
+      <div class="w-100 maxw-400 pb-3">
         <button
           class="btn btn-lg btn-dark p-3 w-100 text-nowrap"
           type="button"
@@ -53,21 +53,27 @@
       :enemyShotHint="this.enemyShotHint"
       :enemyNickname="this.enemyNickName"
     />
-    <button
-      class="btn btn-lg btn-success"
-      type="button"
-      @click="handlePlayButtonClick"
-      :disabled="playButtonDisabled"
-    >
-      Играть
-    </button>
-    <button
-      class="btn btn-lg btn-outline-danger"
-      type="button"
-      :disabled="endGameButtonDisabled"
-    >
-      Завершить игру
-    </button>
+    <div class="d-flex flex-row flex-wrap mt-4 mt-lg-4 justify-content-center">
+      <div class="minw-17 mb-4 px-3">
+        <button
+          class="btn btn-lg btn-success w-100 text-nowrap"
+          type="button"
+          @click="handlePlayButtonClick"
+          :disabled="playButtonDisabled"
+        >
+          Играть
+        </button>
+      </div>
+      <div class="minw-17 px-3">
+        <button
+          class="btn btn-lg btn-outline-danger w-100 text-nowrap"
+          type="button"
+          :disabled="endGameButtonDisabled"
+        >
+          Завершить игру
+        </button>
+      </div>
+    </div>
   </div>
   <CAlert
     id="alert"
@@ -479,7 +485,11 @@ export default defineComponent({
 </script>
 
 <style lang="css" scoped>
-.mw-400 {
-  max-width: 400px;
+.maxw-400 {
+  max-width: 25rem;
+}
+
+.minw-17 {
+  min-width: 17rem;
 }
 </style>
