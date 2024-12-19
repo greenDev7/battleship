@@ -75,14 +75,6 @@
       </div>
     </div>
   </div>
-  <CAlert
-    id="alert"
-    dismissible
-    :visible="getAlert.alertVisible"
-    @close="hideAlert"
-    :color="getAlert.alertColor"
-    >{{ getAlert.alertText }}
-  </CAlert>
 </template>
 
 <script lang="ts">
@@ -97,8 +89,6 @@ import {
   WSDataTransferRootType,
   FireResponseType,
 } from "@/model/WSDataTransferRoot";
-import { CAlert } from "@coreui/vue";
-import "bootstrap/dist/css/bootstrap.min.css";
 import { mapGetters } from "vuex";
 import EnemyState from "@/model/enums/EnemyState";
 import GameStore from "@/store/index";
@@ -115,7 +105,6 @@ export default defineComponent({
   components: {
     BattleBoardComponent,
     EnemyInfoComponent,
-    CAlert,
     GameOverInfoComponent,
   },
 
