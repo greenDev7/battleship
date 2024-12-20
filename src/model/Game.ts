@@ -165,4 +165,17 @@ export default class Game {
     public static allShipsAreSunk(): boolean {
         return Game.ships.every(ship => ship.length === ship.hitsNumber);
     }
+    /**
+     * Подсвечивает диагональные локации и, если нужно, добавляет их в историю выстрелов
+     */
+    public static highlightDiagonalsAndPushToHistory(
+        ctx: CanvasRenderingContext2D,
+        shot: Location,
+        pushToHistory: boolean = false
+    ) {
+        for (const loc of Game.getDiagonalLocations(shot)) {
+            loc.highlight(ctx);
+            if (pushToHistory) Game.shotHistory.push(loc);
+        }
+    }
 }

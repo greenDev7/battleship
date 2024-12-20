@@ -240,17 +240,6 @@ export default defineComponent({
       this.myTurnToShoot = true;
     },
 
-    highlightDiagonalsAndPushToHistory(
-      ctx: CanvasRenderingContext2D,
-      shot: Location,
-      pushToHistory: boolean = false
-    ) {
-      for (const loc of Game.getDiagonalLocations(shot)) {
-        loc.highlight(ctx);
-        if (pushToHistory) Game.shotHistory.push(loc);
-      }
-    },
-
     processDataFromServer(dataFromServer: string) {
       let parsedData: WSDataTransferRootType = JSON.parse(dataFromServer);
 
@@ -322,7 +311,7 @@ export default defineComponent({
 
             if (ship) {
               ht = HighlightType.CROSS;
-              this.highlightDiagonalsAndPushToHistory(ctx, shot);
+              Game.highlightDiagonalsAndPushToHistory(ctx, shot);
               ship.hitsNumber++;
 
               if (ship.hitsNumber < ship.length) {
@@ -376,7 +365,7 @@ export default defineComponent({
             } else {
               // иначе
               this.currentShot.highlight(hostileCtx, HighlightType.CROSS);
-              this.highlightDiagonalsAndPushToHistory(
+              Game.highlightDiagonalsAndPushToHistory(
                 hostileCtx,
                 this.currentShot as Location,
                 true
