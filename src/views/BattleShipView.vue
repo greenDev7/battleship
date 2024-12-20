@@ -162,27 +162,15 @@ export default defineComponent({
       (this.$refs.nickNameInput as HTMLElement).focus();
     },
 
-    nicknameIsNullOrEmpty() {
-      if (
-        this.nickName === "" ||
-        this.nickName === null ||
-        this.nickName === undefined
-      ) {
-        return true;
-      }
-
-      return false;
-    },
-
     clickRandomGameButtonHandle(event: MouseEvent) {
-      if (this.nicknameIsNullOrEmpty()) {
+      if (this.nickName.trim().length === 0) {
         this.showAlert("Для игры необходимо ввести ник!", "warning");
         return;
       }
 
       const userRequestBody = {
         msg_type: MessageType.RANDOM_GAME,
-        nickName: this.nickName,
+        nickName: this.nickName.trim(),
       };
 
       let clientUUID = uuidv4();
