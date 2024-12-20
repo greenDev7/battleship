@@ -142,6 +142,7 @@ export default defineComponent({
       currentShot: new Location(0, 0),
       gameOverInfoIsVisible: false,
       isWinner: false,
+      isPlaying: false,
     };
   },
 
@@ -157,6 +158,12 @@ export default defineComponent({
   },
 
   methods: {
+    preventNavAndUnload(event: BeforeUnloadEvent) {
+      if (!this.isPlaying) return;
+      event.preventDefault();
+      event.returnValue = "";
+    },
+
     hideAlert() {
       GameStore.commit("hideAlert");
       (this.$refs.nickNameInput as HTMLElement).focus();
@@ -184,6 +191,8 @@ export default defineComponent({
         userRequestBody,
         clientUUID
       );
+
+      this.isPlaying = true;
       this.topButtonDisabled = true;
       this.infoComponentVisible = true;
     },
@@ -463,6 +472,27 @@ export default defineComponent({
         })
       );
     },
+  },
+
+  beforeRouteLeave(to: any, from: any, next: any) {
+    if (this.isPlaying) {
+      if (
+        !window.confirm(
+          "Игра будет завершена при переходе на другую вкладку. Перейти на другую вкладку ?"
+        )
+      ) {
+        return;
+      } else (this.getWebSocket as WebSocket).close();
+    }
+    next();
+  },
+
+  beforeMount() {
+    window.addEventListener("beforeunload", this.preventNavAndUnload);
+  },
+
+  beforeUnmount() {
+    window.removeEventListener("beforeunload", this.preventNavAndUnload);
   },
 
   mounted() {
