@@ -452,6 +452,10 @@ export default defineComponent({
         event.offsetY
       );
 
+      // Если каким-то образом игрок сделал выстрел по невалидной локации (вне границ сетки, например по координате з-0),
+      // то выходим из метода
+      if (!shotLocation.isValid()) return;
+
       if (Game.existsInShotHistory(shotLocation)) {
         this.showAlert(
           "Вы уже стреляли по этим координатам, выберите другие координаты для стрельбы",

@@ -79,6 +79,12 @@ export default class Location {
         return this._x < 0 || this._x > 9 || this._y < 0 || this._y > 9
     }
     /**
+     * Возвращает true, если локация валидна, иначе false
+     */
+    public isValid(): boolean {
+        return (this._x >= 0 && this._x <= 9 && this._y >= 0 && this._y <= 9)
+    }
+    /**
      * Возвращает координату в ее текстовом представлении, например (к-7)
      */
     public toString = () => `(${letterDict[this._x]}-${this._y + 1})`;
