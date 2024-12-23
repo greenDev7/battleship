@@ -3,7 +3,7 @@
     <div
       class="d-flex flex-row flex-wrap justify-content-lg-center justify-content-sm-between text-center"
     >
-      <div class="me-lg-2 mb-4">
+      <div class="me-lg-2 mb-4 border border-dark border-2 rounded-3 p-2">
         <table>
           <tbody>
             <tr>
@@ -28,7 +28,7 @@
         </table>
       </div>
 
-      <div class="ms-lg-2">
+      <div class="ms-lg-2 mb-4 border border-dark border-2 rounded-3 p-2">
         <table>
           <tbody>
             <tr>
