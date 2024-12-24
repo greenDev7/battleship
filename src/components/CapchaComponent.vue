@@ -9,7 +9,11 @@
       <tr>
         <td><canvas id="canvas" ref="canvas"></canvas></td>
         <td>
-          <button class="btn btn-outline-light w-100 minw" type="button">
+          <button
+            class="btn btn-outline-light w-100 minw"
+            type="button"
+            @click="generateCapcha"
+          >
             <img id="img" src="@/assets/refresh-icon.png" alt="refresh" />
           </button>
         </td>
@@ -35,16 +39,58 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import refresh from "@/assets/refresh-icon.png";
 
 export default defineComponent({
   name: "CapchaComponent",
 
   data() {
-    return {};
+    return {
+      chars: "abcde",
+      numberOfDigits: 4,
+      numberOfChars: 2,
+    };
   },
 
-  methods: {},
+  methods: {
+    generateCapcha() {
+      let capchaArray = [];
+
+      for (let i = 0; i < this.numberOfDigits; i++)
+        capchaArray.push(this.getRandomInt(10));
+
+      let charArray = [];
+
+      for (let i = 0; i < this.chars.length; i++)
+        charArray.push(this.chars.charAt(i));
+
+      for (let i = 0; i < this.numberOfChars; i++) {
+        const index = this.getRandomInt(this.chars.length);
+        capchaArray.push(charArray[index]);
+      }
+
+      this.shuffle(capchaArray);
+
+      console.log("capchaArray shuffled:", capchaArray);
+    },
+    getRandomInt(max: number) {
+      const maxFloored = Math.floor(max);
+      return Math.floor(Math.random() * maxFloored); // [0, max)
+    },
+    shuffle(array: (string | number)[]) {
+      let currentIndex = array.length;
+      // While there remain elements to shuffle...
+      while (currentIndex != 0) {
+        // Pick a remaining element...
+        let randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+        // And swap it with the current element.
+        [array[currentIndex], array[randomIndex]] = [
+          array[randomIndex],
+          array[currentIndex],
+        ];
+      }
+    },
+  },
 });
 </script>
 
