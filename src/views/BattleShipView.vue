@@ -27,7 +27,7 @@
     <div
       class="border border-secondary border-3 rounded-3 p-1 w-fit mx-auto mb-4"
     >
-      <CapchaComponent />
+      <CaptchaComponent />
     </div>
     <div
       class="d-flex flex-row flex-wrap mb-4 justify-content-center justify-content-lg-between"
@@ -102,7 +102,7 @@
 <script lang="ts">
 import BattleBoardComponent from "../components/BattleBoardComponent.vue";
 import GameOverInfoComponent from "../components/GameOverInfoComponent.vue";
-import CapchaComponent from "../components/CapchaComponent.vue";
+import CaptchaComponent from "../components/CaptchaComponent.vue";
 import { defineComponent } from "vue";
 import ActionStore from "@/store/index";
 import MessageType from "@/model/enums/MessageType";
@@ -129,7 +129,7 @@ export default defineComponent({
     BattleBoardComponent,
     EnemyInfoComponent,
     GameOverInfoComponent,
-    CapchaComponent,
+    CaptchaComponent,
   },
 
   data() {

@@ -37,105 +37,30 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import digits from "@/assets/digits/digits";
-import five from "@/assets/digits/5/5.png";
-import { CaptchaGenerator } from "captcha-canvas";
 
 export default defineComponent({
-  name: "CapchaComponent",
+  name: "CaptchaComponent",
 
   data() {
     return {
-      chars: "abcde",
+      chars:
+        "A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,0,1,2,3,4,5,6,7,8,9,!,@,#,$,%,^,&,*,(,)",
       numberOfDigits: 4,
       numberOfChars: 2,
     };
   },
 
-  getImage(element: string | Number) {
-    if (element instanceof Number) {
-      let img = new Image();
-      img.src = digits.five.five_0;
-      return img;
-    }
-  },
-
   methods: {
     async drawCapcha() {
-      
-      let images = [];
-
-      let img1 = new Image();
-      img1.src = digits.five.five_0;
-      images.push(img1);
-
-      let img2 = new Image();
-      img2.src = digits.nine.nine_1;
-      images.push(img2);
-
-      console.log("images: ", digits.five.five_0);
-
-      await Promise.all(
-        Array.from(images).map(
-          (image) =>
-            new Promise((resolve) => image.addEventListener("load", resolve))
-        )
-      );
-
       let canvas = <HTMLCanvasElement>this.$refs.canvas;
       const ctx: CanvasRenderingContext2D | null = canvas.getContext("2d");
 
       if (ctx) {
-
         canvas.width = 150;
         canvas.height = 30;
-        // ctx.save();
-        ctx.drawImage(
-          images[0],
-          0,
-          0,
-          images[0].width,
-          images[0].height,
-          0,
-          0,
-          28,
-          28
-        );
-
-        ctx.drawImage(
-          images[1],
-          0,
-          0,
-          images[1].width,
-          images[1].height,
-          29,
-          0,
-          28,
-          28
-        );
-        // ctx.restore();
       }
     },
-    generateCapcha() {
-      let capchaArray = [];
-
-      for (let i = 0; i < this.numberOfDigits; i++)
-        capchaArray.push(this.getRandomInt(10));
-
-      let charArray = [];
-
-      for (let i = 0; i < this.chars.length; i++)
-        charArray.push(this.chars.charAt(i));
-
-      for (let i = 0; i < this.numberOfChars; i++) {
-        const index = this.getRandomInt(this.chars.length);
-        capchaArray.push(charArray[index]);
-      }
-
-      this.shuffle(capchaArray);
-
-      console.log("capchaArray shuffled:", capchaArray);
-    },
+    generateCapcha() {},
     getRandomInt(max: number) {
       const maxFloored = Math.floor(max);
       return Math.floor(Math.random() * maxFloored); // [0, max)
@@ -163,11 +88,6 @@ export default defineComponent({
 </script>
 
 <style lang="css" scoped>
-/* #canvas {
-  height: 30px;
-  width: 300px;
-} */
-
 #img {
   width: 30px;
   height: 30px;
