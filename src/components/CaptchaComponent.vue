@@ -7,12 +7,16 @@
         </td>
       </tr>
       <tr>
-        <td><canvas id="canvas" ref="canvas"></canvas></td>
+        <td>
+          <div class="text-center">
+            <canvas id="canvas" ref="canvas"></canvas>
+          </div>
+        </td>
         <td>
           <button
             class="btn btn-outline-light w-100 minw"
             type="button"
-            @click="generateCapcha"
+            @click="drawCaptcha"
           >
             <img id="img" src="@/assets/refresh-icon.png" alt="refresh" />
           </button>
@@ -44,45 +48,61 @@ export default defineComponent({
   data() {
     return {
       chars:
-        "A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,0,1,2,3,4,5,6,7,8,9,!,@,#,$,%,^,&,*,(,)",
-      numberOfDigits: 4,
-      numberOfChars: 2,
+        "A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,0,1,2,3,4,5,6,7,8,9,$,%,&",
+      numberOfCharsForCaptcha: 4,
     };
   },
 
   methods: {
-    async drawCapcha() {
+    async drawCaptcha() {
       let canvas = <HTMLCanvasElement>this.$refs.canvas;
       const ctx: CanvasRenderingContext2D | null = canvas.getContext("2d");
 
       if (ctx) {
         canvas.width = 150;
-        canvas.height = 30;
+        canvas.height = 40;
+
+        ctx.font = "25px serif";
+        ctx.textBaseline = "top";
+        ctx.textAlign = "left";
+        ctx.fillStyle = "black";
+
+        let codes: string[] = this.generateCodeArray();
+        for (let i = 0; i < codes.length; i++) {
+          let angle = (Math.random() * Math.PI) / 10;
+          let x = i * 10 + 10;
+          let y = Math.random() * 4;
+
+          ctx.translate(x, y);
+          ctx.rotate(angle);
+
+          ctx.fillText(codes[i], 0, 0);
+
+          ctx.rotate(-angle);
+        }
       }
     },
-    generateCapcha() {},
+
+    generateCodeArray(): string[] {
+      let charArray: string[] = this.chars.split(",");
+
+      let codeArray: string[] = [];
+      for (let i = 0; i < this.numberOfCharsForCaptcha; i++) {
+        const randomIndex = this.getRandomInt(charArray.length);
+        codeArray.push(charArray[randomIndex]);
+      }
+
+      return codeArray;
+    },
     getRandomInt(max: number) {
-      const maxFloored = Math.floor(max);
-      return Math.floor(Math.random() * maxFloored); // [0, max)
-    },
-    shuffle(array: (string | number)[]) {
-      let currentIndex = array.length;
-      // While there remain elements to shuffle...
-      while (currentIndex != 0) {
-        // Pick a remaining element...
-        let randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex--;
-        // And swap it with the current element.
-        [array[currentIndex], array[randomIndex]] = [
-          array[randomIndex],
-          array[currentIndex],
-        ];
-      }
+      return Math.floor(Math.random() * max); // [0, max)
     },
   },
 
   async mounted() {
-    await this.drawCapcha();
+    let codes = this.generateCodeArray();
+    await this.drawCaptcha();
+    console.log("code array: ", codes);
   },
 });
 </script>
