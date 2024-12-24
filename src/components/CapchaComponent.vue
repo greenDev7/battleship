@@ -27,9 +27,7 @@
           />
         </td>
         <td>
-          <button class="btn btn-dark w-100 text-nowrap" type="button">
-            OK
-          </button>
+          <button class="btn btn-dark w-100" type="button">OK</button>
         </td>
       </tr>
     </tbody>
@@ -39,6 +37,9 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import digits from "@/assets/digits/digits";
+import five from "@/assets/digits/5/5.png";
+import { CaptchaGenerator } from "captcha-canvas";
 
 export default defineComponent({
   name: "CapchaComponent",
@@ -51,7 +52,70 @@ export default defineComponent({
     };
   },
 
+  getImage(element: string | Number) {
+    if (element instanceof Number) {
+      let img = new Image();
+      img.src = digits.five.five_0;
+      return img;
+    }
+  },
+
   methods: {
+    async drawCapcha() {
+      
+      let images = [];
+
+      let img1 = new Image();
+      img1.src = digits.five.five_0;
+      images.push(img1);
+
+      let img2 = new Image();
+      img2.src = digits.nine.nine_1;
+      images.push(img2);
+
+      console.log("images: ", digits.five.five_0);
+
+      await Promise.all(
+        Array.from(images).map(
+          (image) =>
+            new Promise((resolve) => image.addEventListener("load", resolve))
+        )
+      );
+
+      let canvas = <HTMLCanvasElement>this.$refs.canvas;
+      const ctx: CanvasRenderingContext2D | null = canvas.getContext("2d");
+
+      if (ctx) {
+
+        canvas.width = 150;
+        canvas.height = 30;
+        // ctx.save();
+        ctx.drawImage(
+          images[0],
+          0,
+          0,
+          images[0].width,
+          images[0].height,
+          0,
+          0,
+          28,
+          28
+        );
+
+        ctx.drawImage(
+          images[1],
+          0,
+          0,
+          images[1].width,
+          images[1].height,
+          29,
+          0,
+          28,
+          28
+        );
+        // ctx.restore();
+      }
+    },
     generateCapcha() {
       let capchaArray = [];
 
@@ -91,18 +155,22 @@ export default defineComponent({
       }
     },
   },
+
+  async mounted() {
+    await this.drawCapcha();
+  },
 });
 </script>
 
 <style lang="css" scoped>
-#canvas {
-  height: 28px;
-  width: 112px;
-}
+/* #canvas {
+  height: 30px;
+  width: 300px;
+} */
 
 #img {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
 }
 
 #table > tbody > tr > td {

@@ -24,7 +24,9 @@
       v-model="nickName"
       :disabled="topButtonDisabled"
     />
-    <div class="border border-secondary border-3 rounded-3 p-1 w-fit mx-auto mb-4">
+    <div
+      class="border border-secondary border-3 rounded-3 p-1 w-fit mx-auto mb-4"
+    >
       <CapchaComponent />
     </div>
     <div
