@@ -61,11 +61,17 @@ export default defineComponent({
     ): boolean {
       // Создадим временный корабль
 
-      // при проверке на двойной клик - временный корабль нужно создавать
-      // c вертикальной ориентацией, иначе - берем ту, которая передана в метод
-      let orientation = isDoubleClickEvent
-        ? ShipOrientation.Vertical
-        : selectedShip.type;
+      let orientation: ShipOrientation = ShipOrientation.Horizontal;
+
+      if (isDoubleClickEvent) {
+        // при проверке на двойной клик - временный корабль нужно создавать
+        if (selectedShip.type === ShipOrientation.Horizontal)
+          // c ориентацией, противоположной выбранному кораблю
+          orientation = ShipOrientation.Vertical;
+      } else {
+        // иначе - берем такую же, как у выбранного корабля
+        orientation = selectedShip.type;
+      }
 
       let tempShip: Ship = new Ship(
         selectedShip.length,
