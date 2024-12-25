@@ -22,12 +22,13 @@
       placeholder="Введите ник"
       type="text"
       v-model="nickName"
-      :disabled="topButtonDisabled"
+      :disabled="nicknameDisabled"
     />
     <div
+      v-if="this.captchaVisible"
       class="border border-secondary border-3 rounded-3 p-1 w-fit mx-auto mb-4"
     >
-      <CaptchaComponent @captchaOkButtonClicked="showCaptcha" />
+      <CaptchaComponent @captchaOkButtonClicked="processCaptcha" />
     </div>
     <div
       class="d-flex flex-row flex-wrap mb-4 justify-content-center justify-content-lg-between"
@@ -137,7 +138,8 @@ export default defineComponent({
       nickName: "",
       enemyNickName: "",
       enemyState: EnemyState.WAITING_FOR_ENEMY,
-      topButtonDisabled: false,
+      topButtonDisabled: true,
+      nicknameDisabled: false,
       infoComponentVisible: false,
       playButtonDisabled: true,
       endGameButtonDisabled: true,
@@ -150,6 +152,7 @@ export default defineComponent({
       gameOverInfoIsVisible: false,
       isWinner: false,
       isPlaying: false,
+      captchaVisible: true,
     };
   },
 
@@ -165,8 +168,11 @@ export default defineComponent({
   },
 
   methods: {
-    showCaptcha(res: any) {
-      console.log("res: ", res);
+    processCaptcha(isCaptchaSuccess: boolean) {
+      this.topButtonDisabled = !isCaptchaSuccess;
+      this.captchaVisible = !isCaptchaSuccess;
+
+      if (!isCaptchaSuccess) this.showAlert("Неверный код", "danger");
     },
 
     preventNavAndUnload(event: BeforeUnloadEvent) {
@@ -205,6 +211,7 @@ export default defineComponent({
 
       this.isPlaying = true;
       this.topButtonDisabled = true;
+      this.nicknameDisabled = true;
       this.infoComponentVisible = true;
     },
 
@@ -445,6 +452,7 @@ export default defineComponent({
       this.enemyNickName = "";
       this.enemyState = EnemyState.WAITING_FOR_ENEMY;
       this.topButtonDisabled = false;
+      this.nicknameDisabled = false;
       this.infoComponentVisible = false;
       this.gameOverInfoIsVisible = false;
       this.playButtonDisabled = true;
