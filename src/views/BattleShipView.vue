@@ -27,7 +27,7 @@
     <div
       class="border border-secondary border-3 rounded-3 p-1 w-fit mx-auto mb-4"
     >
-      <CaptchaComponent />
+      <CaptchaComponent @captchaOkButtonClicked="showCaptcha" />
     </div>
     <div
       class="d-flex flex-row flex-wrap mb-4 justify-content-center justify-content-lg-between"
@@ -165,6 +165,10 @@ export default defineComponent({
   },
 
   methods: {
+    showCaptcha(res: any) {
+      console.log("res: ", res);
+    },
+
     preventNavAndUnload(event: BeforeUnloadEvent) {
       if (!this.isPlaying) return;
       event.preventDefault();
