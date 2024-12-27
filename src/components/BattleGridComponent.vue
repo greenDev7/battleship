@@ -42,7 +42,27 @@ export default defineComponent({
       return canvas.getContext("2d");
     },
 
-    handleDown(event: MouseEvent | PointerEvent) {
+    changeShipOrientation(ship: Ship, loc: Location) {
+      if (this.crossesBorderWithBackLocation(ship, loc, true)) {
+        GameStore.commit("setAlert", {
+          alertText:
+            "При изменении положения - этот корабль выйдет за границы сетки. Переместите корабль подальше от границы",
+          alertColor: "danger",
+        });
+        return;
+      }
+
+      ship.changeOrientation();
+
+      let ctx: CanvasRenderingContext2D | null = this.getContext();
+
+      if (ctx) {
+        Game.drawShips(ctx);
+        this.checkArrangementAndHighlight(ctx);
+      }
+    },
+
+    handlePointerDown(event: PointerEvent) {
       event.preventDefault();
 
       let canvas = <HTMLCanvasElement>this.$refs.canvas;
@@ -60,14 +80,11 @@ export default defineComponent({
         if (timeDelta <= 500) this.changeShipOrientation(ship, loc);
 
         this.selectedShip = ship;
-
-        if (event instanceof MouseEvent)
-          canvas.addEventListener("mousemove", this.handleMouseMove);
-        else canvas.addEventListener("pointermove", this.handlePointerMove);
+        canvas.addEventListener("pointermove", this.handlePointerMove);
       }
     },
 
-    handleMove(event: MouseEvent | PointerEvent) {
+    handlePointerMove(event: PointerEvent) {
       // получаем текущую локацию
       let loc: Location = Location.getLocationByOffsetXY(
         event.offsetX,
@@ -91,61 +108,15 @@ export default defineComponent({
       }
     },
 
-    handleUp(event: MouseEvent | PointerEvent) {
+    handlePointerUp(event: PointerEvent) {
       let canvas = <HTMLCanvasElement>this.$refs.canvas;
       let ctx: CanvasRenderingContext2D | null = canvas.getContext("2d");
 
-      if (event instanceof MouseEvent)
-        canvas.removeEventListener("mousemove", this.handleMouseMove);
-      else canvas.removeEventListener("pointermove", this.handlePointerMove);
+      canvas.removeEventListener("pointermove", this.handlePointerMove);
 
       this.selectedShip = null;
 
       if (ctx) this.checkArrangementAndHighlight(ctx);
-    },
-
-    changeShipOrientation(ship: Ship, loc: Location) {
-      if (this.crossesBorderWithBackLocation(ship, loc, true)) {
-        GameStore.commit("setAlert", {
-          alertText:
-            "При изменении положения - этот корабль выйдет за границы сетки. Переместите корабль подальше от границы",
-          alertColor: "danger",
-        });
-        return;
-      }
-
-      ship.changeOrientation();
-
-      let ctx: CanvasRenderingContext2D | null = this.getContext();
-
-      if (ctx) {
-        Game.drawShips(ctx);
-        this.checkArrangementAndHighlight(ctx);
-      }
-    },
-
-    handleMouseDown(event: MouseEvent) {
-      this.handleDown(event);
-    },
-
-    handleMouseMove(event: MouseEvent) {
-      this.handleMove(event);
-    },
-
-    handleMouseUp(event: MouseEvent) {
-      this.handleUp(event);
-    },
-
-    handlePointerDown(event: PointerEvent) {
-      this.handleDown(event);
-    },
-
-    handlePointerMove(event: PointerEvent) {
-      this.handleMove(event);
-    },
-
-    handlePointerUp(event: PointerEvent) {
-      this.handleUp(event);
     },
 
     handleTouchStart(event: TouchEvent) {
@@ -153,23 +124,22 @@ export default defineComponent({
     },
 
     registerOwnGridHandlers(ctx: CanvasRenderingContext2D) {
-      ctx.canvas.addEventListener("mousedown", this.handleMouseDown);
-      ctx.canvas.addEventListener("mouseup", this.handleMouseUp);
-
-      const mouseDownHandler = this.handleMouseDown;
-      const mouseUpHandler = this.handleMouseUp;
-
-      GameStore.commit("setHandlers", {
-        mouseDownHandler,
-        mouseUpHandler,
-      });
-    },
-
-    registerOwnGridMobileHandlers(ctx: CanvasRenderingContext2D) {
       ctx.canvas.addEventListener("pointerdown", this.handlePointerDown);
       ctx.canvas.addEventListener("pointermove", this.handlePointerMove);
       ctx.canvas.addEventListener("pointerup", this.handlePointerUp);
       ctx.canvas.addEventListener("touchstart", this.handleTouchStart);
+
+      const pointerDownHandler = this.handlePointerDown;
+      const pointerMoveHandler = this.handlePointerMove;
+      const pointerUpHandler = this.handlePointerUp;
+      const touchStartHandler = this.handleTouchStart;
+
+      GameStore.commit("setHandlers", {
+        pointerDownHandler,
+        pointerMoveHandler,
+        pointerUpHandler,
+        touchStartHandler,
+      });
     },
 
     checkArrangementAndHighlight(ctx: CanvasRenderingContext2D): void {
@@ -227,7 +197,6 @@ export default defineComponent({
           ship.draw(ctx);
         });
         this.registerOwnGridHandlers(ctx);
-        this.registerOwnGridMobileHandlers(ctx);
         // сохраняем ctx в глобальном Store для использования в родительских компонентах
         GameStore.commit("setContext2D", ctx);
       } else {
