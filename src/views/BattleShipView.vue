@@ -183,7 +183,6 @@ export default defineComponent({
 
     hideAlert() {
       GameStore.commit("hideAlert");
-      (this.$refs.nickNameInput as HTMLElement).focus();
     },
 
     clickRandomGameButtonHandle(event: MouseEvent) {
@@ -521,7 +520,7 @@ export default defineComponent({
   mounted() {
     this.ctx_ = this.getContext2D;
     this.hostileCtx_ = this.getHostileContext2D;
-    (this.$refs.nickNameInput as HTMLElement).focus();
+    // (this.$refs.nickNameInput as HTMLElement).focus();
   },
 });
 </script>
