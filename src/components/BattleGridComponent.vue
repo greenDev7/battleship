@@ -28,8 +28,6 @@ export default defineComponent({
       selectedShip: <Ship | null>(
         new Ship(1, ShipOrientation.Horizontal, new Location(0, 0))
       ),
-      initialOffsetX: 0,
-      initialOffsetY: 0,
     };
   },
 
@@ -100,37 +98,8 @@ export default defineComponent({
       if (ctx) this.checkArrangementAndHighlight(ctx);
     },
 
-    handleMouseDown(event: MouseEvent) {
-      this.handleDown(event);
-    },
-
-    handleMouseMove(event: MouseEvent) {
-      this.handleMove(event);
-    },
-
-    handleMouseUp(event: MouseEvent) {
-      this.handleUp(event);
-    },
-
-    handlePointerDown(event: PointerEvent) {
-      this.handleDown(event);
-    },
-
-    handlePointerMove(event: PointerEvent) {
-      this.handleMove(event);
-    },
-
-    handlePointerUp(event: PointerEvent) {
-      this.handleUp(event);
-    },
-
-    handleDoubleClick(event: MouseEvent) {
+    handleDoubleClick(event: MouseEvent | PointerEvent) {
       event.preventDefault();
-
-      GameStore.commit("setAlert", {
-        alertText: "dblclick",
-        alertColor: "danger",
-      });
 
       let loc: Location = Location.getLocationByOffsetXY(
         event.offsetX,
@@ -159,6 +128,34 @@ export default defineComponent({
       }
     },
 
+    handleMouseDown(event: MouseEvent) {
+      this.handleDown(event);
+    },
+
+    handleMouseMove(event: MouseEvent) {
+      this.handleMove(event);
+    },
+
+    handleMouseUp(event: MouseEvent) {
+      this.handleUp(event);
+    },
+
+    handlePointerDown(event: PointerEvent) {
+      this.handleDown(event);
+    },
+
+    handlePointerMove(event: PointerEvent) {
+      this.handleMove(event);
+    },
+
+    handlePointerUp(event: PointerEvent) {
+      this.handleUp(event);
+    },
+
+    handleMouseDoubleClick(event: MouseEvent) {
+      this.handleDoubleClick(event);
+    },
+
     handleTouchStart(event: TouchEvent) {
       event.preventDefault();
     },
@@ -166,11 +163,11 @@ export default defineComponent({
     registerOwnGridHandlers(ctx: CanvasRenderingContext2D) {
       ctx.canvas.addEventListener("mousedown", this.handleMouseDown);
       ctx.canvas.addEventListener("mouseup", this.handleMouseUp);
-      ctx.canvas.addEventListener("dblclick", this.handleDoubleClick);
+      ctx.canvas.addEventListener("dblclick", this.handleMouseDoubleClick);
 
       const mouseDownHandler = this.handleMouseDown;
       const mouseUpHandler = this.handleMouseUp;
-      const doubleClickHandler = this.handleDoubleClick;
+      const doubleClickHandler = this.handleMouseDoubleClick;
 
       GameStore.commit("setHandlers", {
         mouseDownHandler,
