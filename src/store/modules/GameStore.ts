@@ -6,13 +6,13 @@ export const GameStore = {
         canvasHeight: 300,
         numberOfCellsOnTheAxisX: 10,
         numberOfCellsOnTheAxisY: 10,
-        context2x: CanvasRenderingContext2D,
+        context2D: CanvasRenderingContext2D,
         hostileContext2D: CanvasRenderingContext2D,
         handlers: {
             pointerDownHandler: Function,
             pointerMoveHandler: Function,
             pointerUpHandler: Function,
-            touchStartHandler: Function,
+            touchStartHandler: Function
         },
         alert: {
             alertVisible: false,
@@ -34,7 +34,7 @@ export const GameStore = {
             return state.canvasHeight * state.scaleParameter / state.numberOfCellsOnTheAxisY;
         },
         getContext2D(state: any) {
-            return state.context2x;
+            return state.context2D;
         },
         getHostileContext2D(state: any) {
             return state.hostileContext2D;
@@ -45,7 +45,7 @@ export const GameStore = {
     },
     mutations: {
         setContext2D(state: any, ctx: any) {
-            state.context2x = ctx;
+            state.context2D = ctx;
         },
         setContextHostile2D(state: any, ctx: any) {
             state.hostileContext2D = ctx;
@@ -68,12 +68,12 @@ export const GameStore = {
     },
     actions: {
         async removeOwnGridEventListeners({ state }: any) {
-            const canvas = (state.context2x as unknown as CanvasRenderingContext2D).canvas;
+            const canvas = (state.context2D as unknown as CanvasRenderingContext2D).canvas;
 
-            canvas.addEventListener("pointerdown", state.handlers.pointerDownHandler);
-            canvas.addEventListener("pointermove", state.handlers.pointerMoveHandler);
-            canvas.addEventListener("pointerup", state.handlers.pointerUpHandler);
-            canvas.addEventListener("touchstart", state.handlers.touchStartHandler);
+            canvas.removeEventListener("pointerdown", state.handlers.pointerDownHandler);
+            canvas.removeEventListener("pointermove", state.handlers.pointerMoveHandler);
+            canvas.removeEventListener("pointerup", state.handlers.pointerUpHandler);
+            canvas.removeEventListener("touchstart", state.handlers.touchStartHandler);
         }
     }
 }

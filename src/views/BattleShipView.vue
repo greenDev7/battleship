@@ -37,7 +37,7 @@
         <button
           class="btn btn-lg btn-dark p-3 w-100 text-nowrap"
           type="button"
-          @click="clickRandomGameButtonHandle"
+          @click="handleRandomGameButtonClick"
           :disabled="topButtonDisabled"
         >
           Игра со случайным соперником
@@ -185,7 +185,7 @@ export default defineComponent({
       GameStore.commit("hideAlert");
     },
 
-    clickRandomGameButtonHandle(event: PointerEvent) {
+    handleRandomGameButtonClick(event: PointerEvent) {
       if (this.nickName.trim().length === 0) {
         this.showAlert("Для игры необходимо ввести ник!", "warning");
         return;
