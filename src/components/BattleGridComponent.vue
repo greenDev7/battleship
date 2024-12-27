@@ -28,6 +28,8 @@ export default defineComponent({
       selectedShip: <Ship | null>(
         new Ship(1, ShipOrientation.Horizontal, new Location(0, 0))
       ),
+      initialOffsetX: 0,
+      initialOffsetY: 0,
     };
   },
 
@@ -36,7 +38,12 @@ export default defineComponent({
   },
 
   methods: {
-    handleMouseDown(event: MouseEvent) {
+    getContext(): CanvasRenderingContext2D | null {
+      let canvas = <HTMLCanvasElement>this.$refs.canvas;
+      return canvas.getContext("2d");
+    },
+
+    handleDown(event: MouseEvent | PointerEvent) {
       event.preventDefault();
 
       let canvas = <HTMLCanvasElement>this.$refs.canvas;
@@ -50,7 +57,139 @@ export default defineComponent({
 
       if (ship) {
         this.selectedShip = ship;
-        canvas.addEventListener("mousemove", this.handleMouseMove);
+        if (event instanceof MouseEvent)
+          canvas.addEventListener("mousemove", this.handleMouseMove);
+        else canvas.addEventListener("pointermove", this.handlePointerMove);
+      }
+    },
+
+    handleMove(event: MouseEvent | PointerEvent) {
+      // получаем текущую локацию
+      let loc: Location = Location.getLocationByOffsetXY(
+        event.offsetX,
+        event.offsetY
+      );
+
+      // Если головная локация корабля вышла за рамки грида, то просто выходим из метода
+      // и не перемещаем корабль
+      if (loc.outsideTheGrid()) return;
+
+      if (this.selectedShip) {
+        // Если корабль пересек границу своей конечной локацией (кормой) - тоже выходим из метода
+        if (this.crossesBorderWithBackLocation(this.selectedShip as Ship, loc))
+          return;
+
+        // Если ни головная, ни конечная локации не вышли за границы сетки,
+        // то присваиваем выбранному кораблю новую локацию и далее прорисовываем его
+        this.selectedShip.location = loc;
+        let ctx: CanvasRenderingContext2D | null = this.getContext();
+        if (ctx) Game.drawShips(ctx);
+      }
+    },
+
+    handleUp(event: MouseEvent | PointerEvent) {
+      let canvas = <HTMLCanvasElement>this.$refs.canvas;
+      let ctx: CanvasRenderingContext2D | null = canvas.getContext("2d");
+
+      if (event instanceof MouseEvent)
+        canvas.removeEventListener("mousemove", this.handleMouseMove);
+      else canvas.removeEventListener("pointermove", this.handlePointerMove);
+
+      this.selectedShip = null;
+
+      if (ctx) this.checkArrangementAndHighlight(ctx);
+    },
+
+    handleMouseDown(event: MouseEvent) {
+      this.handleDown(event);
+    },
+
+    handleMouseMove(event: MouseEvent) {
+      this.handleMove(event);
+    },
+
+    handleMouseUp(event: MouseEvent) {
+      this.handleUp(event);
+    },
+
+    handlePointerDown(event: PointerEvent) {
+      this.handleDown(event);
+    },
+
+    handlePointerMove(event: PointerEvent) {
+      this.handleMove(event);
+    },
+
+    handlePointerUp(event: PointerEvent) {
+      this.handleUp(event);
+    },
+
+    handleDoubleClick(event: MouseEvent) {
+      event.preventDefault();
+
+      GameStore.commit("setAlert", {
+        alertText: "dblclick",
+        alertColor: "danger",
+      });
+
+      let loc: Location = Location.getLocationByOffsetXY(
+        event.offsetX,
+        event.offsetY
+      );
+      let ship: Ship | undefined = Game.getShipByHeadLocation(loc);
+
+      if (ship) {
+        if (this.crossesBorderWithBackLocation(ship, loc, true)) {
+          GameStore.commit("setAlert", {
+            alertText:
+              "При изменении положения - этот корабль выйдет за границы сетки. Переместите корабль подальше от границы",
+            alertColor: "danger",
+          });
+          return;
+        }
+
+        ship.changeOrientation();
+
+        let ctx: CanvasRenderingContext2D | null = this.getContext();
+
+        if (ctx) {
+          Game.drawShips(ctx);
+          this.checkArrangementAndHighlight(ctx);
+        }
+      }
+    },
+
+    handleTouchStart(event: TouchEvent) {
+      event.preventDefault();
+    },
+
+    registerOwnGridHandlers(ctx: CanvasRenderingContext2D) {
+      ctx.canvas.addEventListener("mousedown", this.handleMouseDown);
+      ctx.canvas.addEventListener("mouseup", this.handleMouseUp);
+      ctx.canvas.addEventListener("dblclick", this.handleDoubleClick);
+
+      const mouseDownHandler = this.handleMouseDown;
+      const mouseUpHandler = this.handleMouseUp;
+      const doubleClickHandler = this.handleDoubleClick;
+
+      GameStore.commit("setHandlers", {
+        mouseDownHandler,
+        mouseUpHandler,
+        doubleClickHandler,
+      });
+    },
+
+    registerOwnGridMobileHandlers(ctx: CanvasRenderingContext2D) {
+      ctx.canvas.addEventListener("pointerdown", this.handlePointerDown);
+      ctx.canvas.addEventListener("pointermove", this.handlePointerMove);
+      ctx.canvas.addEventListener("pointerup", this.handlePointerUp);
+      ctx.canvas.addEventListener("touchstart", this.handleTouchStart);
+    },
+
+    checkArrangementAndHighlight(ctx: CanvasRenderingContext2D): void {
+      let res = Game.isArrangementCorrect();
+      if (!res[0]) {
+        res[1]?.forEach((l) => l.highlight(ctx, HighlightType.SQUARE));
       }
     },
 
@@ -86,97 +225,6 @@ export default defineComponent({
       // возвращаем результат метода outsideTheGrid()
       return endLocation.outsideTheGrid();
     },
-
-    handleMouseMove(event: MouseEvent) {
-      // получаем текущую локацию
-      let loc: Location = Location.getLocationByOffsetXY(
-        event.offsetX,
-        event.offsetY
-      );
-
-      // Если головная локация корабля вышла за рамки грида, то просто выходим из метода
-      // и не перемещаем корабль
-      if (loc.outsideTheGrid()) return;
-
-      if (this.selectedShip) {
-        // Если корабль пересек границу своей конечной локацией (кормой) - тоже выходим из метода
-        if (this.crossesBorderWithBackLocation(this.selectedShip as Ship, loc))
-          return;
-
-        // Если ни головная, ни конечная локации не вышли за границы сетки,
-        // то присваиваем выбранному кораблю новую локацию и далее прорисовываем его
-        this.selectedShip.location = loc;
-        let ctx: CanvasRenderingContext2D | null = this.getContext();
-        if (ctx) Game.drawShips(ctx);
-      }
-    },
-
-    getContext(): CanvasRenderingContext2D | null {
-      let canvas = <HTMLCanvasElement>this.$refs.canvas;
-      return canvas.getContext("2d");
-    },
-
-    handleDoubleClick(event: MouseEvent) {
-      let loc: Location = Location.getLocationByOffsetXY(
-        event.offsetX,
-        event.offsetY
-      );
-      let ship: Ship | undefined = Game.getShipByHeadLocation(loc);
-
-      if (ship) {
-        if (this.crossesBorderWithBackLocation(ship, loc, true)) {
-          GameStore.commit("setAlert", {
-            alertText:
-              "При изменении положения - этот корабль выйдет за границы сетки. Переместите корабль подальше от границы",
-            alertColor: "danger",
-          });
-          return;
-        }
-
-        ship.changeOrientation();
-
-        let ctx: CanvasRenderingContext2D | null = this.getContext();
-
-        if (ctx) {
-          Game.drawShips(ctx);
-          this.checkArrangementAndHighlight(ctx);
-        }
-      }
-    },
-
-    handleMouseUp(event: MouseEvent) {
-      let canvas = <HTMLCanvasElement>this.$refs.canvas;
-      let ctx: CanvasRenderingContext2D | null = canvas.getContext("2d");
-      canvas.removeEventListener("mousemove", this.handleMouseMove);
-
-      this.selectedShip = null;
-
-      if (ctx) this.checkArrangementAndHighlight(ctx);
-      // console.log("ships:", Game.ships);
-    },
-
-    checkArrangementAndHighlight(ctx: CanvasRenderingContext2D): void {
-      let res = Game.isArrangementCorrect();
-      if (!res[0]) {
-        res[1]?.forEach((l) => l.highlight(ctx, HighlightType.SQUARE));
-      }
-    },
-
-    registerOwnGridHandlers(ctx: CanvasRenderingContext2D) {
-      ctx.canvas.addEventListener("mousedown", this.handleMouseDown);
-      ctx.canvas.addEventListener("mouseup", this.handleMouseUp);
-      ctx.canvas.addEventListener("dblclick", this.handleDoubleClick);
-
-      const mouseDownHandler = this.handleMouseDown;
-      const mouseUpHandler = this.handleMouseUp;
-      const doubleClickHandler = this.handleDoubleClick;
-
-      GameStore.commit("setHandlers", {
-        mouseDownHandler,
-        mouseUpHandler,
-        doubleClickHandler,
-      });
-    },
   },
 
   mounted() {
@@ -193,6 +241,7 @@ export default defineComponent({
           ship.draw(ctx);
         });
         this.registerOwnGridHandlers(ctx);
+        this.registerOwnGridMobileHandlers(ctx);
         // сохраняем ctx в глобальном Store для использования в родительских компонентах
         GameStore.commit("setContext2D", ctx);
       } else {
