@@ -185,7 +185,7 @@ export default defineComponent({
       GameStore.commit("hideAlert");
     },
 
-    clickRandomGameButtonHandle(event: MouseEvent) {
+    clickRandomGameButtonHandle(event: PointerEvent) {
       if (this.nickName.trim().length === 0) {
         this.showAlert("Для игры необходимо ввести ник!", "warning");
         return;
@@ -253,7 +253,7 @@ export default defineComponent({
     disableShooting() {
       (
         this.hostileCtx_ as unknown as CanvasRenderingContext2D
-      ).canvas.removeEventListener("mousedown", this.handleHostileGridClick);
+      ).canvas.removeEventListener("pointerdown", this.handleHostileGridClick);
 
       this.myTurnToShoot = false;
     },
@@ -261,7 +261,7 @@ export default defineComponent({
     enableShooting() {
       (
         this.hostileCtx_ as unknown as CanvasRenderingContext2D
-      ).canvas.addEventListener("mousedown", this.handleHostileGridClick);
+      ).canvas.addEventListener("pointerdown", this.handleHostileGridClick);
 
       this.myTurnToShoot = true;
     },
@@ -458,7 +458,7 @@ export default defineComponent({
       this.endGameButtonDisabled = true;
     },
 
-    handleHostileGridClick(event: MouseEvent) {
+    handleHostileGridClick(event: PointerEvent) {
       const enemyClientUuid = this.getEnemyClientUuid;
       if (!enemyClientUuid) {
         console.log("Enemy client UUID is not found");
