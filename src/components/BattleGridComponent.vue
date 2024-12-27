@@ -28,6 +28,7 @@ export default defineComponent({
       selectedShip: <Ship | null>(
         new Ship(1, ShipOrientation.Horizontal, new Location(0, 0))
       ),
+      currentTimeStamp: 0,
     };
   },
 
@@ -54,7 +55,12 @@ export default defineComponent({
       let ship: Ship | undefined = Game.getShipByHeadLocation(loc);
 
       if (ship) {
+        let timeDelta = Date.now() - this.currentTimeStamp;
+        this.currentTimeStamp = Date.now();
+        if (timeDelta <= 500) this.changeShipOrientation(ship, loc);
+
         this.selectedShip = ship;
+
         if (event instanceof MouseEvent)
           canvas.addEventListener("mousemove", this.handleMouseMove);
         else canvas.addEventListener("pointermove", this.handlePointerMove);
@@ -98,33 +104,23 @@ export default defineComponent({
       if (ctx) this.checkArrangementAndHighlight(ctx);
     },
 
-    handleDoubleClick(event: MouseEvent | PointerEvent) {
-      event.preventDefault();
+    changeShipOrientation(ship: Ship, loc: Location) {
+      if (this.crossesBorderWithBackLocation(ship, loc, true)) {
+        GameStore.commit("setAlert", {
+          alertText:
+            "При изменении положения - этот корабль выйдет за границы сетки. Переместите корабль подальше от границы",
+          alertColor: "danger",
+        });
+        return;
+      }
 
-      let loc: Location = Location.getLocationByOffsetXY(
-        event.offsetX,
-        event.offsetY
-      );
-      let ship: Ship | undefined = Game.getShipByHeadLocation(loc);
+      ship.changeOrientation();
 
-      if (ship) {
-        if (this.crossesBorderWithBackLocation(ship, loc, true)) {
-          GameStore.commit("setAlert", {
-            alertText:
-              "При изменении положения - этот корабль выйдет за границы сетки. Переместите корабль подальше от границы",
-            alertColor: "danger",
-          });
-          return;
-        }
+      let ctx: CanvasRenderingContext2D | null = this.getContext();
 
-        ship.changeOrientation();
-
-        let ctx: CanvasRenderingContext2D | null = this.getContext();
-
-        if (ctx) {
-          Game.drawShips(ctx);
-          this.checkArrangementAndHighlight(ctx);
-        }
+      if (ctx) {
+        Game.drawShips(ctx);
+        this.checkArrangementAndHighlight(ctx);
       }
     },
 
@@ -152,10 +148,6 @@ export default defineComponent({
       this.handleUp(event);
     },
 
-    handleMouseDoubleClick(event: MouseEvent) {
-      this.handleDoubleClick(event);
-    },
-
     handleTouchStart(event: TouchEvent) {
       event.preventDefault();
     },
@@ -163,16 +155,13 @@ export default defineComponent({
     registerOwnGridHandlers(ctx: CanvasRenderingContext2D) {
       ctx.canvas.addEventListener("mousedown", this.handleMouseDown);
       ctx.canvas.addEventListener("mouseup", this.handleMouseUp);
-      ctx.canvas.addEventListener("dblclick", this.handleMouseDoubleClick);
 
       const mouseDownHandler = this.handleMouseDown;
       const mouseUpHandler = this.handleMouseUp;
-      const doubleClickHandler = this.handleMouseDoubleClick;
 
       GameStore.commit("setHandlers", {
         mouseDownHandler,
         mouseUpHandler,
-        doubleClickHandler,
       });
     },
 
@@ -192,7 +181,7 @@ export default defineComponent({
 
     crossesBorderWithBackLocation(
       selectedShip: Ship,
-      currentLocation: Location,
+      currentMovedLocation: Location,
       isDoubleClickEvent: boolean = false
     ): boolean {
       // Создадим временный корабль
@@ -212,7 +201,7 @@ export default defineComponent({
       let tempShip: Ship = new Ship(
         selectedShip.length,
         orientation,
-        currentLocation /* в качетсве локации передаем текущую */
+        currentMovedLocation // локацию нужно передавать отдельно, ее нельзя доставать из selectedShip !!!
       );
 
       // получим конечную локацию этого временного корабля

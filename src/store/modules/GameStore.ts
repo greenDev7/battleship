@@ -10,7 +10,6 @@ export const GameStore = {
         hostileContext2D: CanvasRenderingContext2D,
         mouseDownHandler: Function,
         mouseUpHandler: Function,
-        doubleClickHandler: Function,
         alert: {
             alertVisible: false,
             alertText: "",
@@ -48,10 +47,9 @@ export const GameStore = {
             state.hostileContext2D = ctx;
         },
         setHandlers(state: any, payload: any) {
-            const { mouseDownHandler, mouseUpHandler, doubleClickHandler } = payload;
+            const { mouseDownHandler, mouseUpHandler } = payload;
             state.mouseDownHandler = mouseDownHandler;
             state.mouseUpHandler = mouseUpHandler;
-            state.doubleClickHandler = doubleClickHandler;
         },
         setAlert(state: any, { alertText, alertColor }: any) {
             state.alert.alertVisible = true;
@@ -68,7 +66,6 @@ export const GameStore = {
 
             canvas.removeEventListener("mousedown", state.mouseDownHandler);
             canvas.removeEventListener("mouseup", state.mouseUpHandler);
-            canvas.removeEventListener("dblclick", state.doubleClickHandler);
         }
     }
 }
