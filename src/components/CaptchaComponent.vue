@@ -29,6 +29,9 @@
             placeholder="Текст с картинки"
             type="text"
             v-model="userText"
+            @keyup.enter="
+              $emit('captchaOkButtonClicked', getComparisonResult())
+            "
           />
         </td>
         <td>
