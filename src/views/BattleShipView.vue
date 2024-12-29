@@ -170,6 +170,10 @@ export default defineComponent({
   },
 
   methods: {
+    getContext(): CanvasRenderingContext2D {
+      return this.ctx_ as unknown as CanvasRenderingContext2D;
+    },
+
     processCaptcha(isCaptchaSuccess: boolean) {
       this.topButtonDisabled = !isCaptchaSuccess;
       this.captchaVisible = !isCaptchaSuccess;
@@ -325,7 +329,7 @@ export default defineComponent({
             let ht: HighlightType = HighlightType.CIRCLE;
             let ship: Ship | undefined = Game.getShipByLocation(shot);
 
-            let ctx = this.ctx_ as unknown as CanvasRenderingContext2D;
+            let ctx = this.getContext();
 
             let fireResponse: FireResponseType = {
               msg_type: MessageType.FIRE_RESPONSE,
@@ -473,6 +477,10 @@ export default defineComponent({
         return;
       }
 
+      Game.ships.forEach((ship) => {
+        ship.draw(this.getContext(), "black", false);
+      });
+
       const clientUuid = this.getClientUuid;
       if (!clientUuid) return;
 
@@ -568,7 +576,6 @@ export default defineComponent({
   mounted() {
     this.ctx_ = this.getContext2D;
     this.hostileCtx_ = this.getHostileContext2D;
-    // (this.$refs.nickNameInput as HTMLElement).focus();
   },
 });
 </script>

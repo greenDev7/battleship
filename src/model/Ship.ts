@@ -47,7 +47,7 @@ export default class Ship {
     /**
      * Рисует корабль
      */
-    public draw(ctx: CanvasRenderingContext2D | null, strokeColor: string = "black") {
+    public draw(ctx: CanvasRenderingContext2D | null, strokeColor: string = "black", isInitialDraw: boolean = true) {
 
         let rectangleWidth, rectangleHeight: number;
 
@@ -70,7 +70,8 @@ export default class Ship {
 
             this.drawBulkhead(ctx);
 
-            this._location.highlightHead(ctx);
+            if (isInitialDraw)
+                this._location.highlightHead(ctx);
 
             ctx.strokeRect(this._location.x * gcw + 1, this._location.y * gch + 1, rectangleWidth - 2, rectangleHeight - 2);
             ctx.restore();
