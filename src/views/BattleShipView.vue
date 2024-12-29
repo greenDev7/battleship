@@ -92,6 +92,7 @@
           class="btn btn-lg btn-danger w-100 text-nowrap"
           type="button"
           :disabled="endGameButtonDisabled"
+          @click="handleFinishButtonClick"
         >
           Завершить игру
         </button>
@@ -290,8 +291,6 @@ export default defineComponent({
             this.showAlert(
               "К сожалению, ваш соперник разорвал соединение и вышел из игры. Обновите страницу для новой игры"
             );
-
-          this.setInitialInputElementState();
           break;
 
         case MessageType.SHIPS_ARE_ARRANGED:
@@ -445,6 +444,10 @@ export default defineComponent({
 
       // Удаляем обработчики событий мыши, чтобы игрок не мог менять расстановку кораблей во время игры
       GameStore.dispatch("removeOwnGridEventListeners");
+    },
+
+    handleFinishButtonClick(event: Event) {
+      window.location.reload();
     },
 
     setInitialInputElementState() {
