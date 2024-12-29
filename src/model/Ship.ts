@@ -70,8 +70,7 @@ export default class Ship {
 
             this.drawBulkhead(ctx);
 
-            if (isInitialDraw)
-                this._location.highlightHead(ctx);
+            this._location.highlightOrClearHead(ctx, isInitialDraw);
 
             ctx.strokeRect(this._location.x * gcw + 1, this._location.y * gch + 1, rectangleWidth - 2, rectangleHeight - 2);
             ctx.restore();

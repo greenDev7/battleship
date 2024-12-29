@@ -75,7 +75,7 @@ export default class Location {
     /**
      * Подсвечивает на канвасе расположение головной части корабля
      */
-    public highlightHead(ctx: CanvasRenderingContext2D | null) {
+    public highlightOrClearHead(ctx: CanvasRenderingContext2D | null, highlight: boolean = true) {
         if (ctx) {
 
             const st = GameStore.state;
@@ -90,13 +90,23 @@ export default class Location {
             let initX = this._x * gcw;
             let initY = this._y * gch;
 
-            region.moveTo(initX, initY);
-            region.lineTo(initX + 0.5 * gcw + 5, initY);
-            region.lineTo(initX, initY + 0.5 * gch + 5);
+
+            if (highlight) {
+                region.moveTo(initX + 3, initY + 3);
+                region.lineTo(initX + 0.5 * gcw + 3, initY + 3);
+                region.lineTo(initX + 3, initY + 0.5 * gch + 3);
+            }
+            else /* clear highlight */ {
+                region.moveTo(initX + 1, initY + 1);
+                region.lineTo(initX + 0.5 * gcw + 7, initY + 1);
+                region.lineTo(initX + 1, initY + 0.5 * gch + 7);
+            }
+
             region.closePath();
 
             // Fill path
-            ctx.fillStyle = "grey";
+            ctx.fillStyle = highlight ? "grey" : "white";
+
             ctx.fill(region);
 
             ctx.restore();

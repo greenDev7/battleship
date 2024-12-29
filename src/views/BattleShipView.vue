@@ -436,7 +436,7 @@ export default defineComponent({
             // Покажем где у соперника остались непотопленные корабли
             let hostileCtx_ = this
               .hostileCtx_ as unknown as CanvasRenderingContext2D;
-            unsunkShips.forEach((ship) => ship.draw(hostileCtx_, "red"));
+            unsunkShips.forEach((ship) => ship.draw(hostileCtx_, "red", false));
           }
           break;
 
