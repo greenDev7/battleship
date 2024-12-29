@@ -113,6 +113,7 @@ import { v4 as uuidv4 } from "uuid";
 import {
   WSDataTransferRootType,
   FireResponseType,
+  UnSunkShipsType,
 } from "@/model/WSDataTransferRoot";
 import { mapGetters } from "vuex";
 import EnemyState from "@/model/enums/EnemyState";
@@ -411,15 +412,59 @@ export default defineComponent({
                   this.disableShooting();
                   this.turnOrderHintsVisible = false;
                   this.isWinner = true;
+                  // Отправим сопернику информацию о непотопленных кораблях
+                  this.sendUnsunkShipsToEnemy();
                 }
               }
             }
           }
           break;
 
+        case MessageType.UNSUNK_SHIPS:
+          if (parsedData.is_status_ok) {
+            console.log("receive unsunk ships: ", parsedData.data.unSunkShips);
+
+            let unsunkShips: Ship[] = parsedData.data.unSunkShips.map(
+              (s) =>
+                new Ship(s.length, s.type, new Location(s.loc._x, s.loc._y))
+            );
+
+            // Покажем где у соперника остались непотопленные корабли
+            let hostileCtx_ = this
+              .hostileCtx_ as unknown as CanvasRenderingContext2D;
+            unsunkShips.forEach((ship) => ship.draw(hostileCtx_, "red"));
+          }
+          break;
+
         default:
           break;
       }
+    },
+
+    sendUnsunkShipsToEnemy(): void {
+      const ws: WebSocket = this.getWebSocket;
+
+      let unsunkShipsResp: UnSunkShipsType = {
+        msg_type: MessageType.UNSUNK_SHIPS,
+        enemy_client_id: this.getEnemyClientUuid,
+        unSunkShips: [],
+      };
+
+      let unSunkShips: Ship[] = Game.ships.filter(
+        (s) => s.hitsNumber < s.length
+      );
+
+      for (const ship of unSunkShips) {
+        unsunkShipsResp.unSunkShips.push({
+          loc: { _x: ship.location.x, _y: ship.location.y },
+          length: ship.length,
+          type: ship.type,
+        });
+      }
+
+      console.log("sending unsunk ships: ", unsunkShipsResp);
+
+      ws.send(JSON.stringify(unsunkShipsResp));
     },
 
     handlePlayButtonClick(event: Event) {

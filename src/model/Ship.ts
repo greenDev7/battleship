@@ -47,13 +47,13 @@ export default class Ship {
     /**
      * Рисует корабль
      */
-    public draw(ctx: CanvasRenderingContext2D | null) {
+    public draw(ctx: CanvasRenderingContext2D | null, strokeColor: string = "black") {
 
         let rectangleWidth, rectangleHeight: number;
 
         if (ctx) {
             ctx.save();
-            ctx.strokeStyle = "black";
+            ctx.strokeStyle = strokeColor;
             ctx.lineWidth = 2;
 
             let gcw: number = GameStore.getters.getGridCellWidth;

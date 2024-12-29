@@ -1,6 +1,6 @@
 enum ShipOrientation {
-    Horizontal = "Horizontal",
-    Vertical = "Vertical"
+    Horizontal = 0,
+    Vertical = 1
 }
 
 export default ShipOrientation
