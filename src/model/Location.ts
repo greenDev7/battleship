@@ -73,7 +73,7 @@ export default class Location {
         }
     }
     /**
-     * Подсвечивает на канвасе расположение головной части корабля
+     * Рисует/очищает выделение на канвасе расположение головной части корабля
      */
     public highlightOrClearHead(ctx: CanvasRenderingContext2D | null, highlight: boolean = true) {
         if (ctx) {
@@ -90,7 +90,6 @@ export default class Location {
             let initX = this._x * gcw;
             let initY = this._y * gch;
 
-
             if (highlight) {
                 region.moveTo(initX + 3, initY + 3);
                 region.lineTo(initX + 0.5 * gcw + 3, initY + 3);
@@ -106,7 +105,6 @@ export default class Location {
 
             // Fill path
             ctx.fillStyle = highlight ? "grey" : "white";
-
             ctx.fill(region);
 
             ctx.restore();
