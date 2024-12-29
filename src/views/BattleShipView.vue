@@ -89,7 +89,7 @@
       </div>
       <div class="minw-17 px-3">
         <button
-          class="btn btn-lg btn-outline-danger w-100 text-nowrap"
+          class="btn btn-lg btn-danger w-100 text-nowrap"
           type="button"
           :disabled="endGameButtonDisabled"
         >
