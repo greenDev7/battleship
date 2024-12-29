@@ -73,6 +73,36 @@ export default class Location {
         }
     }
     /**
+     * Подсвечивает на канвасе расположение головной части корабля
+     */
+    public highlightHead(ctx: CanvasRenderingContext2D | null) {
+        if (ctx) {
+
+            const st = GameStore.state;
+            let gcw: number = GameStore.getters.getGridCellWidth(st);
+            let gch: number = GameStore.getters.getGridCellHeight(st);
+
+            ctx.save();
+
+            // Create path
+            let region = new Path2D();
+
+            let initX = this._x * gcw;
+            let initY = this._y * gch;
+
+            region.moveTo(initX, initY);
+            region.lineTo(initX + 0.5 * gcw + 5, initY);
+            region.lineTo(initX, initY + 0.5 * gch + 5);
+            region.closePath();
+
+            // Fill path
+            ctx.fillStyle = "grey";
+            ctx.fill(region);
+
+            ctx.restore();
+        }
+    }
+    /**
      * Возвращает true, если локация находится за пределами сетки, иначе false
      */
     public outsideTheGrid(): boolean {
