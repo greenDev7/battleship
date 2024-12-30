@@ -235,8 +235,8 @@ export default defineComponent({
       };
 
       const processData = this.processDataFromServer;
-      ws.onmessage = async function (event: MessageEvent<string>) {
-        await processData(event.data);
+      ws.onmessage = function (event: MessageEvent<string>) {
+        processData(event.data);
       };
 
       ws.onerror = function (event: Event) {
@@ -272,7 +272,7 @@ export default defineComponent({
       this.myTurnToShoot = true;
     },
 
-    async processDataFromServer(dataFromServer: string) {
+    processDataFromServer(dataFromServer: string) {
       let parsedData: WSDataTransferRootType = JSON.parse(dataFromServer);
 
       switch (parsedData.msg_type) {
@@ -417,7 +417,7 @@ export default defineComponent({
                   this.turnOrderHintsVisible = false;
                   this.isWinner = true;
                   // Отправим сопернику информацию о непотопленных кораблях
-                  await this.sendUnsunkShipsToEnemy();
+                  this.sendUnsunkShipsToEnemy();
                 }
               }
             }
@@ -436,7 +436,7 @@ export default defineComponent({
             // Покажем где у соперника остались непотопленные корабли
             let hostileCtx_ = this
               .hostileCtx_ as unknown as CanvasRenderingContext2D;
-            for (const ship of unsunkShips) await ship.draw(hostileCtx_, "red");
+            unsunkShips.forEach((ship) => ship.draw(hostileCtx_, "red", false));
           }
           break;
 
@@ -445,7 +445,7 @@ export default defineComponent({
       }
     },
 
-    async sendUnsunkShipsToEnemy() {
+    sendUnsunkShipsToEnemy(): void {
       const ws: WebSocket = this.getWebSocket;
 
       let unsunkShipsResp: UnSunkShipsType = {
@@ -476,6 +476,10 @@ export default defineComponent({
         this.showAlert("Корабли расставлены некорректно!");
         return;
       }
+
+      Game.ships.forEach((ship) => {
+        ship.draw(this.getContext(), "black", false);
+      });
 
       const clientUuid = this.getClientUuid;
       if (!clientUuid) return;
