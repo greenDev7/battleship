@@ -64,48 +64,10 @@ export default class Location {
                 circle.arc(this._x * gcw + 0.5 * gcw, this._y * gch + 0.5 * gch, 5 * sp, 0, 2 * Math.PI);
                 ctx.fill(circle);
             } else {
-                let img = new Image();
-                img.src = cross2;
-                img.onload = () => (ctx.drawImage(img, 0, 0, img.width, img.height, this._x * gcw + 3, this._y * gch + 3, gcw - 6, gch - 6));
+                // let img = new Image();
+                // img.src = cross2;
+                // img.onload = () => (ctx.drawImage(img, 0, 0, img.width, img.height, this._x * gcw + 3, this._y * gch + 3, gcw - 6, gch - 6));
             }
-
-            ctx.restore();
-        }
-    }
-    /**
-     * Рисует/очищает выделение на канвасе расположение головной части корабля
-     */
-    public highlightOrClearHead(ctx: CanvasRenderingContext2D | null, highlight: boolean = true) {
-        if (ctx) {
-
-            const st = GameStore.state;
-            let gcw: number = GameStore.getters.getGridCellWidth(st);
-            let gch: number = GameStore.getters.getGridCellHeight(st);
-
-            ctx.save();
-
-            // Create path
-            let region = new Path2D();
-
-            let initX = this._x * gcw;
-            let initY = this._y * gch;
-
-            if (highlight) {
-                region.moveTo(initX + 3, initY + 3);
-                region.lineTo(initX + 0.5 * gcw + 3, initY + 3);
-                region.lineTo(initX + 3, initY + 0.5 * gch + 3);
-            }
-            else /* clear highlight */ {
-                region.moveTo(initX + 1, initY + 1);
-                region.lineTo(initX + 0.5 * gcw + 7, initY + 1);
-                region.lineTo(initX + 1, initY + 0.5 * gch + 7);
-            }
-
-            region.closePath();
-
-            // Fill path
-            ctx.fillStyle = highlight ? "grey" : "white";
-            ctx.fill(region);
 
             ctx.restore();
         }

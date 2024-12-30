@@ -116,7 +116,7 @@ export default class Game {
     /**
      * Рисует корабли на канвасе
      */
-    public static drawShips(ctx: CanvasRenderingContext2D): void {
+    public static async drawShips(ctx: CanvasRenderingContext2D) {
         ctx.save();
 
         const st = GameStore.state;
@@ -125,7 +125,10 @@ export default class Game {
 
         ctx.clearRect(0, 0, cw, ch);
         this.makeGrid(ctx);
-        Game.ships.forEach(ship => ship.draw(ctx));
+
+        for (const ship of Game.ships)
+            await ship.draw(ctx);
+
         ctx.restore();
     }
     /**

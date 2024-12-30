@@ -42,7 +42,7 @@ export default defineComponent({
       return canvas.getContext("2d");
     },
 
-    changeShipOrientation(ship: Ship, loc: Location) {
+    async changeShipOrientation(ship: Ship, loc: Location) {
       if (this.crossesBorderWithBackLocation(ship, loc, true)) {
         GameStore.commit("setAlert", {
           alertText:
@@ -57,12 +57,12 @@ export default defineComponent({
       let ctx: CanvasRenderingContext2D | null = this.getContext();
 
       if (ctx) {
-        Game.drawShips(ctx);
+        await Game.drawShips(ctx);
         this.checkArrangementAndHighlight(ctx);
       }
     },
 
-    handlePointerDown(event: PointerEvent) {
+    async handlePointerDown(event: PointerEvent) {
       event.preventDefault();
 
       let canvas = <HTMLCanvasElement>this.$refs.canvas;
@@ -77,14 +77,14 @@ export default defineComponent({
       if (ship) {
         let timeDelta = Date.now() - this.currentTimeStamp;
         this.currentTimeStamp = Date.now();
-        if (timeDelta <= 500) this.changeShipOrientation(ship, loc);
+        if (timeDelta <= 500) await this.changeShipOrientation(ship, loc);
 
         this.selectedShip = ship;
         canvas.addEventListener("pointermove", this.handlePointerMove);
       }
     },
 
-    handlePointerMove(event: PointerEvent) {
+    async handlePointerMove(event: PointerEvent) {
       // получаем текущую локацию
       let loc: Location = Location.getLocationByOffsetXY(
         event.offsetX,
@@ -104,7 +104,7 @@ export default defineComponent({
         // то присваиваем выбранному кораблю новую локацию и далее прорисовываем его
         this.selectedShip.location = loc;
         let ctx: CanvasRenderingContext2D | null = this.getContext();
-        if (ctx) Game.drawShips(ctx);
+        if (ctx) await Game.drawShips(ctx);
       }
     },
 
@@ -183,7 +183,7 @@ export default defineComponent({
     },
   },
 
-  mounted() {
+  async mounted() {
     let ctx: CanvasRenderingContext2D | null = this.getContext();
 
     if (ctx) {
@@ -193,9 +193,7 @@ export default defineComponent({
       Game.makeGrid(ctx);
 
       if (this.gridType === GridType.Own) {
-        Game.ships.forEach((ship) => {
-          ship.draw(ctx);
-        });
+        for (const ship of Game.ships) await ship.draw(ctx);
         this.registerOwnGridHandlers(ctx);
         // сохраняем ctx в глобальном Store для использования в родительских компонентах
         GameStore.commit("setContext2D", ctx);
