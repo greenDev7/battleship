@@ -114,6 +114,7 @@ import {
   WSDataTransferRootType,
   FireResponseType,
   UnSunkShipsType,
+  ShipType,
 } from "@/model/WSDataTransferRoot";
 import { mapGetters } from "vuex";
 import EnemyState from "@/model/enums/EnemyState";
@@ -140,7 +141,7 @@ export default defineComponent({
       nickName: "",
       enemyNickName: "",
       enemyState: EnemyState.WAITING_FOR_ENEMY,
-      topButtonDisabled: true,
+      topButtonDisabled: false,
       nicknameDisabled: false,
       infoComponentVisible: false,
       playButtonDisabled: true,
@@ -154,7 +155,7 @@ export default defineComponent({
       gameOverInfoIsVisible: false,
       isWinner: false,
       isPlaying: false,
-      captchaVisible: true,
+      captchaVisible: false,
     };
   },
 
@@ -341,7 +342,7 @@ export default defineComponent({
               msg_type: MessageType.FIRE_RESPONSE,
               shot_result: ShotResult.MISS,
               enemy_client_id: this.getEnemyClientUuid,
-              edgeLocs: [],
+              sunkShip: { length: 1, loc: { _x: 0, _y: 0 }, type: 0 },
               gameIsOver: false,
             };
 
@@ -354,12 +355,18 @@ export default defineComponent({
                 fireResponse.shot_result = ShotResult.HIT;
               } else {
                 fireResponse.shot_result = ShotResult.SUNK;
-                // Отмечаем кружочком торцевые локации корабля
-                let edgeLocs = ship.getFrontAndBackLocations();
-                for (const loc of edgeLocs) {
-                  await loc.highlight(ctx);
-                  fireResponse.edgeLocs.push({ _x: loc.x, _y: loc.y });
-                }
+
+                // Отправляем сопернику информацию о подбитом корабле
+
+                let ss: ShipType = {
+                  length: ship.length,
+                  loc: { _x: ship.location.x, _y: ship.location.y },
+                  type: ship.type,
+                };
+
+                fireResponse.sunkShip = ss;
+                // и выделяем его кружочками на гриде
+                await this.highlightSunkShip(ss, ctx);
 
                 // Если все корабли потоплены, даем знать об этом противнику. Игра окончена!
                 if (Game.allShipsAreSunk()) {
@@ -388,8 +395,7 @@ export default defineComponent({
         // действия на гриде соперника
         case MessageType.FIRE_RESPONSE:
           if (parsedData.is_status_ok) {
-            let hostileCtx = this
-              .hostileCtx_ as unknown as CanvasRenderingContext2D;
+            let hostileCtx = this.getHostileContext();
 
             Game.shotHistory.push(this.currentShot as Location);
 
@@ -408,12 +414,11 @@ export default defineComponent({
               );
               // если от соперника пришла информация, что корабль потоплен
               if (parsedData.data.shot_result === ShotResult.SUNK) {
-                for (const el of parsedData.data.edgeLocs) {
-                  let loc = new Location(el._x, el._y);
-                  if (!Game.containsLocation(loc, Game.shotHistory))
-                    Game.shotHistory.push(loc);
-                  loc.highlight(hostileCtx);
-                }
+                // Выделяем его кружочками на гриде соперника
+                await this.highlightSunkShip(
+                  parsedData.data.sunkShip,
+                  hostileCtx
+                );
 
                 // если от соперника пришел ответ, что все корабли потоплены
                 if (parsedData.data.gameIsOver) {
@@ -475,6 +480,21 @@ export default defineComponent({
       console.log("sending unsunk ships: ", unsunkShipsResp);
 
       ws.send(JSON.stringify(unsunkShipsResp));
+    },
+
+    async highlightSunkShip(sunkShip: ShipType, ctx: CanvasRenderingContext2D) {
+      let edgeLocs = await Ship.getFrontAndBackLocations(
+        sunkShip.length,
+        sunkShip.loc._x,
+        sunkShip.loc._y,
+        sunkShip.type
+      );
+
+      for (const loc of edgeLocs) {
+        if (!Game.containsLocation(loc, Game.shotHistory))
+          Game.shotHistory.push(loc);
+        await loc.highlight(ctx);
+      }
     },
 
     handlePlayButtonClick(event: Event) {

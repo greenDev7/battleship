@@ -130,16 +130,16 @@ export default class Ship {
     /**
      * Возвращает торцевые локации корабля (в случае потопления корабля их необходимо подсветить)
      */
-    public getFrontAndBackLocations(): Location[] {
+    public static async getFrontAndBackLocations(length: number, loc_x: number, loc_y: number, shipType: number) {
         let locs: Location[] = [];
 
-        if (this._length === 1) {
+        if (length === 1) {
             // если корабль однопалубный, то возвращаем смежные (недиагональные) локации
             for (let i = -1; i <= 1; i++)
                 for (let j = -1; j <= 1; j++) {
 
-                    let neighborX = this._location.x + i;
-                    let neighborY = this._location.y + j;
+                    let neighborX = loc_x + i;
+                    let neighborY = loc_y + j;
 
                     // проверка, что локации НЕдиагональные и не выходят за рамки грида
                     if ((i * i + j * j !== 1) || neighborX < 0 || neighborY < 0 || neighborX > 9 || neighborY > 9)
@@ -150,16 +150,16 @@ export default class Ship {
         }
         else {
 
-            if (this._type === ShipOrientation.Horizontal) {
-                let leftLoc = new Location(this._location.x - 1, this._location.y);
-                let rightLoc = new Location(this._location.x + this._length, this._location.y);
+            if (shipType === ShipOrientation.Horizontal) {
+                let leftLoc = new Location(loc_x - 1, loc_y);
+                let rightLoc = new Location(loc_x + length, loc_y);
 
                 if (leftLoc.x >= 0) locs.push(leftLoc);
                 if (rightLoc.x <= 9) locs.push(rightLoc);
             }
             else {
-                let topLoc = new Location(this._location.x, this._location.y - 1);
-                let bottomLoc = new Location(this._location.x, this._location.y + this._length);
+                let topLoc = new Location(loc_x, loc_y - 1);
+                let bottomLoc = new Location(loc_x, loc_y + length);
 
                 if (topLoc.y >= 0) locs.push(topLoc);
                 if (bottomLoc.y <= 9) locs.push(bottomLoc);

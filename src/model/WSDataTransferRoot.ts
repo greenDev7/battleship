@@ -12,7 +12,7 @@ interface Loc {
 interface FireResponse extends MsgType {
     shot_result: number;
     enemy_client_id: string;
-    edgeLocs: Array<Loc>;
+    sunkShip: Ship_;
     gameIsOver: boolean
 };
 
@@ -38,4 +38,7 @@ interface WSDataTransferRoot extends MsgType {
     is_status_ok: boolean;
 };
 
-export type { FireResponse as FireResponseType, WSDataTransferRoot as WSDataTransferRootType, Loc as LocType, UnSunkShips as UnSunkShipsType }
+export type {
+    FireResponse as FireResponseType, WSDataTransferRoot as WSDataTransferRootType,
+    Loc as LocType, UnSunkShips as UnSunkShipsType, Ship_ as ShipType
+}
