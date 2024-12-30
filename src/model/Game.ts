@@ -168,13 +168,13 @@ export default class Game {
     /**
      * Подсвечивает диагональные локации и, если нужно, добавляет их в историю выстрелов
      */
-    public static highlightDiagonalsAndPushToHistory(
+    public static async highlightDiagonalsAndPushToHistory(
         ctx: CanvasRenderingContext2D,
         shot: Location,
         pushToHistory: boolean = false
     ) {
         for (const loc of Game.getDiagonalLocations(shot)) {
-            loc.highlight(ctx);
+            await loc.highlight(ctx);
             if (pushToHistory) Game.shotHistory.push(loc);
         }
     }

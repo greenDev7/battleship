@@ -42,7 +42,7 @@ export default class Location {
     /**
      * Подсвечивает на канвасе расположение данной локации
      */
-    public highlight(ctx: CanvasRenderingContext2D | null, highlightType: HighlightType = HighlightType.CIRCLE) {
+    public async highlight(ctx: CanvasRenderingContext2D | null, highlightType: HighlightType = HighlightType.CIRCLE) {
         if (ctx) {
 
             const st = GameStore.state;

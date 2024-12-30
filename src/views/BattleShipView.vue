@@ -235,8 +235,8 @@ export default defineComponent({
       };
 
       const processData = this.processDataFromServer;
-      ws.onmessage = function (event: MessageEvent<string>) {
-        processData(event.data);
+      ws.onmessage = async function (event: MessageEvent<string>) {
+        await processData(event.data);
       };
 
       ws.onerror = function (event: Event) {
@@ -256,7 +256,7 @@ export default defineComponent({
       GameStore.commit("setAlert", { alertText, alertColor });
     },
 
-    disableShooting() {
+    async disableShooting() {
       (
         this.hostileCtx_ as unknown as CanvasRenderingContext2D
       ).canvas.removeEventListener("click", this.handleHostileGridClick);
@@ -264,7 +264,7 @@ export default defineComponent({
       this.myTurnToShoot = false;
     },
 
-    enableShooting() {
+    async enableShooting() {
       (
         this.hostileCtx_ as unknown as CanvasRenderingContext2D
       ).canvas.addEventListener("click", this.handleHostileGridClick);
@@ -272,7 +272,7 @@ export default defineComponent({
       this.myTurnToShoot = true;
     },
 
-    processDataFromServer(dataFromServer: string) {
+    async processDataFromServer(dataFromServer: string) {
       let parsedData: WSDataTransferRootType = JSON.parse(dataFromServer);
 
       switch (parsedData.msg_type) {
@@ -314,7 +314,7 @@ export default defineComponent({
             this.myTurnToShoot = parsedData.data.turn_to_shoot;
             this.turnOrderHintsVisible = true;
 
-            if (this.myTurnToShoot) this.enableShooting();
+            if (this.myTurnToShoot) await this.enableShooting();
           }
           break;
 
@@ -341,7 +341,7 @@ export default defineComponent({
 
             if (ship) {
               ht = HighlightType.CROSS;
-              Game.highlightDiagonalsAndPushToHistory(ctx, shot);
+              await Game.highlightDiagonalsAndPushToHistory(ctx, shot);
               ship.hitsNumber++;
 
               if (ship.hitsNumber < ship.length) {
@@ -351,7 +351,7 @@ export default defineComponent({
                 // Отмечаем кружочком торцевые локации корабля
                 let edgeLocs = ship.getFrontAndBackLocations();
                 for (const loc of edgeLocs) {
-                  loc.highlight(ctx);
+                  await loc.highlight(ctx);
                   fireResponse.edgeLocs.push({ _x: loc.x, _y: loc.y });
                 }
 
@@ -364,10 +364,10 @@ export default defineComponent({
                 }
               }
 
-              this.disableShooting();
-            } else this.enableShooting();
+              await this.disableShooting();
+            } else await this.enableShooting();
 
-            shot.highlight(ctx, ht);
+            await shot.highlight(ctx, ht);
 
             // Отправляем сопернику информацию о попадании (мимо/ранил/потоплен)
             // с типом сообщения FIRE_RESPONSE
@@ -389,13 +389,13 @@ export default defineComponent({
 
             if (parsedData.data.shot_result === ShotResult.MISS) {
               // Если промахнулись
-              this.currentShot.highlight(hostileCtx);
+              await this.currentShot.highlight(hostileCtx);
               this.enemyShotHint = "";
-              this.disableShooting();
+              await this.disableShooting();
             } else {
               // иначе
-              this.currentShot.highlight(hostileCtx, HighlightType.CROSS);
-              Game.highlightDiagonalsAndPushToHistory(
+              await this.currentShot.highlight(hostileCtx, HighlightType.CROSS);
+              await Game.highlightDiagonalsAndPushToHistory(
                 hostileCtx,
                 this.currentShot as Location,
                 true
@@ -413,11 +413,11 @@ export default defineComponent({
                 if (parsedData.data.gameIsOver) {
                   this.infoComponentVisible = false;
                   this.gameOverInfoIsVisible = true;
-                  this.disableShooting();
+                  await this.disableShooting();
                   this.turnOrderHintsVisible = false;
                   this.isWinner = true;
                   // Отправим сопернику информацию о непотопленных кораблях
-                  this.sendUnsunkShipsToEnemy();
+                  await this.sendUnsunkShipsToEnemy();
                 }
               }
             }
@@ -445,7 +445,7 @@ export default defineComponent({
       }
     },
 
-    sendUnsunkShipsToEnemy(): void {
+    async sendUnsunkShipsToEnemy() {
       const ws: WebSocket = this.getWebSocket;
 
       let unsunkShipsResp: UnSunkShipsType = {
