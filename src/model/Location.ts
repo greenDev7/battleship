@@ -1,7 +1,7 @@
 import { GameStore } from "@/store/modules/GameStore";
 import HighlightType from "./enums/HighlightType";
 import { letterDict } from "@/helpers/LetterDict";
-import cross2 from "@/assets/cross2.png";
+
 
 export default class Location {
     private _x: number;
@@ -64,14 +64,23 @@ export default class Location {
                 circle.arc(this._x * gcw + 0.5 * gcw, this._y * gch + 0.5 * gch, 5 * sp, 0, 2 * Math.PI);
                 ctx.fill(circle);
             } else {
-                let img = new Image();
-                img.src = cross2;
-                img.onload = () => (ctx.drawImage(img, 0, 0, img.width, img.height, this._x * gcw + 3, this._y * gch + 3, gcw - 6, gch - 6));
+                // Рисуем крестик
+                ctx.strokeStyle = "rgb(229 22 35)";
+                ctx.lineWidth = 3;
+
+                ctx.beginPath();
+                ctx.moveTo(this._x * gcw + 5, this._y * gch + 5);
+                ctx.lineTo((this._x + 1) * gcw - 5, (this._y + 1) * gch - 5);
+
+                ctx.moveTo((this._x + 1) * gcw - 5, this._y * gch + 5);
+                ctx.lineTo(this._x * gcw + 5, (this._y + 1) * gch - 5);
+
+                ctx.stroke();
             }
 
             ctx.restore();
         }
-    }    
+    }
     /**
      * Возвращает true, если локация находится за пределами сетки, иначе false
      */
