@@ -174,6 +174,10 @@ export default defineComponent({
       return this.ctx_ as unknown as CanvasRenderingContext2D;
     },
 
+    getHostileContext(): CanvasRenderingContext2D {
+      return this.hostileCtx_ as unknown as CanvasRenderingContext2D;
+    },
+
     processCaptcha(isCaptchaSuccess: boolean) {
       this.topButtonDisabled = !isCaptchaSuccess;
       this.captchaVisible = !isCaptchaSuccess;
@@ -257,17 +261,19 @@ export default defineComponent({
     },
 
     async disableShooting() {
-      (
-        this.hostileCtx_ as unknown as CanvasRenderingContext2D
-      ).canvas.removeEventListener("click", this.handleHostileGridClick);
+      this.getHostileContext().canvas.removeEventListener(
+        "click",
+        this.handleHostileGridClick
+      );
 
       this.myTurnToShoot = false;
     },
 
     async enableShooting() {
-      (
-        this.hostileCtx_ as unknown as CanvasRenderingContext2D
-      ).canvas.addEventListener("click", this.handleHostileGridClick);
+      this.getHostileContext().canvas.addEventListener(
+        "click",
+        this.handleHostileGridClick
+      );
 
       this.myTurnToShoot = true;
     },
