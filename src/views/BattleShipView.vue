@@ -436,7 +436,7 @@ export default defineComponent({
             // Покажем где у соперника остались непотопленные корабли
             let hostileCtx_ = this
               .hostileCtx_ as unknown as CanvasRenderingContext2D;
-            unsunkShips.forEach((ship) => ship.draw(hostileCtx_, "red", false));
+            unsunkShips.forEach((ship) => ship.draw(hostileCtx_, "red"));
           }
           break;
 
@@ -476,10 +476,6 @@ export default defineComponent({
         this.showAlert("Корабли расставлены некорректно!");
         return;
       }
-
-      Game.ships.forEach((ship) => {
-        ship.draw(this.getContext(), "black", false);
-      });
 
       const clientUuid = this.getClientUuid;
       if (!clientUuid) return;

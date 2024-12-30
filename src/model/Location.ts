@@ -71,45 +71,7 @@ export default class Location {
 
             ctx.restore();
         }
-    }
-    /**
-     * Рисует/очищает выделение на канвасе расположение головной части корабля
-     */
-    public highlightOrClearHead(ctx: CanvasRenderingContext2D | null, highlight: boolean = true) {
-        if (ctx) {
-
-            const st = GameStore.state;
-            let gcw: number = GameStore.getters.getGridCellWidth(st);
-            let gch: number = GameStore.getters.getGridCellHeight(st);
-
-            ctx.save();
-
-            // Create path
-            let region = new Path2D();
-
-            let initX = this._x * gcw;
-            let initY = this._y * gch;
-
-            if (highlight) {
-                region.moveTo(initX + 3, initY + 3);
-                region.lineTo(initX + 0.5 * gcw + 3, initY + 3);
-                region.lineTo(initX + 3, initY + 0.5 * gch + 3);
-            }
-            else /* clear highlight */ {
-                region.moveTo(initX + 1, initY + 1);
-                region.lineTo(initX + 0.5 * gcw + 7, initY + 1);
-                region.lineTo(initX + 1, initY + 0.5 * gch + 7);
-            }
-
-            region.closePath();
-
-            // Fill path
-            ctx.fillStyle = highlight ? "grey" : "white";
-            ctx.fill(region);
-
-            ctx.restore();
-        }
-    }
+    }    
     /**
      * Возвращает true, если локация находится за пределами сетки, иначе false
      */
