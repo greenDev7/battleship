@@ -519,6 +519,9 @@ export default defineComponent({
         return;
       }
 
+      // очистим истоирю выстрелов на всякий случай
+      Game.shotHistory = [];
+
       if (!Game.isArrangementCorrect()[0]) {
         this.showAlert("Корабли расставлены некорректно!");
         return;
