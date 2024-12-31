@@ -1,21 +1,5 @@
 <template>
   <div class="container">
-    <div class="position-fixed alpos">
-      <div
-        class="alert alert-dismissible fade show"
-        :class="`alert-${getAlert.alertColor}`"
-        role="alert"
-        v-show="getAlert.alertVisible"
-      >
-        {{ getAlert.alertText }}
-        <button
-          type="button"
-          class="btn-close"
-          aria-label="Close"
-          @click="hideAlert"
-        ></button>
-      </div>
-    </div>
     <input
       ref="nickNameInput"
       class="form-control form-control-lg mb-4"
@@ -76,8 +60,8 @@
       :enemyShotHint="this.enemyShotHint"
       :enemyNickname="this.enemyNickName"
     />
-    <div class="d-flex flex-row flex-wrap mt-4 mt-lg-4 justify-content-center">
-      <div class="minw-17 mb-4 px-3">
+    <div class="d-flex flex-row flex-wrap mt-4 mt-lg-3 justify-content-center">
+      <div class="minw-17">
         <button
           class="btn btn-lg btn-success w-100 text-nowrap"
           type="button"
@@ -87,15 +71,21 @@
           Играть
         </button>
       </div>
-      <div class="minw-17 px-3">
+    </div>
+    <div class="position-fixed alpos">
+      <div
+        class="alert alert-dismissible fade show"
+        :class="`alert-${getAlert.alertColor}`"
+        role="alert"
+        v-show="getAlert.alertVisible"
+      >
+        {{ getAlert.alertText }}
         <button
-          class="btn btn-lg btn-danger w-100 text-nowrap"
           type="button"
-          :disabled="endGameButtonDisabled"
-          @click="handleFinishButtonClick"
-        >
-          Завершить игру
-        </button>
+          class="btn-close"
+          aria-label="Close"
+          @click="hideAlert"
+        ></button>
       </div>
     </div>
   </div>
@@ -257,8 +247,13 @@ export default defineComponent({
       };
     },
 
-    showAlert(alertText: string, alertColor: string = "danger") {
+    showAlert(
+      alertText: string,
+      alertColor: string = "danger",
+      delay: number = 3000
+    ) {
       GameStore.commit("setAlert", { alertText, alertColor });
+      setTimeout(this.hideAlert, delay);
     },
 
     async disableShooting() {
@@ -521,10 +516,6 @@ export default defineComponent({
       GameStore.dispatch("removeOwnGridEventListeners");
     },
 
-    handleFinishButtonClick(event: Event) {
-      window.location.reload();
-    },
-
     setInitialInputElementState() {
       this.enemyNickName = "";
       this.enemyState = EnemyState.WAITING_FOR_ENEMY;
@@ -553,10 +544,7 @@ export default defineComponent({
       if (!shotLocation.isValid()) return;
 
       if (Game.existsInShotHistory(shotLocation)) {
-        this.showAlert(
-          "Вы уже стреляли по этим координатам, выберите другие координаты для стрельбы",
-          "warning"
-        );
+        this.showAlert("Вы уже стреляли сюда", "warning");
         return;
       }
 
@@ -604,7 +592,7 @@ export default defineComponent({
 
 <style lang="css" scoped>
 .alpos {
-  top: 1rem;
+  bottom: 1rem;
   left: 1rem;
 }
 
