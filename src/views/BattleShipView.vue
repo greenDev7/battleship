@@ -430,8 +430,6 @@ export default defineComponent({
               if (parsedData.data.shot_result === ShotResult.SUNK) {
                 let sunkShip = parsedData.data.sunkShip;
                 if (sunkShip) {
-                  // await this.highlightSunkShip(sunkShip, hostileCtx);
-
                   // находим боковые локации
                   let edgeLocs = await Ship.getFrontAndBackLocations(
                     sunkShip.length,
