@@ -338,7 +338,6 @@ export default defineComponent({
               msg_type: MessageType.FIRE_RESPONSE,
               shot_result: ShotResult.MISS,
               enemy_client_id: this.getEnemyClientUuid,
-              gameIsOver: false,
             };
 
             let ship: Ship | undefined = Game.getShipByLocation(shot);
@@ -381,9 +380,17 @@ export default defineComponent({
                 // Если все корабли потоплены, даем знать об этом противнику. Игра окончена!
                 if (Game.allShipsAreSunk()) {
                   this.infoComponentVisible = false;
-                  fireResponse.gameIsOver = true;
                   this.gameOverInfoIsVisible = true;
                   this.turnOrderHintsVisible = false;
+
+                  // Отправляем сопернику информацию о завершение игры с типом сообщения GAME_OVER
+                  const ws: WebSocket = this.getWebSocket;
+                  ws.send(
+                    JSON.stringify({
+                      msg_type: MessageType.GAME_OVER,
+                      enemy_client_id: this.getEnemyClientUuid,
+                    })
+                  );
                 }
               }
 
@@ -394,7 +401,6 @@ export default defineComponent({
 
             // Отправляем сопернику информацию о попадании (мимо/ранил/потоплен)
             // с типом сообщения FIRE_RESPONSE
-
             const ws: WebSocket = this.getWebSocket;
             ws.send(JSON.stringify(fireResponse));
 
@@ -443,26 +449,21 @@ export default defineComponent({
                   // и добавляем в историю выстрелов
                   for (const loc of edgeLocs) Game.addToShotHistory(loc);
                 }
-                // если от соперника пришел ответ, что все корабли потоплены
-                if (parsedData.data.gameIsOver) {
-                  this.infoComponentVisible = false;
-                  this.gameOverInfoIsVisible = true;
-                  await this.disableShooting();
-                  this.turnOrderHintsVisible = false;
-                  this.isWinner = true;
-                  // Отправим сопернику информацию о непотопленных кораблях
-                  await this.sendUnsunkShipsToEnemy();
-                }
               }
             }
           }
+          break;
 
-          console.log(
-            "shot history: ",
-            Game.shotHistory.map((s) => `${s.x}-${s.y}`)
-          );
-          console.log("shot history length: ", Game.shotHistory.length);
-
+        case MessageType.GAME_OVER:
+          if (parsedData.is_status_ok) {
+            this.infoComponentVisible = false;
+            this.gameOverInfoIsVisible = true;
+            await this.disableShooting();
+            this.turnOrderHintsVisible = false;
+            this.isWinner = true;
+            // Отправим сопернику информацию о непотопленных кораблях
+            await this.sendUnsunkShipsToEnemy();
+          }
           break;
 
         case MessageType.UNSUNK_SHIPS:

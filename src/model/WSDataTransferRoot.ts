@@ -1,5 +1,3 @@
-import ShipOrientation from "./enums/ShipOrientation";
-
 interface MsgType {
     msg_type: string;
 };
@@ -13,7 +11,6 @@ interface FireResponse extends MsgType {
     shot_result: number;
     enemy_client_id: string;
     sunkShip?: Ship_;
-    gameIsOver: boolean
 };
 
 interface Ship_ {

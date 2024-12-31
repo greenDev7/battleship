@@ -5,7 +5,8 @@ enum MessageType {
     PLAY = "play",
     FIRE_REQUEST = "fire_request",
     FIRE_RESPONSE = "fire_response",
-    UNSUNK_SHIPS = "unsunk_ships"
+    UNSUNK_SHIPS = "unsunk_ships",
+    GAME_OVER = "game_over"
 }
 
 export default MessageType
