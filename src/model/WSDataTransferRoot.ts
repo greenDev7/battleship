@@ -12,7 +12,7 @@ interface Loc {
 interface FireResponse extends MsgType {
     shot_result: number;
     enemy_client_id: string;
-    sunkShip: Ship_;
+    sunkShip?: Ship_;
     gameIsOver: boolean
 };
 

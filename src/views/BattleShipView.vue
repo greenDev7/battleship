@@ -296,7 +296,9 @@ export default defineComponent({
         case MessageType.DISCONNECTION:
           if (parsedData.is_status_ok)
             this.showAlert(
-              "К сожалению, ваш соперник разорвал соединение и вышел из игры. Обновите страницу для новой игры"
+              "К сожалению, ваш соперник разорвал соединение и вышел из игры. Обновите страницу для новой игры",
+              "danger",
+              5000
             );
           break;
 
@@ -329,7 +331,6 @@ export default defineComponent({
             );
 
             let ht: HighlightType = HighlightType.CIRCLE;
-            let ship: Ship | undefined = Game.getShipByLocation(shot);
 
             let ctx = this.getContext();
 
@@ -337,22 +338,28 @@ export default defineComponent({
               msg_type: MessageType.FIRE_RESPONSE,
               shot_result: ShotResult.MISS,
               enemy_client_id: this.getEnemyClientUuid,
-              sunkShip: { length: 1, loc: { _x: 0, _y: 0 }, type: 0 },
               gameIsOver: false,
             };
 
+            let ship: Ship | undefined = Game.getShipByLocation(shot);
+            // если наш корабль ранили
             if (ship) {
-              ht = HighlightType.CROSS;
-              await Game.highlightDiagonalsAndPushToHistory(ctx, shot);
-              ship.hitsNumber++;
+              ht = HighlightType.CROSS; // меняем тип выделения на "крест"
+              ship.hitsNumber++; // увеличиваем счетчик ранений у подбитого корабля
 
+              // находим диагональные локации
+              let diags: Location[] = Game.getDiagonalLocations(shot);
+              // подсвечиваем диагональные локации
+              await Game.highlightDiagonals(ctx, diags);
+
+              // если корабль только ранен
               if (ship.hitsNumber < ship.length) {
                 fireResponse.shot_result = ShotResult.HIT;
               } else {
+                // если корабль потоплен
                 fireResponse.shot_result = ShotResult.SUNK;
 
-                // Отправляем сопернику информацию о подбитом корабле
-
+                // формируем подбитый корабль
                 let ss: ShipType = {
                   length: ship.length,
                   loc: { _x: ship.location.x, _y: ship.location.y },
@@ -360,8 +367,16 @@ export default defineComponent({
                 };
 
                 fireResponse.sunkShip = ss;
-                // и выделяем его кружочками на гриде
-                await this.highlightSunkShip(ss, ctx);
+                // находим боковые локации
+                let edgeLocs = await Ship.getFrontAndBackLocations(
+                  ss.length,
+                  ss.loc._x,
+                  ss.loc._y,
+                  ss.type
+                );
+
+                // выделяем их на своем гриде
+                for (const loc of edgeLocs) await loc.highlight(ctx);
 
                 // Если все корабли потоплены, даем знать об этом противнику. Игра окончена!
                 if (Game.allShipsAreSunk()) {
@@ -392,29 +407,44 @@ export default defineComponent({
           if (parsedData.is_status_ok) {
             let hostileCtx = this.getHostileContext();
 
-            Game.shotHistory.push(this.currentShot as Location);
+            let shot: Location = this.currentShot as Location;
+            Game.addToShotHistory(shot);
 
             if (parsedData.data.shot_result === ShotResult.MISS) {
               // Если промахнулись
-              await this.currentShot.highlight(hostileCtx);
+              await shot.highlight(hostileCtx);
               this.enemyShotHint = "";
               await this.disableShooting();
             } else {
-              // иначе
-              await this.currentShot.highlight(hostileCtx, HighlightType.CROSS);
-              await Game.highlightDiagonalsAndPushToHistory(
-                hostileCtx,
-                this.currentShot as Location,
-                true
-              );
+              // если попали (ранили), то
+              // подсвечивае локацию на вражеском гриде
+              await shot.highlight(hostileCtx, HighlightType.CROSS);
+              // находим диагональные локации
+              let diags: Location[] = Game.getDiagonalLocations(shot);
+              // подсвечиваем диагональные локации
+              await Game.highlightDiagonals(hostileCtx, diags);
+              // добавляем диагональные локации в историю выстрелов
+              for (const loc of diags) Game.addToShotHistory(loc);
+
               // если от соперника пришла информация, что корабль потоплен
               if (parsedData.data.shot_result === ShotResult.SUNK) {
-                // Выделяем его кружочками на гриде соперника
-                await this.highlightSunkShip(
-                  parsedData.data.sunkShip,
-                  hostileCtx
-                );
+                let sunkShip = parsedData.data.sunkShip;
+                if (sunkShip) {
+                  // await this.highlightSunkShip(sunkShip, hostileCtx);
 
+                  // находим боковые локации
+                  let edgeLocs = await Ship.getFrontAndBackLocations(
+                    sunkShip.length,
+                    sunkShip.loc._x,
+                    sunkShip.loc._y,
+                    sunkShip.type
+                  );
+
+                  // выделяем их на гриде соперника
+                  for (const loc of edgeLocs) await loc.highlight(hostileCtx);
+                  // и добавляем в историю выстрелов
+                  for (const loc of edgeLocs) Game.addToShotHistory(loc);
+                }
                 // если от соперника пришел ответ, что все корабли потоплены
                 if (parsedData.data.gameIsOver) {
                   this.infoComponentVisible = false;
@@ -428,6 +458,13 @@ export default defineComponent({
               }
             }
           }
+
+          console.log(
+            "shot history: ",
+            Game.shotHistory.map((s) => `${s.x}-${s.y}`)
+          );
+          console.log("shot history length: ", Game.shotHistory.length);
+
           break;
 
         case MessageType.UNSUNK_SHIPS:
@@ -477,22 +514,12 @@ export default defineComponent({
       ws.send(JSON.stringify(unsunkShipsResp));
     },
 
-    async highlightSunkShip(sunkShip: ShipType, ctx: CanvasRenderingContext2D) {
-      let edgeLocs = await Ship.getFrontAndBackLocations(
-        sunkShip.length,
-        sunkShip.loc._x,
-        sunkShip.loc._y,
-        sunkShip.type
-      );
-
-      for (const loc of edgeLocs) {
-        if (!Game.containsLocation(loc, Game.shotHistory))
-          Game.shotHistory.push(loc);
-        await loc.highlight(ctx);
-      }
-    },
-
     handlePlayButtonClick(event: Event) {
+      if (Game.ships.length === 0) {
+        this.showAlert("Корабли отсутствуют, обновите страницу!");
+        return;
+      }
+
       if (!Game.isArrangementCorrect()[0]) {
         this.showAlert("Корабли расставлены некорректно!");
         return;
@@ -542,6 +569,8 @@ export default defineComponent({
       // Если каким-то образом игрок сделал выстрел по невалидной локации (вне границ сетки, например по координате з-0),
       // то выходим из метода
       if (!shotLocation.isValid()) return;
+
+      console.log("shotLocation: ", shotLocation);
 
       if (Game.existsInShotHistory(shotLocation)) {
         this.showAlert("Вы уже стреляли сюда", "warning");
