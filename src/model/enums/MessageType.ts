@@ -1,5 +1,6 @@
 enum MessageType {
     RANDOM_GAME = "random_game",
+    FRIEND_GAME = "friend_game",
     DISCONNECTION = "disconnection",
     SHIPS_ARE_ARRANGED = "ships_are_arranged",
     PLAY = "play",

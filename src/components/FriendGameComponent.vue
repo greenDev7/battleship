@@ -11,7 +11,7 @@
               class="form-control"
               type="text"
               disabled
-              value="cbafa20d-c07e-40e7-8c35-732970a29287"
+              :value="clientUUID"
             />
           </td>
         </tr>
@@ -35,6 +35,10 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "FriendGameComponent",
+
+  props: {
+    clientUUID: { type: String, default: "" },
+  },
 });
 </script>
 

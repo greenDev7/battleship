@@ -30,6 +30,7 @@
           class="btn btn-lg btn-dark p-3 w-100 text-nowrap"
           type="button"
           :disabled="topButtonDisabled"
+          @click="handleFriendGameButtonClick"
         >
           Игра с другом
         </button>
@@ -48,7 +49,7 @@
       class="border border-dark border-2 rounded-3 mx-auto wfit mb-4"
       v-if="friendComponentVisible"
     >
-      <FriendGameComponent />
+      <FriendGameComponent :clientUUID="myUUIDforFriendGame" />
     </div>
     <div
       class="border border-dark border-2 rounded-3 wfit mx-auto mb-4"
@@ -163,7 +164,8 @@ export default defineComponent({
       isPlaying: false,
       captchaVisible: false,
       arrangeRuleComponentVisible: true,
-      friendComponentVisible: true,
+      friendComponentVisible: false,
+      myUUIDforFriendGame: "",
     };
   },
 
@@ -204,8 +206,12 @@ export default defineComponent({
       GameStore.commit("hideAlert");
     },
 
-    handleRandomGameButtonClick(event: PointerEvent) {
-      if (this.nickName.trim().length === 0) {
+    isNickNameValid(): boolean {
+      return this.nickName.trim().length !== 0;
+    },
+
+    handleRandomGameButtonClick() {
+      if (!this.isNickNameValid()) {
         this.showAlert("Для игры необходимо ввести ник!", "warning");
         return;
       }
@@ -231,6 +237,25 @@ export default defineComponent({
       this.topButtonDisabled = true;
       this.nicknameDisabled = true;
       this.infoComponentVisible = true;
+      this.arrangeRuleComponentVisible = false;
+    },
+
+    handleFriendGameButtonClick() {
+      if (!this.isNickNameValid()) {
+        this.showAlert("Для игры необходимо ввести ник!", "warning");
+        return;
+      }
+
+      const userRequestBody = {
+        msg_type: MessageType.FRIEND_GAME,
+        nickName: this.nickName.trim(),
+      };
+
+      this.myUUIDforFriendGame = uuidv4();
+
+      this.friendComponentVisible = true;
+      this.topButtonDisabled = true;
+      this.nicknameDisabled = true;
       this.arrangeRuleComponentVisible = false;
     },
 
