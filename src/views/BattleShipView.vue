@@ -15,9 +15,9 @@
       <CaptchaComponent @captchaOkButtonClicked="processCaptcha" />
     </div>
     <div
-      class="d-flex flex-row flex-wrap mb-4 justify-content-center justify-content-lg-between"
+      class="d-flex flex-row flex-wrap mb-3 justify-content-center"
     >
-      <div class="w-100 maxw-400 pb-3">
+      <div class="w-100 maxw-400 pb-3 me-lg-5">
         <button
           class="btn btn-lg btn-dark p-3 w-100 text-nowrap"
           type="button"
@@ -27,7 +27,7 @@
           Игра со случайным соперником
         </button>
       </div>
-      <div class="w-100 maxw-400 pb-3">
+      <div class="w-100 maxw-400 pb-3 ms-lg-5">
         <button
           class="btn btn-lg btn-dark p-3 w-100 text-nowrap"
           type="button"
@@ -36,7 +36,7 @@
           Игра с другом
         </button>
       </div>
-      <div class="w-100 maxw-400 pb-3">
+      <!-- <div class="w-100 maxw-400 pb-3">
         <button
           class="btn btn-lg btn-dark p-3 w-100 text-nowrap"
           type="button"
@@ -44,7 +44,7 @@
         >
           Игра с компьютером
         </button>
-      </div>
+      </div> -->
     </div>
     <ArrangementRuleComponent class="mb-4" v-if="arrangeRuleComponentVisible" />
     <EnemyInfoComponent
@@ -136,7 +136,7 @@ export default defineComponent({
       nickName: "",
       enemyNickName: "",
       enemyState: EnemyState.WAITING_FOR_ENEMY,
-      topButtonDisabled: true,
+      topButtonDisabled: false,
       nicknameDisabled: false,
       infoComponentVisible: false,
       playButtonDisabled: true,
@@ -150,7 +150,7 @@ export default defineComponent({
       gameOverInfoIsVisible: false,
       isWinner: false,
       isPlaying: false,
-      captchaVisible: true,
+      captchaVisible: false,
       arrangeRuleComponentVisible: true,
     };
   },
