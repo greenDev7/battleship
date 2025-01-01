@@ -46,6 +46,7 @@
         </button>
       </div>
     </div>
+    <ArrangementRuleComponent class="mb-4" v-if="arrangeRuleComponentVisible" />
     <EnemyInfoComponent
       id="enemy-component"
       v-if="infoComponentVisible"
@@ -60,7 +61,9 @@
       :enemyShotHint="this.enemyShotHint"
       :enemyNickname="this.enemyNickName"
     />
-    <div class="d-flex flex-row flex-wrap mt-4 mb-4 mt-lg-3 justify-content-center">
+    <div
+      class="d-flex flex-row flex-wrap mt-4 mb-4 mt-lg-3 justify-content-center"
+    >
       <div class="minw-17">
         <button
           class="btn btn-lg btn-success w-100 text-nowrap"
@@ -95,6 +98,7 @@
 import BattleBoardComponent from "../components/BattleBoardComponent.vue";
 import GameOverInfoComponent from "../components/GameOverInfoComponent.vue";
 import CaptchaComponent from "../components/CaptchaComponent.vue";
+import ArrangementRuleComponent from "../components/ArrangementRuleComponent.vue";
 import { defineComponent } from "vue";
 import ActionStore from "@/store/index";
 import MessageType from "@/model/enums/MessageType";
@@ -124,6 +128,7 @@ export default defineComponent({
     EnemyInfoComponent,
     GameOverInfoComponent,
     CaptchaComponent,
+    ArrangementRuleComponent,
   },
 
   data() {
@@ -131,7 +136,7 @@ export default defineComponent({
       nickName: "",
       enemyNickName: "",
       enemyState: EnemyState.WAITING_FOR_ENEMY,
-      topButtonDisabled: false,
+      topButtonDisabled: true,
       nicknameDisabled: false,
       infoComponentVisible: false,
       playButtonDisabled: true,
@@ -145,7 +150,8 @@ export default defineComponent({
       gameOverInfoIsVisible: false,
       isWinner: false,
       isPlaying: false,
-      captchaVisible: false,
+      captchaVisible: true,
+      arrangeRuleComponentVisible: true,
     };
   },
 
@@ -213,6 +219,7 @@ export default defineComponent({
       this.topButtonDisabled = true;
       this.nicknameDisabled = true;
       this.infoComponentVisible = true;
+      this.arrangeRuleComponentVisible = false;
     },
 
     setupSocketConnectionAndCreateRivalCouple(
