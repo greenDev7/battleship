@@ -3,8 +3,8 @@
     <div class="d-flex flex-row flex-wrap justify-content-center">
       <div class="p-3">
         <div class="badge text-bg-dark text-wrap p-3 fs-6 minmaxw custom-style">
-          Перемещай корабли используя первую клетку. Двойной клик по ней меняет положение
-          корабля
+          <p>Перемещай корабли используя первую клетку корабля.</p>
+          <p>Двойной клик по ней меняет положение корабля</p>
         </div>
       </div>
       <div>

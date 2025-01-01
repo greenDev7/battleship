@@ -44,8 +44,17 @@
         </button>
       </div> -->
     </div>
-    <div class="border border-dark border-2 rounded-3 wfit mx-auto mb-4">
-      <ArrangementRuleComponent v-if="arrangeRuleComponentVisible" />
+    <div
+      class="border border-dark border-2 rounded-3 mx-auto wfit mb-4"
+      v-if="friendComponentVisible"
+    >
+      <FriendGameComponent />
+    </div>
+    <div
+      class="border border-dark border-2 rounded-3 wfit mx-auto mb-4"
+      v-if="arrangeRuleComponentVisible"
+    >
+      <ArrangementRuleComponent />
     </div>
     <EnemyInfoComponent
       id="enemy-component"
@@ -99,6 +108,7 @@ import BattleBoardComponent from "../components/BattleBoardComponent.vue";
 import GameOverInfoComponent from "../components/GameOverInfoComponent.vue";
 import CaptchaComponent from "../components/CaptchaComponent.vue";
 import ArrangementRuleComponent from "../components/ArrangementRuleComponent.vue";
+import FriendGameComponent from "../components/FriendGameComponent.vue";
 import { defineComponent } from "vue";
 import ActionStore from "@/store/index";
 import MessageType from "@/model/enums/MessageType";
@@ -129,6 +139,7 @@ export default defineComponent({
     GameOverInfoComponent,
     CaptchaComponent,
     ArrangementRuleComponent,
+    FriendGameComponent,
   },
 
   data() {
@@ -152,6 +163,7 @@ export default defineComponent({
       isPlaying: false,
       captchaVisible: false,
       arrangeRuleComponentVisible: true,
+      friendComponentVisible: true,
     };
   },
 
