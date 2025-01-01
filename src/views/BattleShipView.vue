@@ -60,7 +60,7 @@
       :enemyShotHint="this.enemyShotHint"
       :enemyNickname="this.enemyNickName"
     />
-    <div class="d-flex flex-row flex-wrap mt-4 mt-lg-3 justify-content-center">
+    <div class="d-flex flex-row flex-wrap mt-4 mb-4 mt-lg-3 justify-content-center">
       <div class="minw-17">
         <button
           class="btn btn-lg btn-success w-100 text-nowrap"
@@ -519,8 +519,8 @@ export default defineComponent({
         return;
       }
 
-      // очистим истоирю выстрелов на всякий случай
-      Game.shotHistory = [];
+      // очистим историю выстрелов на всякий случай
+      Game.clearShotHistory();
 
       if (!Game.isArrangementCorrect()[0]) {
         this.showAlert("Корабли расставлены некорректно!");

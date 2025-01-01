@@ -5,8 +5,8 @@ import { GameStore } from "@/store/modules/GameStore";
 
 export default class Game {
 
-    public static ships: Ship[] = Game.createInitialShips();
-    public static shotHistory: Location[] = [];
+    public static readonly ships: Ship[] = Game.createInitialShips();
+    private static shotHistory: Location[] = [];
 
     /**
      * createDefaultShips
@@ -181,5 +181,11 @@ export default class Game {
     public static addToShotHistory(shot: Location) {
         if (!Game.containsLocation(shot, Game.shotHistory))
             Game.shotHistory.push(shot);
+    }
+    /**
+     * Очищает историю выстрелов
+     */
+    public static async clearShotHistory() {
+        Game.shotHistory = [];
     }
 }
