@@ -1,5 +1,5 @@
 <template>
-  <div class="container border border-dark border-2 rounded-3 wfit">
+  <div class="container">
     <div class="d-flex flex-row flex-wrap justify-content-center">
       <div class="p-3">
         <div class="badge text-bg-dark text-wrap p-3 fs-6 minmaxw custom-style">
@@ -26,10 +26,6 @@ export default defineComponent({
 <style lang="css" scoped>
 .minmaxw {
   max-width: 20rem;
-}
-
-.wfit {
-  width: fit-content;
 }
 
 .custom-style {

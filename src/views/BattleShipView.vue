@@ -10,13 +10,11 @@
     />
     <div
       v-if="this.captchaVisible"
-      class="border border-secondary border-3 rounded-3 p-1 w-fit mx-auto mb-4"
+      class="border border-secondary border-3 rounded-3 p-1 wfit mx-auto mb-4"
     >
       <CaptchaComponent @captchaOkButtonClicked="processCaptcha" />
     </div>
-    <div
-      class="d-flex flex-row flex-wrap mb-3 justify-content-center"
-    >
+    <div class="d-flex flex-row flex-wrap mb-3 justify-content-center">
       <div class="w-100 maxw-400 pb-3 me-lg-5">
         <button
           class="btn btn-lg btn-dark p-3 w-100 text-nowrap"
@@ -46,7 +44,9 @@
         </button>
       </div> -->
     </div>
-    <ArrangementRuleComponent class="mb-4" v-if="arrangeRuleComponentVisible" />
+    <div class="border border-dark border-2 rounded-3 wfit mx-auto mb-4">
+      <ArrangementRuleComponent v-if="arrangeRuleComponentVisible" />
+    </div>
     <EnemyInfoComponent
       id="enemy-component"
       v-if="infoComponentVisible"
@@ -640,9 +640,5 @@ export default defineComponent({
 
 .minw-17 {
   min-width: 17rem;
-}
-
-.w-fit {
-  width: fit-content;
 }
 </style>

@@ -32,6 +32,10 @@
   color: rgb(66, 185, 131);
 }
 
+.wfit {
+  width: fit-content
+}
+
 @keyframes blink-animation {
   to {
     visibility: hidden;
