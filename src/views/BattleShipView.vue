@@ -185,7 +185,6 @@ export default defineComponent({
   computed: {
     ...mapGetters([
       "getWebSocket",
-      "getClientUuid",
       "getEnemyClientUuid",
       "getContext2D",
       "getHostileContext2D",
@@ -313,15 +312,13 @@ export default defineComponent({
 
     setupSocketConnectionAndCreateRivalCouple(
       ws: WebSocket,
-      gameCreationBody: Object,
-      clientUuid: string
+      gameCreationBody: GameCreationBodyType
     ) {
       ws.onopen = function (event) {
         console.log("Successfully connected to the websocket server...");
         ActionStore.dispatch("createTeamPlayerWS", {
           ws,
           gameCreationBody,
-          clientUuid,
         });
       };
 
