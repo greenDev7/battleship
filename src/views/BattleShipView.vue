@@ -79,6 +79,7 @@
     >
       <div class="minw-17">
         <button
+          ref="playButton"
           class="btn btn-lg btn-success w-100 text-nowrap"
           type="button"
           @click="handlePlayButtonClick"
@@ -314,7 +315,7 @@ export default defineComponent({
     ) {
       ws.onopen = function (event) {
         console.log("Successfully connected to the websocket server...");
-        ActionStore.dispatch("createTeamPlayerWS", {
+        ActionStore.dispatch("createRivalCouple", {
           ws,
           gameCreationBody,
         });
@@ -365,6 +366,11 @@ export default defineComponent({
       this.myTurnToShoot = true;
     },
 
+    async changePlayButtonText() {
+      if (this.gameType === GameType.FRIEND)
+        (this.$refs.playButton as HTMLButtonElement).innerHTML =
+          "Играть еще раз";
+    },
     async processDataFromServer(dataFromServer: string) {
       let parsedData: WSDataTransferRootType = JSON.parse(dataFromServer);
 
@@ -485,6 +491,9 @@ export default defineComponent({
                       enemy_client_id: this.getEnemyClientUuid,
                     })
                   );
+
+                  // В случае игры с другом - меняем надпись на кнопке - "Играть еще раз"
+                  await this.changePlayButtonText();
                 }
               }
 
@@ -551,13 +560,15 @@ export default defineComponent({
         case MessageType.GAME_OVER:
           if (parsedData.is_status_ok) {
             this.infoComponentVisible = false;
-            this.gameOverInfoIsVisible = true;            
+            this.gameOverInfoIsVisible = true;
             this.turnOrderHintsVisible = false;
             this.isWinner = true;
 
             await this.disableShooting();
             // Отправим сопернику информацию о непотопленных кораблях
             await this.sendUnsunkShipsToEnemy();
+
+            await this.changePlayButtonText();
           }
           break;
 
@@ -569,8 +580,7 @@ export default defineComponent({
             );
 
             // Покажем где у соперника остались непотопленные корабли
-            let hostileCtx_ = this
-              .hostileCtx_ as unknown as CanvasRenderingContext2D;
+            let hostileCtx_ = this.getHostileContext();
             unsunkShips.forEach((ship) => ship.draw(hostileCtx_, "red"));
           }
           break;
