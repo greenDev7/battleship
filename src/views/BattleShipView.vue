@@ -315,7 +315,7 @@ export default defineComponent({
     ) {
       ws.onopen = function (event) {
         console.log("Successfully connected to the websocket server...");
-        ActionStore.dispatch("createRivalCouple", {
+        ActionStore.dispatch("saveSocketAndCreateRivalCouple", {
           ws,
           gameCreationBody,
         });

@@ -20,7 +20,7 @@ export const ActionStore = {
         }
     },
     actions: {
-        async createRivalCouple(context: any, payload: any) {
+        async saveSocketAndCreateRivalCouple(context: any, payload: any) {
             const { ws, gameCreationBody } = payload;
             context.commit("setWebSocket", ws);
             console.log('Sending WS request to create game...');
