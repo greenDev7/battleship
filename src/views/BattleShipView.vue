@@ -295,18 +295,11 @@ export default defineComponent({
     },
 
     handleFriendGameButtonClick() {
-      // При нажатии на кнопку "Игра с другом", в отличие от клика по кнопке "Игра со случайным соперником"
-      // сокет соединение НЕ будет сразу установлено. Соединение будет установлено по нажатии кнопки играть
-
-      // Здесь лишь будут сделаны некоторые проверки
-
-      // для игры с другом также нужно будет ввести ник
       if (!this.isNickNameValid()) {
         this.showAlert("Для игры необходимо ввести ник!", "warning");
         return;
       }
 
-      // устанавливаем тип игры
       this.gameType = GameType.FRIEND;
 
       // формируем свой UUID для игры с другом
@@ -318,7 +311,6 @@ export default defineComponent({
 
       this.isPlaying = true; // устанавливаем факт начала игры
 
-      // скрываем/деактивируем определенные элементы
       this.friendComponentVisible = true;
       this.topButtonDisabled = true;
       this.nicknameDisabled = true;
@@ -644,7 +636,10 @@ export default defineComponent({
       );
     },
 
-    processFriendGameCreation() {},
+    processFriendGameCreation() {
+      // нужно очистить вражеский грид
+      Game.makeGrid(this.getHostileContext());
+    },
 
     handlePlayButtonClick(event: Event) {
       if (Game.ships.length === 0) {
