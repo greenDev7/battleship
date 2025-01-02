@@ -551,10 +551,11 @@ export default defineComponent({
         case MessageType.GAME_OVER:
           if (parsedData.is_status_ok) {
             this.infoComponentVisible = false;
-            this.gameOverInfoIsVisible = true;
-            await this.disableShooting();
+            this.gameOverInfoIsVisible = true;            
             this.turnOrderHintsVisible = false;
             this.isWinner = true;
+
+            await this.disableShooting();
             // Отправим сопернику информацию о непотопленных кораблях
             await this.sendUnsunkShipsToEnemy();
           }
@@ -562,8 +563,6 @@ export default defineComponent({
 
         case MessageType.UNSUNK_SHIPS:
           if (parsedData.is_status_ok) {
-            console.log("receive unsunk ships: ", parsedData.data.unSunkShips);
-
             let unsunkShips: Ship[] = parsedData.data.unSunkShips.map(
               (s) =>
                 new Ship(s.length, s.type, new Location(s.loc._x, s.loc._y))
@@ -686,8 +685,6 @@ export default defineComponent({
       // Если каким-то образом игрок сделал выстрел по невалидной локации (вне границ сетки, например по координате з-0),
       // то выходим из метода
       if (!shotLocation.isValid()) return;
-
-      console.log("shotLocation: ", shotLocation);
 
       if (Game.existsInShotHistory(shotLocation)) {
         this.showAlert("Вы уже стреляли сюда", "warning");
