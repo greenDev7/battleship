@@ -1,8 +1,5 @@
-import axiosInstance from '@/helpers/axios';
-
 export const ActionStore = {
     state: {
-        clientUuid: "",
         enemyClientUuid: "",
         ws: WebSocket
     },
@@ -23,7 +20,7 @@ export const ActionStore = {
         }
     },
     actions: {
-        async createTeamPlayerWS(context: any, payload: any) {
+        async createRivalCouple(context: any, payload: any) {
             const { ws, gameCreationBody } = payload;
             context.commit("setWebSocket", ws);
             console.log('Sending WS request to create game...');
