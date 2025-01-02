@@ -229,6 +229,22 @@ export default defineComponent({
         this.playButtonDisabled = false;
 
         this.showAlert("UUID валидный", "success", 5000);
+
+        // После успешной валидации - сразу создаем сокет-подключение
+
+        const gameCreationBody: GameCreationBodyType = {
+          msg_type: MessageType.GAME_CREATION,
+          game_type: GameType.FRIEND,
+          nickName: this.nickName.trim(),
+          friendUUID: this.friendUUID,
+        };
+
+        // Сохраняем id друга в качестве id соперника
+        ActionStore.commit("setEnemyClientUuid", this.friendUUID);
+        let ws: WebSocket = new WebSocket(
+          `ws://${serverHost}:${serverPort}/client/${this.myUUIDforFriendGame}/ws`
+        );
+        this.setupSocketConnectionAndCreateRivalCouple(ws, gameCreationBody);
       } catch (error) {
         this.showAlert("Невалидный UUID", "danger", 7000);
       }
@@ -370,7 +386,9 @@ export default defineComponent({
       if (this.gameType === GameType.FRIEND)
         (this.$refs.playButton as HTMLButtonElement).innerHTML =
           "Играть еще раз";
+      this.playButtonDisabled = false;
     },
+
     async processDataFromServer(dataFromServer: string) {
       let parsedData: WSDataTransferRootType = JSON.parse(dataFromServer);
 
@@ -626,27 +644,7 @@ export default defineComponent({
       );
     },
 
-    processFriendGameCreation() {
-      // Создаем тело сообщения для создания игры с типом GameType.FRIEND
-      // в тело также передаем id друга (friendUUID)
-      const gameCreationBody: GameCreationBodyType = {
-        msg_type: MessageType.GAME_CREATION,
-        game_type: GameType.FRIEND,
-        nickName: this.nickName.trim(),
-        friendUUID: this.friendUUID,
-      };
-
-      // Сохраняем id друга в качестве id соперника
-      ActionStore.commit("setEnemyClientUuid", this.friendUUID);
-
-      let ws: WebSocket = new WebSocket(
-        `ws://${serverHost}:${serverPort}/client/${this.myUUIDforFriendGame}/ws`
-      );
-
-      this.setupSocketConnectionAndCreateRivalCouple(ws, gameCreationBody);
-
-      this.friendInputDisabled = true;
-    },
+    processFriendGameCreation() {},
 
     handlePlayButtonClick(event: Event) {
       if (Game.ships.length === 0) {
