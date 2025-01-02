@@ -1,7 +1,6 @@
 <template>
   <div class="container">
     <input
-      ref="nickNameInput"
       class="form-control form-control-lg mb-4"
       placeholder="Введите ник"
       type="text"
@@ -49,7 +48,11 @@
       class="border border-dark border-2 rounded-3 mx-auto wfit mb-4"
       v-if="friendComponentVisible"
     >
-      <FriendGameComponent :clientUUID="myUUIDforFriendGame" />
+      <FriendGameComponent
+        :clientUUID="myUUIDforFriendGame"
+        @friendUUIDUpdated="friendUUIDChanged"
+        :friendInputDisabled="friendInputDisabled"
+      />
     </div>
     <div
       class="border border-dark border-2 rounded-3 wfit mx-auto mb-4"
@@ -130,6 +133,7 @@ import HighlightType from "@/model/enums/HighlightType";
 import ShotResult from "@/model/enums/ShotResult";
 import Ship from "@/model/Ship";
 import { serverHost, serverPort } from "@/helpers/axios";
+import GameType from "@/model/enums/GameType";
 
 export default defineComponent({
   name: "BattleShipView",
@@ -145,6 +149,7 @@ export default defineComponent({
 
   data() {
     return {
+      gameType: 1,
       nickName: "",
       enemyNickName: "",
       enemyState: EnemyState.WAITING_FOR_ENEMY,
@@ -152,7 +157,6 @@ export default defineComponent({
       nicknameDisabled: false,
       infoComponentVisible: false,
       playButtonDisabled: true,
-      endGameButtonDisabled: true,
       myTurnToShoot: false,
       turnOrderHintsVisible: false,
       ctx_: CanvasRenderingContext2D,
@@ -166,6 +170,8 @@ export default defineComponent({
       arrangeRuleComponentVisible: true,
       friendComponentVisible: false,
       myUUIDforFriendGame: "",
+      friendUUID: "",
+      friendInputDisabled: false,
     };
   },
 
@@ -196,6 +202,10 @@ export default defineComponent({
       if (!isCaptchaSuccess) this.showAlert("Неверный код", "danger");
     },
 
+    friendUUIDChanged(friendUUID: string) {
+      this.friendUUID = friendUUID;
+    },
+
     preventNavAndUnload(event: BeforeUnloadEvent) {
       if (!this.isPlaying) return;
       event.preventDefault();
@@ -216,12 +226,16 @@ export default defineComponent({
         return;
       }
 
+      this.gameType = GameType.RANDOM;
+
       const userRequestBody = {
-        msg_type: MessageType.RANDOM_GAME,
+        msg_type: MessageType.GAME_CREATION,
+        game_type: GameType.RANDOM,
         nickName: this.nickName.trim(),
       };
 
       let clientUUID = uuidv4();
+      console.log("Your clientUUID for random game: ", clientUUID);
 
       let ws: WebSocket = new WebSocket(
         `ws://${serverHost}:${serverPort}/client/${clientUUID}/ws`
@@ -241,18 +255,28 @@ export default defineComponent({
     },
 
     handleFriendGameButtonClick() {
+      // При нажатии на кнопку "Игра с другом", в отличие от клика по кнопке "Игра со случайным соперником"
+      // сокет соединение НЕ будет сразу установлено. Соединение будет установлено по нажатии кнопки играть
+
+      // Здесь лишь будут сделаны некоторые проверки
+
+      // для игры с другом также нужно будет ввести ник
       if (!this.isNickNameValid()) {
         this.showAlert("Для игры необходимо ввести ник!", "warning");
         return;
       }
 
-      const userRequestBody = {
-        msg_type: MessageType.FRIEND_GAME,
-        nickName: this.nickName.trim(),
-      };
+      // устанавливаем тип игры
+      this.gameType = GameType.FRIEND;
 
+      // формируем свой UUID для игры с другом
       this.myUUIDforFriendGame = uuidv4();
+      console.log(
+        "Your clientUUID for friend game: ",
+        this.myUUIDforFriendGame
+      );
 
+      // скрываем/деактивируем определенные элементы
       this.friendComponentVisible = true;
       this.topButtonDisabled = true;
       this.nicknameDisabled = true;
@@ -322,7 +346,7 @@ export default defineComponent({
       let parsedData: WSDataTransferRootType = JSON.parse(dataFromServer);
 
       switch (parsedData.msg_type) {
-        case MessageType.RANDOM_GAME:
+        case MessageType.GAME_CREATION:
           if (parsedData.is_status_ok) {
             if (parsedData.data.enemy_nickname) {
               console.log("Enemy for random game successfully created");
@@ -557,12 +581,27 @@ export default defineComponent({
       ws.send(JSON.stringify(unsunkShipsResp));
     },
 
+    processRandomGameCreation() {
+      const ws: WebSocket = this.getWebSocket;
+
+      ws.send(
+        JSON.stringify({
+          msg_type: MessageType.SHIPS_ARE_ARRANGED,
+        })
+      );
+    },
+
+    processFriendGameCreation() {
+
+      
+      this.friendInputDisabled = true;
+    },
+
     handlePlayButtonClick(event: Event) {
       if (Game.ships.length === 0) {
         this.showAlert("Корабли отсутствуют, обновите страницу!");
         return;
       }
-
       // очистим историю выстрелов на всякий случай
       Game.clearShotHistory();
 
@@ -571,20 +610,11 @@ export default defineComponent({
         return;
       }
 
-      const clientUuid = this.getClientUuid;
-      if (!clientUuid) return;
+      if (this.gameType === GameType.RANDOM) this.processRandomGameCreation();
+      else this.processFriendGameCreation();
 
-      const ws: WebSocket = this.getWebSocket;
-
-      ws.send(
-        JSON.stringify({
-          msg_type: MessageType.SHIPS_ARE_ARRANGED,
-        })
-      );
-
+      // Деактивируем кнопку "Играть"
       if (event) (<HTMLButtonElement>event.target).disabled = true;
-      this.endGameButtonDisabled = false;
-
       // Удаляем обработчики событий мыши, чтобы игрок не мог менять расстановку кораблей во время игры
       GameStore.dispatch("removeOwnGridEventListeners");
     },
@@ -597,7 +627,6 @@ export default defineComponent({
       this.infoComponentVisible = false;
       this.gameOverInfoIsVisible = false;
       this.playButtonDisabled = true;
-      this.endGameButtonDisabled = true;
     },
 
     handleHostileGridClick(event: MouseEvent) {

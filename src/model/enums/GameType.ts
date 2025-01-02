@@ -1,7 +1,7 @@
 enum GameType {
-    Random = "RANDOM",
-    Friend = "FRIEND",
-    Computer = "COMPUTER"
+    RANDOM = 1,
+    FRIEND = 2,
+    COMPUTER = 3
 }
 
 export default GameType

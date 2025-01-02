@@ -21,6 +21,8 @@
               class="form-control"
               type="text"
               placeholder="Введите id друга"
+              @input="$emit('friendUUIDUpdated', $event.target.value)"
+              :disabled="friendInputDisabled"
             />
           </td>
         </tr>
@@ -36,8 +38,17 @@ import { defineComponent } from "vue";
 export default defineComponent({
   name: "FriendGameComponent",
 
+  emits: {
+    friendUUIDUpdated(payload: string) {
+      // return `true` or `false` to indicate
+      // validation pass / fail
+      return true;
+    },
+  },
+
   props: {
     clientUUID: { type: String, default: "" },
+    friendInputDisabled: { type: Boolean, default: false },
   },
 });
 </script>
