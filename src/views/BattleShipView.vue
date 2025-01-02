@@ -270,7 +270,7 @@ export default defineComponent({
 
       this.setupSocketConnectionAndCreateRivalCouple(ws, gameCreationBody);
 
-      this.isPlaying = true;
+      this.isPlaying = true; // устанавливаем факт начала игры
       this.topButtonDisabled = true;
       this.nicknameDisabled = true;
       this.infoComponentVisible = true;
@@ -298,6 +298,8 @@ export default defineComponent({
         "Your clientUUID for friend game: ",
         this.myUUIDforFriendGame
       );
+
+      this.isPlaying = true; // устанавливаем факт начала игры
 
       // скрываем/деактивируем определенные элементы
       this.friendComponentVisible = true;
