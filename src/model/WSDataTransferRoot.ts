@@ -7,6 +7,7 @@ interface MsgType {
 interface GameCreationBody extends MsgType {
     game_type: GameType,
     nickName: string
+    friendUUID?: string
 }
 
 interface Loc {

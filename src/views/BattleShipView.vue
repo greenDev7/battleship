@@ -218,7 +218,7 @@ export default defineComponent({
         }
 
         if (parsedUUID === this.myUUIDforFriendGame) {
-          this.showAlert("UUID ваш и друга не могут совпадать", "danger", 3000);
+          this.showAlert("UUID ваш и друга не могут совпадать", "danger", 5000);
           return;
         }
 
@@ -227,9 +227,9 @@ export default defineComponent({
         this.friendInputDisabled = true;
         this.playButtonDisabled = false;
 
-        this.showAlert("UUID валидный", "success", 3000);
+        this.showAlert("UUID валидный", "success", 5000);
       } catch (error) {
-        this.showAlert("Невалидный UUID", "danger", 3000);
+        this.showAlert("Невалидный UUID", "danger", 7000);
       }
     },
 
@@ -268,11 +268,7 @@ export default defineComponent({
         `ws://${serverHost}:${serverPort}/client/${clientUUID}/ws`
       );
 
-      this.setupSocketConnectionAndCreateRivalCouple(
-        ws,
-        gameCreationBody,
-        clientUUID
-      );
+      this.setupSocketConnectionAndCreateRivalCouple(ws, gameCreationBody);
 
       this.isPlaying = true;
       this.topButtonDisabled = true;
@@ -617,23 +613,23 @@ export default defineComponent({
     },
 
     processFriendGameCreation() {
-      // Создаем тело сообщения для создания игры
-      // с типом GameType.FRIEND
+      // Создаем тело сообщения для создания игры с типом GameType.FRIEND
+      // в тело также передаем id друга (friendUUID)
       const gameCreationBody: GameCreationBodyType = {
         msg_type: MessageType.GAME_CREATION,
         game_type: GameType.FRIEND,
         nickName: this.nickName.trim(),
+        friendUUID: this.friendUUID,
       };
+
+      // Сохраняем id друга в качестве id соперника
+      ActionStore.commit("setEnemyClientUuid", this.friendUUID);
 
       let ws: WebSocket = new WebSocket(
         `ws://${serverHost}:${serverPort}/client/${this.myUUIDforFriendGame}/ws`
       );
 
-      this.setupSocketConnectionAndCreateRivalCouple(
-        ws,
-        gameCreationBody,
-        this.myUUIDforFriendGame
-      );
+      this.setupSocketConnectionAndCreateRivalCouple(ws, gameCreationBody);
 
       this.friendInputDisabled = true;
     },
