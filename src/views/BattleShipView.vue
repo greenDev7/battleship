@@ -117,7 +117,13 @@ import { defineComponent } from "vue";
 import ActionStore from "@/store/index";
 import MessageType from "@/model/enums/MessageType";
 import EnemyInfoComponent from "@/components/EnemyInfoComponent.vue";
-import { v4 as uuidv4 } from "uuid";
+import {
+  v4 as uuidv4,
+  parse as uuidParse,
+  stringify as uuidStringify,
+  MAX as MAX_UUID,
+  NIL as NIL_UUID,
+} from "uuid";
 import {
   WSDataTransferRootType,
   FireResponseType,
@@ -202,8 +208,29 @@ export default defineComponent({
       if (!isCaptchaSuccess) this.showAlert("Неверный код", "danger");
     },
 
-    friendUUIDChanged(friendUUID: string) {
-      this.friendUUID = friendUUID;
+    friendUUIDChanged(friendUUID_: string) {
+      try {
+        let parsedUUID = uuidStringify(uuidParse(friendUUID_));
+
+        if (parsedUUID === MAX_UUID || parsedUUID === NIL_UUID) {
+          this.showAlert("Некорректный UUID (NIL/MAX UUID)", "danger", 3000);
+          return;
+        }
+
+        if (parsedUUID === this.myUUIDforFriendGame) {
+          this.showAlert("UUID ваш и друга не могут совпадать", "danger", 3000);
+          return;
+        }
+
+        // Если валидация UUID прошла успешно - сохраняем его
+        this.friendUUID = parsedUUID;
+        this.friendInputDisabled = true;
+        this.playButtonDisabled = false;
+
+        this.showAlert("UUID валидный", "success", 3000);
+      } catch (error) {
+        this.showAlert("Невалидный UUID", "danger", 3000);
+      }
     },
 
     preventNavAndUnload(event: BeforeUnloadEvent) {
@@ -592,8 +619,6 @@ export default defineComponent({
     },
 
     processFriendGameCreation() {
-
-      
       this.friendInputDisabled = true;
     },
 
@@ -615,7 +640,7 @@ export default defineComponent({
 
       // Деактивируем кнопку "Играть"
       if (event) (<HTMLButtonElement>event.target).disabled = true;
-      // Удаляем обработчики событий мыши, чтобы игрок не мог менять расстановку кораблей во время игры
+      // Удаляем обработчики событий мыши (Pointer), чтобы игрок не мог менять расстановку кораблей во время игры
       GameStore.dispatch("removeOwnGridEventListeners");
     },
 
