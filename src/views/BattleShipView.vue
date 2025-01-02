@@ -408,6 +408,9 @@ export default defineComponent({
             this.turnOrderHintsVisible = true;
 
             if (this.myTurnToShoot) await this.enableShooting();
+
+            if (this.gameType === GameType.FRIEND)
+              this.enemyNickName = parsedData.data.enemy_nickname;
           }
           break;
 
