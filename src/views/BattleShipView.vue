@@ -226,7 +226,7 @@ export default defineComponent({
         // Если валидация UUID прошла успешно - сохраняем его
         this.friendUUID = parsedUUID;
         this.friendInputDisabled = true;
-        this.playButtonDisabled = false;
+        this.infoComponentVisible = true;
 
         this.showAlert("UUID валидный", "success", 5000);
 
@@ -632,13 +632,20 @@ export default defineComponent({
       ws.send(
         JSON.stringify({
           msg_type: MessageType.SHIPS_ARE_ARRANGED,
+          game_type: GameType.RANDOM,
         })
       );
     },
 
     processFriendGameCreation() {
-      // нужно очистить вражеский грид
-      Game.makeGrid(this.getHostileContext());
+      const ws: WebSocket = this.getWebSocket;
+
+      ws.send(
+        JSON.stringify({
+          msg_type: MessageType.SHIPS_ARE_ARRANGED,
+          game_type: GameType.FRIEND,
+        })
+      );
     },
 
     handlePlayButtonClick(event: Event) {
