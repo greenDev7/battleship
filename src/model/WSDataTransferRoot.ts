@@ -1,6 +1,13 @@
+import GameType from "./enums/GameType";
+
 interface MsgType {
     msg_type: string;
 };
+
+interface GameCreationBody extends MsgType {
+    game_type: GameType,
+    nickName: string
+}
 
 interface Loc {
     _x: number;
@@ -37,5 +44,5 @@ interface WSDataTransferRoot extends MsgType {
 
 export type {
     FireResponse as FireResponseType, WSDataTransferRoot as WSDataTransferRootType,
-    Loc as LocType, UnSunkShips as UnSunkShipsType, Ship_ as ShipType
+    Loc as LocType, UnSunkShips as UnSunkShipsType, Ship_ as ShipType, GameCreationBody as GameCreationBodyType
 }

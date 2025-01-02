@@ -34,11 +34,11 @@ export const ActionStore = {
                 .catch((reason) => console.log("createUser error:", reason));
         },
         async createTeamPlayerWS(context: any, payload: any) {
-            const { ws, userRequestBody, clientUuid } = payload;
+            const { ws, gameCreationBody, clientUuid } = payload;
             context.commit("setWebSocket", ws);
             context.commit("setClientUuid", clientUuid);
-            console.log('Sending WS request to find a suitable player...');
-            ws.send(JSON.stringify(userRequestBody));
+            console.log('Sending WS request to create game...');
+            ws.send(JSON.stringify(gameCreationBody));
         },
 
         async nickNameExists(context: any, nickName_: string) {

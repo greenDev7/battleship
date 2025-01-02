@@ -129,6 +129,7 @@ import {
   FireResponseType,
   UnSunkShipsType,
   ShipType,
+  GameCreationBodyType,
 } from "@/model/WSDataTransferRoot";
 import { mapGetters } from "vuex";
 import EnemyState from "@/model/enums/EnemyState";
@@ -255,7 +256,7 @@ export default defineComponent({
 
       this.gameType = GameType.RANDOM;
 
-      const userRequestBody = {
+      const gameCreationBody: GameCreationBodyType = {
         msg_type: MessageType.GAME_CREATION,
         game_type: GameType.RANDOM,
         nickName: this.nickName.trim(),
@@ -270,7 +271,7 @@ export default defineComponent({
 
       this.setupSocketConnectionAndCreateRivalCouple(
         ws,
-        userRequestBody,
+        gameCreationBody,
         clientUUID
       );
 
@@ -312,14 +313,14 @@ export default defineComponent({
 
     setupSocketConnectionAndCreateRivalCouple(
       ws: WebSocket,
-      userRequestBody: Object,
+      gameCreationBody: Object,
       clientUuid: string
     ) {
       ws.onopen = function (event) {
         console.log("Successfully connected to the websocket server...");
         ActionStore.dispatch("createTeamPlayerWS", {
           ws,
-          userRequestBody,
+          gameCreationBody,
           clientUuid,
         });
       };
@@ -619,6 +620,24 @@ export default defineComponent({
     },
 
     processFriendGameCreation() {
+      // Создаем тело сообщения для создания игры
+      // с типом GameType.FRIEND
+      const gameCreationBody: GameCreationBodyType = {
+        msg_type: MessageType.GAME_CREATION,
+        game_type: GameType.FRIEND,
+        nickName: this.nickName.trim(),
+      };
+
+      let ws: WebSocket = new WebSocket(
+        `ws://${serverHost}:${serverPort}/client/${this.myUUIDforFriendGame}/ws`
+      );
+
+      this.setupSocketConnectionAndCreateRivalCouple(
+        ws,
+        gameCreationBody,
+        this.myUUIDforFriendGame
+      );
+
       this.friendInputDisabled = true;
     },
 
