@@ -374,7 +374,7 @@ export default defineComponent({
       this.myTurnToShoot = true;
     },
 
-    async changePlayButtonText() {
+    async processPlayButton() {
       if (this.gameType === GameType.FRIEND)
         (this.$refs.playButton as HTMLButtonElement).innerHTML =
           "Играть еще раз";
@@ -426,9 +426,6 @@ export default defineComponent({
             this.turnOrderHintsVisible = true;
 
             if (this.myTurnToShoot) await this.enableShooting();
-
-            if (this.gameType === GameType.FRIEND)
-              this.enemyNickName = parsedData.data.enemy_nickname;
           }
           break;
 
@@ -503,7 +500,7 @@ export default defineComponent({
                   );
 
                   // В случае игры с другом - меняем надпись на кнопке - "Играть еще раз"
-                  await this.changePlayButtonText();
+                  await this.processPlayButton();
                 }
               }
 
@@ -577,8 +574,7 @@ export default defineComponent({
             await this.disableShooting();
             // Отправим сопернику информацию о непотопленных кораблях
             await this.sendUnsunkShipsToEnemy();
-
-            await this.changePlayButtonText();
+            await this.processPlayButton();
           }
           break;
 
@@ -621,8 +617,6 @@ export default defineComponent({
         });
       }
 
-      console.log("sending unsunk ships: ", unsunkShipsResp);
-
       ws.send(JSON.stringify(unsunkShipsResp));
     },
 
@@ -632,7 +626,7 @@ export default defineComponent({
       ws.send(
         JSON.stringify({
           msg_type: MessageType.SHIPS_ARE_ARRANGED,
-          game_type: GameType.RANDOM,
+          game_type: this.gameType,
         })
       );
     },
@@ -643,7 +637,7 @@ export default defineComponent({
       ws.send(
         JSON.stringify({
           msg_type: MessageType.SHIPS_ARE_ARRANGED,
-          game_type: GameType.FRIEND,
+          game_type: this.gameType,
         })
       );
     },
@@ -664,20 +658,9 @@ export default defineComponent({
       if (this.gameType === GameType.RANDOM) this.processRandomGameCreation();
       else this.processFriendGameCreation();
 
-      // Деактивируем кнопку "Играть"
-      if (event) (<HTMLButtonElement>event.target).disabled = true;
+      this.playButtonDisabled = true;
       // Удаляем обработчики событий мыши (Pointer), чтобы игрок не мог менять расстановку кораблей во время игры
       GameStore.dispatch("removeOwnGridEventListeners");
-    },
-
-    setInitialInputElementState() {
-      this.enemyNickName = "";
-      this.enemyState = EnemyState.WAITING_FOR_ENEMY;
-      this.topButtonDisabled = false;
-      this.nicknameDisabled = false;
-      this.infoComponentVisible = false;
-      this.gameOverInfoIsVisible = false;
-      this.playButtonDisabled = true;
     },
 
     handleHostileGridClick(event: MouseEvent) {
