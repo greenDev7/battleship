@@ -1,6 +1,5 @@
 import GameProcessManager from "@/helpers/GameProcessManager";
 import GameState from "@/model/enums/GameState";
-import BattleShipView from "@/views/BattleShipView.vue";
 
 export const GameStore = {
     state: {
@@ -27,7 +26,8 @@ export const GameStore = {
         enemyState: GameState.NOT_CREATED,
         enemyNickname: "",
         enemyClientUuid: "",
-        isMyTurnToShoot: false
+        isMyTurnToShoot: false,
+        enemyShotHint: ""
     },
     getters: {
         getCanvasWidth(state: any) {
@@ -65,6 +65,9 @@ export const GameStore = {
         },
         getIsMyTurnToShoot(state: any) {
             return state.isMyTurnToShoot;
+        },
+        getEnemyShotHint(state: any) {
+            return state.enemyShotHint;
         }
     },
     mutations: {
@@ -103,6 +106,9 @@ export const GameStore = {
         },
         setMyTurnToShoot(state: any, isMyTurnToShoot: boolean) {
             state.isMyTurnToShoot = isMyTurnToShoot;
+        },
+        setEnemyShotHint(state: any, enemyShotHint: string) {
+            state.enemyShotHint = enemyShotHint;
         }
     },
     actions: {
@@ -114,9 +120,15 @@ export const GameStore = {
             canvas.removeEventListener("pointerup", state.handlers.pointerUpHandler);
             canvas.removeEventListener("touchstart", state.handlers.touchStartHandler);
         },
-        async enableShooting({ state }: any) {
+        async enableShooting({ commit, state }: any) {
             const canvas = (state.hostileContext2D as unknown as CanvasRenderingContext2D).canvas;
             canvas.addEventListener("click", GameProcessManager.handleHostileGridClick);
+            commit("setMyTurnToShoot", true);
+        },
+        async disableShooting({ commit, state }: any) {
+            const canvas = (state.hostileContext2D as unknown as CanvasRenderingContext2D).canvas;
+            canvas.removeEventListener("click", GameProcessManager.handleHostileGridClick);
+            commit("setMyTurnToShoot", false);
         }
     }
 }

@@ -69,9 +69,9 @@
     <GameOverInfoComponent v-if="gameOverInfoIsVisible" :isWinner="isWinner" />
 
     <BattleBoardComponent
-      :isMyTurnToShoot="this.myTurnToShoot"
+      :isMyTurnToShoot="getIsMyTurnToShoot"
       :turnOrderHintsVisible="getMyState === 4"
-      :enemyShotHint="this.enemyShotHint"
+      :enemyShotHint="getEnemyShotHint"
       :enemyNickname="getEnemyNickname"
     />
     <div
@@ -189,6 +189,8 @@ export default defineComponent({
       "getMyState",
       "getEnemyState",
       "getEnemyNickname",
+      "getEnemyShotHint",
+      "getIsMyTurnToShoot",
       "getContext2D",
       "getHostileContext2D",
       "getAlert",
