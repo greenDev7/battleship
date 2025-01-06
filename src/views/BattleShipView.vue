@@ -56,22 +56,23 @@
     </div>
     <div
       class="border border-dark border-2 rounded-3 wfit mx-auto mb-4"
-      v-if="getEnemyState === 0"
+      v-if="getMyState === 0"
     >
       <ArrangementRuleComponent />
     </div>
     <StateInfoComponent
-      v-if="getEnemyState !== 0"
+      v-if="getMyState !== 0"
       :enemyNickName="getEnemyNickname"
       :enemyState="getEnemyState"
+      :myState="getMyState"
     />
     <GameOverInfoComponent v-if="gameOverInfoIsVisible" :isWinner="isWinner" />
 
     <BattleBoardComponent
       :isMyTurnToShoot="this.myTurnToShoot"
-      :turnOrderHintsVisible="this.turnOrderHintsVisible"
+      :turnOrderHintsVisible="getMyState === 4"
       :enemyShotHint="this.enemyShotHint"
-      :enemyNickname="this.enemyNickName"
+      :enemyNickname="getEnemyNickname"
     />
     <div
       class="d-flex flex-row flex-wrap mt-4 mb-4 mt-lg-3 justify-content-center"
@@ -82,7 +83,7 @@
           class="btn btn-lg btn-success w-100 text-nowrap"
           type="button"
           @click="handlePlayButtonClick"
-          :disabled="playButtonDisabled"
+          :disabled="getMyState <= 1 || getMyState === 3"
         >
           Играть
         </button>
@@ -114,7 +115,6 @@ import CaptchaComponent from "../components/CaptchaComponent.vue";
 import ArrangementRuleComponent from "../components/ArrangementRuleComponent.vue";
 import FriendGameComponent from "../components/FriendGameComponent.vue";
 import { defineComponent } from "vue";
-import ActionStore from "@/store/index";
 import MessageType from "@/model/enums/MessageType";
 import StateInfoComponent from "@/components/StateInfoComponent.vue";
 import {
@@ -164,7 +164,7 @@ export default defineComponent({
       topButtonDisabled: false,
       nicknameDisabled: false,
       infoComponentVisible: false,
-      playButtonDisabled: true,
+      playButtonDisabled: false,
       myTurnToShoot: false,
       turnOrderHintsVisible: false,
       ctx_: CanvasRenderingContext2D,
@@ -175,7 +175,6 @@ export default defineComponent({
       isWinner: false,
       isPlaying: false,
       captchaVisible: false,
-      arrangeRuleComponentVisible: true,
       friendComponentVisible: false,
       myUUIDforFriendGame: "",
       friendUUID: "",
@@ -187,6 +186,7 @@ export default defineComponent({
     ...mapGetters([
       "getWebSocket",
       "getEnemyClientUuid",
+      "getMyState",
       "getEnemyState",
       "getEnemyNickname",
       "getContext2D",
@@ -259,7 +259,7 @@ export default defineComponent({
       }
 
       this.gameType = GameType.RANDOM;
-      GameStore.commit("setEnemyState", GameState.WAITING_FOR_ENEMY);
+      GameStore.commit("setMyState", GameState.WAITING_FOR_ENEMY);
 
       const clientUUID = uuidv4();
 
@@ -296,7 +296,6 @@ export default defineComponent({
       this.friendComponentVisible = true;
       this.topButtonDisabled = true;
       this.nicknameDisabled = true;
-      this.arrangeRuleComponentVisible = false;
     },
 
     showAlert(
@@ -311,7 +310,7 @@ export default defineComponent({
     async disableShooting() {
       this.getHostileContext().canvas.removeEventListener(
         "click",
-        this.handleHostileGridClick
+        GameProcessManager.handleHostileGridClick
       );
 
       this.myTurnToShoot = false;
@@ -320,7 +319,7 @@ export default defineComponent({
     async enableShooting() {
       this.getHostileContext().canvas.addEventListener(
         "click",
-        this.handleHostileGridClick
+        GameProcessManager.handleHostileGridClick
       );
 
       this.myTurnToShoot = true;
@@ -363,23 +362,23 @@ export default defineComponent({
           break;
 
         case MessageType.SHIPS_ARE_ARRANGED:
-          if (parsedData.is_status_ok) {
-            this.enemyState = EnemyState.READY_TO_PLAY;
-            ActionStore.commit(
-              "setEnemyClientUuid",
-              parsedData.data.enemy_client_id
-            );
-          }
+          // if (parsedData.is_status_ok) {
+          //   this.enemyState = GameState.SHIPS_ARE_ARRANGED;
+          //   ActionStore.commit(
+          //     "setEnemyClientUuid",
+          //     parsedData.data.enemy_client_id
+          //   );
+          // }
           break;
 
         case MessageType.PLAY:
-          if (parsedData.is_status_ok) {
-            this.enemyState = EnemyState.PLAYING;
-            this.myTurnToShoot = parsedData.data.turn_to_shoot;
-            this.turnOrderHintsVisible = true;
+          // if (parsedData.is_status_ok) {
+          //   this.enemyState = EnemyState.PLAYING;
+          //   this.myTurnToShoot = parsedData.data.turn_to_shoot;
+          //   this.turnOrderHintsVisible = true;
 
-            if (this.myTurnToShoot) await this.enableShooting();
-          }
+          //   if (this.myTurnToShoot) await this.enableShooting();
+          // }
           break;
 
         // действия на своем гриде
@@ -558,7 +557,7 @@ export default defineComponent({
         unSunkShips: [],
       };
 
-      let unSunkShips: Ship[] = Game.ships.filter(
+      let unSunkShips: Ship[] = Game.getShips().filter(
         (s) => s.hitsNumber < s.length
       );
 
@@ -574,7 +573,7 @@ export default defineComponent({
     },
 
     processRandomGameCreation() {
-      const ws: WebSocket = this.getWebSocket;
+      const ws: WebSocket = WebSocketManager.getWebSocket();
 
       ws.send(
         JSON.stringify({
@@ -585,7 +584,7 @@ export default defineComponent({
     },
 
     processFriendGameCreation() {
-      const ws: WebSocket = this.getWebSocket;
+      const ws: WebSocket = WebSocketManager.getWebSocket();
 
       ws.send(
         JSON.stringify({
@@ -596,11 +595,22 @@ export default defineComponent({
     },
 
     handlePlayButtonClick(event: Event) {
-      if (Game.ships.length === 0) {
-        this.showAlert("Корабли отсутствуют, обновите страницу!");
+      if (!WebSocketManager.getWebSocket()) {
+        this.showAlert(
+          "Игра еще не создана. Выберите тип игры с помощью кнопок выше",
+          "warning",
+          5000
+        );
         return;
       }
-      // очистим историю выстрелов на всякий случай
+
+      if (Game.getShips().length === 0) {
+        this.showAlert(
+          "Корабли отсутствуют, необходимо почистить куки и обновить страницу!"
+        );
+        return;
+      }
+
       Game.clearShotHistory();
 
       if (!Game.isArrangementCorrect()[0]) {
@@ -608,46 +618,13 @@ export default defineComponent({
         return;
       }
 
+      GameStore.commit("setMyState", GameState.SHIPS_ARE_ARRANGED);
+
       if (this.gameType === GameType.RANDOM) this.processRandomGameCreation();
       else this.processFriendGameCreation();
 
-      this.playButtonDisabled = true;
       // Удаляем обработчики событий мыши (Pointer), чтобы игрок не мог менять расстановку кораблей во время игры
       GameStore.dispatch("removeOwnGridEventListeners");
-    },
-
-    handleHostileGridClick(event: MouseEvent) {
-      const enemyClientUuid = this.getEnemyClientUuid;
-      if (!enemyClientUuid) {
-        console.log("Enemy client UUID is not found");
-        return;
-      }
-
-      let shotLocation: Location = Location.getLocationByOffsetXY(
-        event.offsetX,
-        event.offsetY
-      );
-
-      // Если каким-то образом игрок сделал выстрел по невалидной локации (вне границ сетки, например по координате з-0),
-      // то выходим из метода
-      if (!shotLocation.isValid()) return;
-
-      if (Game.existsInShotHistory(shotLocation)) {
-        this.showAlert("Вы уже стреляли сюда", "warning");
-        return;
-      }
-
-      this.currentShot = shotLocation;
-
-      const ws: WebSocket = this.getWebSocket;
-
-      ws.send(
-        JSON.stringify({
-          msg_type: MessageType.FIRE_REQUEST,
-          shot_location: shotLocation,
-          enemy_client_id: enemyClientUuid,
-        })
-      );
     },
   },
 

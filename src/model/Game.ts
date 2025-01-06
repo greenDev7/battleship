@@ -5,14 +5,21 @@ import { GameStore } from "@/store/modules/GameStore";
 
 export default class Game {
 
-    public static readonly ships: Ship[] = Game.createInitialShips();
+    private static ships: Ship[];
     private static shotHistory: Location[] = [];
 
+
+    /**
+     * getShips
+     */
+    public static getShips(): Ship[] {
+        return Game.ships;
+    }
     /**
      * createDefaultShips
     */
-    private static createInitialShips(): Ship[] {
-        return [
+    public static createInitialShips() {
+        Game.ships = [
             new Ship(1, ShipOrientation.Horizontal, new Location(8, 2)),
             // new Ship(1, ShipOrientation.Horizontal, new Location(0, 9)),
             // new Ship(1, ShipOrientation.Horizontal, new Location(7, 5)),

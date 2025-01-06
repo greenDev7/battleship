@@ -1,9 +1,9 @@
 enum MessageType {
     GAME_CREATION = 0,
     DISCONNECTION = "disconnection",
-    SHIPS_ARE_ARRANGED = "ships_are_arranged",
-    PLAY = "play",
-    FIRE_REQUEST = "fire_request",
+    SHIPS_ARE_ARRANGED = 1,
+    PLAY = 2,
+    FIRE_REQUEST = 3,
     FIRE_RESPONSE = "fire_response",
     UNSUNK_SHIPS = "unsunk_ships",
     GAME_OVER = "game_over"

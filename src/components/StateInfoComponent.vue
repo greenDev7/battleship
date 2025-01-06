@@ -1,10 +1,10 @@
 <template>
-  <p class="text-center fs-5 blink" v-if="this.enemyState === 1">
-    {{ getGameStateCaption() }}
+  <p class="text-center fs-5 blink" v-if="this.myState === 1">
+    Ожидание противника...
   </p>
   <!-- -------------- -->
   <div
-    v-else-if="isGameStateBeforePlaying()"
+    v-if="isEnemyPositioningOrArranged()"
     class="card border-success text-center mb-4"
   >
     <div class="card-body text-success">
@@ -14,9 +14,9 @@
       </h5>
       <p
         class="card-text text-dark"
-        :class="{ blink: isGameStateBeforePlaying }"
+        :class="{ blink: isEnemyPositioningOrArranged }"
       >
-        {{ getGameStateCaption() }}
+        {{ getEnemyStateCaption() }}
       </p>
     </div>
     <div
@@ -28,7 +28,7 @@
   </div>
   <!-- -------------- -->
   <p v-else class="text-center mb-lg-4 mb-5">
-    {{ getGameStateCaption() }}
+    {{ getEnemyStateCaption() }}
   </p>
 </template>
 
@@ -47,6 +47,10 @@ export default defineComponent({
       type: Number as PropType<GameState>,
       default: GameState.NOT_CREATED,
     },
+    myState: {
+      type: Number as PropType<GameState>,
+      default: GameState.NOT_CREATED,
+    },
   },
 
   data() {
@@ -54,21 +58,24 @@ export default defineComponent({
   },
 
   methods: {
-    isGameStateBeforePlaying(): boolean {
-      return this.enemyState === 2 || this.enemyState === 3;
+    isEnemyPositioningOrArranged(): boolean {
+      return (
+        this.enemyState === GameState.SHIPS_POSITIONING ||
+        this.enemyState === GameState.SHIPS_ARE_ARRANGED
+      );
     },
 
-    getGameStateCaption(): string {
+    getEnemyStateCaption() {
       switch (this.enemyState) {
         case GameState.SHIPS_POSITIONING:
           return "расставляет корабли...";
-        case GameState.READY_TO_PLAY:
+        case GameState.SHIPS_ARE_ARRANGED:
           return "расставил корабли и готов играть";
         case GameState.PLAYING:
           return "Игра началась";
 
         default:
-          return "Ожидание противника...";
+          break;
       }
     },
   },

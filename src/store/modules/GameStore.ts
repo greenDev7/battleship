@@ -1,4 +1,6 @@
+import GameProcessManager from "@/helpers/GameProcessManager";
 import GameState from "@/model/enums/GameState";
+import BattleShipView from "@/views/BattleShipView.vue";
 
 export const GameStore = {
     state: {
@@ -21,8 +23,11 @@ export const GameStore = {
             alertText: "",
             alertColor: "danger",
         },
+        myState: GameState.NOT_CREATED,
         enemyState: GameState.NOT_CREATED,
-        enemyNickname: ""
+        enemyNickname: "",
+        enemyClientUuid: "",
+        isMyTurnToShoot: false
     },
     getters: {
         getCanvasWidth(state: any) {
@@ -46,12 +51,21 @@ export const GameStore = {
         getAlert(state: any) {
             return state.alert;
         },
-        getEnemyState(state: any) {
-            return state.enemyState;
+        getMyState(state: any) {
+            return state.myState;
         },
         getEnemyNickname(state: any) {
             return state.enemyNickname;
         },
+        getEnemyState(state: any) {
+            return state.enemyState;
+        },
+        getEnemyClientUuid(state: any) {
+            return state.enemyClientUuid;
+        },
+        getIsMyTurnToShoot(state: any) {
+            return state.isMyTurnToShoot;
+        }
     },
     mutations: {
         setContext2D(state: any, ctx: any) {
@@ -75,12 +89,21 @@ export const GameStore = {
         hideAlert(state: any) {
             state.alert.alertVisible = false;
         },
-        setEnemyState(state: any, enemyState: any) {
+        setMyState(state: any, myState: number) {
+            state.myState = myState;
+        },
+        setEnemyState(state: any, enemyState: number) {
             state.enemyState = enemyState;
         },
         setEnemyNickname(state: any, enemyNickname: string) {
             state.enemyNickname = enemyNickname;
         },
+        setEnemyClientUuid(state: any, enemyClientUuid: string) {
+            state.enemyClientUuid = enemyClientUuid;
+        },
+        setMyTurnToShoot(state: any, isMyTurnToShoot: boolean) {
+            state.isMyTurnToShoot = isMyTurnToShoot;
+        }
     },
     actions: {
         async removeOwnGridEventListeners({ state }: any) {
@@ -90,6 +113,10 @@ export const GameStore = {
             canvas.removeEventListener("pointermove", state.handlers.pointerMoveHandler);
             canvas.removeEventListener("pointerup", state.handlers.pointerUpHandler);
             canvas.removeEventListener("touchstart", state.handlers.touchStartHandler);
+        },
+        async enableShooting({ state }: any) {
+            const canvas = (state.hostileContext2D as unknown as CanvasRenderingContext2D).canvas;
+            canvas.addEventListener("click", GameProcessManager.handleHostileGridClick);
         }
     }
 }

@@ -7,17 +7,11 @@ export const ActionStore = {
         getWebSocket(state: any): WebSocket {
             return state.ws;
         },
-        getEnemyClientUuid(state: any) {
-            return state.enemyClientUuid;
-        }
     },
     mutations: {
         setWebSocket(state: any, ws: WebSocket) {
             state.ws = ws;
         },
-        setEnemyClientUuid(state: any, enemyClientUuid: string) {
-            state.enemyClientUuid = enemyClientUuid;
-        }
     },
     actions: {
         async saveSocketAndCreateRivalCouple(context: any, payload: any) {

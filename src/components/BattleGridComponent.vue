@@ -191,9 +191,10 @@ export default defineComponent({
       ctx.canvas.height = this.getCanvasHeight;
 
       Game.makeGrid(ctx);
+      Game.createInitialShips();
 
       if (this.gridType === GridType.Own) {
-        Game.ships.forEach((ship) => {
+        Game.getShips().forEach((ship) => {
           ship.draw(ctx);
         });
         this.registerOwnGridHandlers(ctx);
