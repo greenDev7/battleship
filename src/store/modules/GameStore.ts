@@ -1,3 +1,5 @@
+import GameState from "@/model/enums/GameState";
+
 export const GameStore = {
     state: {
         scaleParameter: 0.9,
@@ -18,7 +20,9 @@ export const GameStore = {
             alertVisible: false,
             alertText: "",
             alertColor: "danger",
-        }
+        },
+        enemyState: GameState.NOT_CREATED,
+        enemyNickname: ""
     },
     getters: {
         getCanvasWidth(state: any) {
@@ -41,7 +45,13 @@ export const GameStore = {
         },
         getAlert(state: any) {
             return state.alert;
-        }
+        },
+        getEnemyState(state: any) {
+            return state.enemyState;
+        },
+        getEnemyNickname(state: any) {
+            return state.enemyNickname;
+        },
     },
     mutations: {
         setContext2D(state: any, ctx: any) {
@@ -64,7 +74,13 @@ export const GameStore = {
         },
         hideAlert(state: any) {
             state.alert.alertVisible = false;
-        }
+        },
+        setEnemyState(state: any, enemyState: any) {
+            state.enemyState = enemyState;
+        },
+        setEnemyNickname(state: any, enemyNickname: string) {
+            state.enemyNickname = enemyNickname;
+        },
     },
     actions: {
         async removeOwnGridEventListeners({ state }: any) {

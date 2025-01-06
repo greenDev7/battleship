@@ -1,10 +1,10 @@
 <template>
   <p class="text-center fs-5 blink" v-if="this.enemyState === 1">
-    {{ getEnemyStateCaption() }}
+    {{ getGameStateCaption() }}
   </p>
   <!-- -------------- -->
   <div
-    v-else-if="isEnemyStateBeforePlaying()"
+    v-else-if="isGameStateBeforePlaying()"
     class="card border-success text-center mb-4"
   >
     <div class="card-body text-success">
@@ -14,9 +14,9 @@
       </h5>
       <p
         class="card-text text-dark"
-        :class="{ blink: isEnemyStateBeforePlaying }"
+        :class="{ blink: isGameStateBeforePlaying }"
       >
-        {{ getEnemyStateCaption() }}
+        {{ getGameStateCaption() }}
       </p>
     </div>
     <div
@@ -28,7 +28,7 @@
   </div>
   <!-- -------------- -->
   <p v-else class="text-center mb-lg-4 mb-5">
-    {{ getEnemyStateCaption() }}
+    {{ getGameStateCaption() }}
   </p>
 </template>
 
@@ -36,16 +36,16 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import type { PropType } from "vue";
-import EnemyState from "@/model/enums/EnemyState";
+import GameState from "@/model/enums/GameState";
 
 export default defineComponent({
-  name: "EnemyInfoComponent",
+  name: "StateInfoComponent",
 
   props: {
     enemyNickName: { type: String, default: "" },
     enemyState: {
-      type: Number as PropType<EnemyState>,
-      default: EnemyState.WAITING_FOR_ENEMY,
+      type: Number as PropType<GameState>,
+      default: GameState.NOT_CREATED,
     },
   },
 
@@ -54,17 +54,17 @@ export default defineComponent({
   },
 
   methods: {
-    isEnemyStateBeforePlaying(): boolean {
+    isGameStateBeforePlaying(): boolean {
       return this.enemyState === 2 || this.enemyState === 3;
     },
 
-    getEnemyStateCaption(): string {
+    getGameStateCaption(): string {
       switch (this.enemyState) {
-        case EnemyState.SHIPS_POSITIONING:
+        case GameState.SHIPS_POSITIONING:
           return "расставляет корабли...";
-        case EnemyState.READY_TO_PLAY:
+        case GameState.READY_TO_PLAY:
           return "расставил корабли и готов играть";
-        case EnemyState.PLAYING:
+        case GameState.PLAYING:
           return "Игра началась";
 
         default:

@@ -50,21 +50,20 @@
     >
       <FriendGameComponent
         :clientUUID="myUUIDforFriendGame"
-        @friendUUIDUpdated="friendUUIDChanged"
+        @friendUUIDUpdated="validateAndSetFriendUUID"
         :friendInputDisabled="friendInputDisabled"
       />
     </div>
     <div
       class="border border-dark border-2 rounded-3 wfit mx-auto mb-4"
-      v-if="arrangeRuleComponentVisible"
+      v-if="getEnemyState === 0"
     >
       <ArrangementRuleComponent />
     </div>
-    <EnemyInfoComponent
-      id="enemy-component"
-      v-if="infoComponentVisible"
-      :enemyNickName="this.enemyNickName"
-      :enemyState="this.enemyState"
+    <StateInfoComponent
+      v-if="getEnemyState !== 0"
+      :enemyNickName="getEnemyNickname"
+      :enemyState="getEnemyState"
     />
     <GameOverInfoComponent v-if="gameOverInfoIsVisible" :isWinner="isWinner" />
 
@@ -117,7 +116,7 @@ import FriendGameComponent from "../components/FriendGameComponent.vue";
 import { defineComponent } from "vue";
 import ActionStore from "@/store/index";
 import MessageType from "@/model/enums/MessageType";
-import EnemyInfoComponent from "@/components/EnemyInfoComponent.vue";
+import StateInfoComponent from "@/components/StateInfoComponent.vue";
 import {
   v4 as uuidv4,
   parse as uuidParse,
@@ -130,25 +129,26 @@ import {
   FireResponseType,
   UnSunkShipsType,
   ShipType,
-  GameCreationBodyType,
 } from "@/model/WSDataTransferRoot";
 import { mapGetters } from "vuex";
-import EnemyState from "@/model/enums/EnemyState";
+import EnemyState from "@/model/enums/GameState";
 import GameStore from "@/store/index";
 import Location from "@/model/Location";
 import Game from "@/model/Game";
+import WebSocketManager from "@/helpers/WebSocketManager";
+import GameProcessManager from "@/helpers/GameProcessManager";
 import HighlightType from "@/model/enums/HighlightType";
 import ShotResult from "@/model/enums/ShotResult";
 import Ship from "@/model/Ship";
-import { serverHost, serverPort } from "@/helpers/axios";
 import GameType from "@/model/enums/GameType";
+import GameState from "@/model/enums/GameState";
 
 export default defineComponent({
   name: "BattleShipView",
 
   components: {
     BattleBoardComponent,
-    EnemyInfoComponent,
+    StateInfoComponent,
     GameOverInfoComponent,
     CaptchaComponent,
     ArrangementRuleComponent,
@@ -187,6 +187,8 @@ export default defineComponent({
     ...mapGetters([
       "getWebSocket",
       "getEnemyClientUuid",
+      "getEnemyState",
+      "getEnemyNickname",
       "getContext2D",
       "getHostileContext2D",
       "getAlert",
@@ -209,42 +211,19 @@ export default defineComponent({
       if (!isCaptchaSuccess) this.showAlert("Неверный код", "danger");
     },
 
-    friendUUIDChanged(friendUUID_: string) {
+    validateAndSetFriendUUID(eventArg: string) {
       try {
-        let parsedUUID = uuidStringify(uuidParse(friendUUID_));
-
+        let parsedUUID = uuidStringify(uuidParse(eventArg));
         if (parsedUUID === MAX_UUID || parsedUUID === NIL_UUID) {
           this.showAlert("Некорректный UUID (NIL/MAX UUID)", "danger", 3000);
           return;
         }
-
         if (parsedUUID === this.myUUIDforFriendGame) {
           this.showAlert("UUID ваш и друга не могут совпадать", "danger", 5000);
           return;
         }
-
-        // Если валидация UUID прошла успешно - сохраняем его
         this.friendUUID = parsedUUID;
-        this.friendInputDisabled = true;
-        this.infoComponentVisible = true;
-
         this.showAlert("UUID валидный", "success", 5000);
-
-        // После успешной валидации - сразу создаем сокет-подключение
-
-        const gameCreationBody: GameCreationBodyType = {
-          msg_type: MessageType.GAME_CREATION,
-          game_type: GameType.FRIEND,
-          nickName: this.nickName.trim(),
-          friendUUID: this.friendUUID,
-        };
-
-        // Сохраняем id друга в качестве id соперника
-        ActionStore.commit("setEnemyClientUuid", this.friendUUID);
-        let ws: WebSocket = new WebSocket(
-          `ws://${serverHost}:${serverPort}/client/${this.myUUIDforFriendGame}/ws`
-        );
-        this.setupSocketConnectionAndCreateRivalCouple(ws, gameCreationBody);
       } catch (error) {
         this.showAlert("Невалидный UUID", "danger", 7000);
       }
@@ -270,28 +249,31 @@ export default defineComponent({
         return;
       }
 
+      if (WebSocketManager.getWebSocket()) {
+        this.showAlert(
+          "Соединение уже установлено. Для новой игры необходимо обновить страницу!",
+          "warning",
+          5000
+        );
+        return;
+      }
+
       this.gameType = GameType.RANDOM;
+      GameStore.commit("setEnemyState", GameState.WAITING_FOR_ENEMY);
 
-      const gameCreationBody: GameCreationBodyType = {
-        msg_type: MessageType.GAME_CREATION,
-        game_type: GameType.RANDOM,
-        nickName: this.nickName.trim(),
-      };
+      const clientUUID = uuidv4();
 
-      let clientUUID = uuidv4();
-      console.log("Your clientUUID for random game: ", clientUUID);
+      let ws: WebSocket = WebSocketManager.createWebSocket(clientUUID);
 
-      let ws: WebSocket = new WebSocket(
-        `ws://${serverHost}:${serverPort}/client/${clientUUID}/ws`
+      let gameCreationBody = GameProcessManager.getGameCreationBody(
+        GameType.RANDOM,
+        this.nickName.trim(),
+        ""
       );
 
-      this.setupSocketConnectionAndCreateRivalCouple(ws, gameCreationBody);
+      WebSocketManager.setupWSAndCreateGameOnOpen(ws, gameCreationBody);
 
       this.isPlaying = true; // устанавливаем факт начала игры
-      this.topButtonDisabled = true;
-      this.nicknameDisabled = true;
-      this.infoComponentVisible = true;
-      this.arrangeRuleComponentVisible = false;
     },
 
     handleFriendGameButtonClick() {
@@ -315,36 +297,6 @@ export default defineComponent({
       this.topButtonDisabled = true;
       this.nicknameDisabled = true;
       this.arrangeRuleComponentVisible = false;
-    },
-
-    setupSocketConnectionAndCreateRivalCouple(
-      ws: WebSocket,
-      gameCreationBody: GameCreationBodyType
-    ) {
-      ws.onopen = function (event) {
-        console.log("Successfully connected to the websocket server...");
-        ActionStore.dispatch("saveSocketAndCreateRivalCouple", {
-          ws,
-          gameCreationBody,
-        });
-      };
-
-      const processData = this.processDataFromServer;
-      ws.onmessage = async function (event: MessageEvent<string>) {
-        await processData(event.data);
-      };
-
-      ws.onerror = function (event: Event) {
-        console.log("Connection error");
-      };
-
-      ws.onclose = function (event: CloseEvent) {
-        if (event.wasClean) {
-          console.log("Connection closed correctly");
-        } else {
-          console.error("The connection was broken");
-        }
-      };
     },
 
     showAlert(
@@ -382,21 +334,22 @@ export default defineComponent({
     },
 
     async processDataFromServer(dataFromServer: string) {
+      console.log("wdgsdgsdgsg333333");
       let parsedData: WSDataTransferRootType = JSON.parse(dataFromServer);
 
       switch (parsedData.msg_type) {
         case MessageType.GAME_CREATION:
-          if (parsedData.is_status_ok) {
-            if (parsedData.data.enemy_nickname) {
-              console.log("Enemy for random game successfully created");
-              this.enemyNickName = parsedData.data.enemy_nickname;
-              this.enemyState = EnemyState.SHIPS_POSITIONING;
-              this.playButtonDisabled = false;
-            }
-          } else {
-            this.showAlert("Возникла ошибка при поиске случайного соперника");
-            console.log("Random enemy search error: ", parsedData.data);
-          }
+          // if (parsedData.is_status_ok) {
+          //   if (parsedData.data.enemy_nickname) {
+          //     console.log("Enemy for random game successfully created");
+          //     this.enemyNickName = parsedData.data.enemy_nickname;
+          //     this.enemyState = EnemyState.SHIPS_POSITIONING;
+          //     this.playButtonDisabled = false;
+          //   }
+          // } else {
+          //   this.showAlert("Возникла ошибка при поиске случайного соперника");
+          //   console.log("Random enemy search error: ", parsedData.data);
+          // }
 
           break;
 
