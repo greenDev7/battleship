@@ -61,12 +61,12 @@
       <ArrangementRuleComponent />
     </div>
     <StateInfoComponent
-      v-if="getMyState !== 0"
+      v-if="getMyState !== 0 && getMyState !== 5"
       :enemyNickName="getEnemyNickname"
       :enemyState="getEnemyState"
       :myState="getMyState"
     />
-    <GameOverInfoComponent v-if="gameOverInfoIsVisible" :isWinner="isWinner" />
+    <GameOverInfoComponent v-if="getMyState === 5" :isWinner="getIsWinner" />
 
     <BattleBoardComponent
       :isMyTurnToShoot="getIsMyTurnToShoot"
@@ -83,7 +83,7 @@
           class="btn btn-lg btn-success w-100 text-nowrap"
           type="button"
           @click="handlePlayButtonClick"
-          :disabled="getMyState <= 1 || getMyState === 3"
+          :disabled="!(getMyState === 2 || getMyState === 5)"
         >
           Играть
         </button>
@@ -191,6 +191,7 @@ export default defineComponent({
       "getEnemyNickname",
       "getEnemyShotHint",
       "getIsMyTurnToShoot",
+      "getIsWinner",
       "getContext2D",
       "getHostileContext2D",
       "getAlert",

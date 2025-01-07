@@ -27,7 +27,8 @@ export const GameStore = {
         enemyNickname: "",
         enemyClientUuid: "",
         isMyTurnToShoot: false,
-        enemyShotHint: ""
+        enemyShotHint: "",
+        isWinner: false
     },
     getters: {
         getCanvasWidth(state: any) {
@@ -68,7 +69,10 @@ export const GameStore = {
         },
         getEnemyShotHint(state: any) {
             return state.enemyShotHint;
-        }
+        },
+        getIsWinner(state: any) {
+            return state.isWinner;
+        },
     },
     mutations: {
         setContext2D(state: any, ctx: any) {
@@ -109,7 +113,10 @@ export const GameStore = {
         },
         setEnemyShotHint(state: any, enemyShotHint: string) {
             state.enemyShotHint = enemyShotHint;
-        }
+        },
+        setIsWinner(state: any) {
+            state.isWinner = true;
+        },
     },
     actions: {
         async removeOwnGridEventListeners({ state }: any) {

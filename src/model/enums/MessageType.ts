@@ -1,12 +1,12 @@
 enum MessageType {
     GAME_CREATION = 0,
-    DISCONNECTION = "disconnection",
     SHIPS_ARE_ARRANGED = 1,
     PLAY = 2,
     FIRE_REQUEST = 3,
-    FIRE_RESPONSE = "fire_response",
-    UNSUNK_SHIPS = "unsunk_ships",
-    GAME_OVER = "game_over"
+    FIRE_RESPONSE = 4,
+    UNSUNK_SHIPS = 5,
+    GAME_OVER = 6,
+    DISCONNECTION = 7
 }
 
 export default MessageType

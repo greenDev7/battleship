@@ -1,7 +1,7 @@
 import GameType from "./enums/GameType";
 
 interface MsgType {
-    msg_type: string | number;
+    msg_type: number;
 };
 
 interface GameCreationBody extends MsgType {
