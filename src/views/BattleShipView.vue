@@ -174,6 +174,9 @@ export default defineComponent({
   },
 
   methods: {
+    hideAlert() {
+      GameStore.commit("hideAlert");
+    },
     processCaptcha(isCaptchaSuccess: boolean) {
       this.topButtonDisabled = !isCaptchaSuccess;
       this.captchaVisible = !isCaptchaSuccess;

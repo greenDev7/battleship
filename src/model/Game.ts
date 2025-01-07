@@ -10,7 +10,7 @@ export default class Game {
 
 
     /**
-     * getShips
+     * Возвращает корабли
      */
     public static getShips(): Ship[] {
         return Game.ships;
