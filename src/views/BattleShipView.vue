@@ -125,9 +125,7 @@ import {
   NIL as NIL_UUID,
 } from "uuid";
 import { mapGetters } from "vuex";
-import EnemyState from "@/model/enums/GameState";
 import GameStore from "@/store/index";
-import Location from "@/model/Location";
 import Game from "@/model/Game";
 import WebSocketManager from "@/helpers/WebSocketManager";
 import GameProcessManager from "@/helpers/GameProcessManager";

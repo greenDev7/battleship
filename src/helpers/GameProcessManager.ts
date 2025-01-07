@@ -161,13 +161,7 @@ export default class GameProcessManager {
 
                 // Если все корабли потоплены, даем знать об этом противнику. Игра окончена!
                 if (Game.allShipsAreSunk()) {
-
                     GameStore.commit("setMyState", GameState.GAME_IS_OVER);
-
-                    // this.infoComponentVisible = false;
-                    // this.gameOverInfoIsVisible = true;
-                    // this.turnOrderHintsVisible = false;
-
                     // Отправляем сопернику информацию о завершение игры с типом сообщения GAME_OVER
                     const ws: WebSocket = WebSocketManager.getWebSocket();
                     ws.send(
@@ -176,12 +170,8 @@ export default class GameProcessManager {
                             enemy_client_id: GameProcessManager.enemyClientUuid,
                         })
                     );
-
-                    // В случае игры с другом - меняем надпись на кнопке - "Играть еще раз"
-                    // await this.processPlayButton();
                 }
             }
-
             await GameStore.dispatch("disableShooting");
         } else await GameStore.dispatch("enableShooting");
 
