@@ -36,6 +36,31 @@ export default class Game {
         ]
     }
     /**
+     * Очищает канвас, заново рисует сетку и корабли
+    */
+    public static refreshGridAndShips() {
+        const st = GameStore.state;
+
+        const ctx: CanvasRenderingContext2D = GameStore.getters.getContext2D(st);
+        const hostileCtx: CanvasRenderingContext2D = GameStore.getters.getHostileContext2D(st);
+
+        Game.clearGrid(ctx);
+        Game.clearGrid(hostileCtx);
+
+        Game.makeGrid(ctx);
+        Game.makeGrid(hostileCtx);
+        
+        Game.createInitialShips();
+
+        Game.ships.forEach(s => { s.draw(ctx); });
+    }
+    /**
+     * Очищает канвас
+    */
+    private static clearGrid(ctx: CanvasRenderingContext2D) {
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    }
+    /**
      * Возвращает true, если локация уже существует в истори выстрелов (shotHistory), иначе false
      */
     public static existsInShotHistory(location: Location): boolean {

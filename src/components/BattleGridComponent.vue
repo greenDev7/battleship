@@ -124,12 +124,7 @@ export default defineComponent({
       event.preventDefault();
     },
 
-    registerOwnGridHandlers(ctx: CanvasRenderingContext2D) {
-      ctx.canvas.addEventListener("pointerdown", this.handlePointerDown);
-      ctx.canvas.addEventListener("pointermove", this.handlePointerMove);
-      ctx.canvas.addEventListener("pointerup", this.handlePointerUp);
-      ctx.canvas.addEventListener("touchstart", this.handleTouchStart);
-
+    async registerOwnGridHandlers() {
       const pointerDownHandler = this.handlePointerDown;
       const pointerMoveHandler = this.handlePointerMove;
       const pointerUpHandler = this.handlePointerUp;
@@ -141,6 +136,8 @@ export default defineComponent({
         pointerUpHandler,
         touchStartHandler,
       });
+
+      await GameStore.dispatch("addOwnGridEventListeners");
     },
 
     checkArrangementAndHighlight(ctx: CanvasRenderingContext2D): void {
@@ -184,7 +181,7 @@ export default defineComponent({
     },
   },
 
-  mounted() {
+  async mounted() {
     let ctx: CanvasRenderingContext2D | null = this.getContext();
 
     if (ctx) {
@@ -198,9 +195,10 @@ export default defineComponent({
         Game.getShips().forEach((ship) => {
           ship.draw(ctx);
         });
-        this.registerOwnGridHandlers(ctx);
         // сохраняем ctx в глобальном Store для использования в родительских компонентах
         GameStore.commit("setContext2D", ctx);
+        // Добавляем обработчики событий
+        await this.registerOwnGridHandlers();
       } else {
         GameStore.commit("setContextHostile2D", ctx);
       }

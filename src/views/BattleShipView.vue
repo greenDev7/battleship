@@ -85,7 +85,7 @@
           @click="handlePlayButtonClick"
           :disabled="!(getMyState === 2 || getMyState === 5)"
         >
-          Играть
+          {{ getPlayButtonCaption() }}
         </button>
       </div>
     </div>
@@ -177,6 +177,7 @@ export default defineComponent({
     hideAlert() {
       GameStore.commit("hideAlert");
     },
+
     processCaptcha(isCaptchaSuccess: boolean) {
       this.topButtonDisabled = !isCaptchaSuccess;
       this.captchaVisible = !isCaptchaSuccess;
@@ -275,13 +276,6 @@ export default defineComponent({
       this.nicknameDisabled = true;
     },
 
-    async processPlayButton() {
-      if (this.gameType === GameType.FRIEND)
-        (this.$refs.playButton as HTMLButtonElement).innerHTML =
-          "Играть еще раз";
-      this.playButtonDisabled = false;
-    },
-
     processRandomGameCreation() {
       const ws: WebSocket = WebSocketManager.getWebSocket();
 
@@ -323,18 +317,38 @@ export default defineComponent({
 
       Game.clearShotHistory();
 
-      if (!Game.isArrangementCorrect()[0]) {
-        UIHandler.showAlert("Корабли расставлены некорректно!");
-        return;
+      const ws: WebSocket = WebSocketManager.getWebSocket();
+
+      if (this.getMyState === GameState.GAME_IS_OVER) {
+        Game.refreshGridAndShips();
+        GameStore.commit("setMyState", GameState.SHIPS_POSITIONING);
+        GameStore.commit("setEnemyState", GameState.SHIPS_POSITIONING);
+
+        GameStore.dispatch("addOwnGridEventListeners");
+      } else {
+        if (!Game.isArrangementCorrect()[0]) {
+          UIHandler.showAlert("Корабли расставлены некорректно!");
+          return;
+        }
+
+        GameStore.commit("setMyState", GameState.SHIPS_ARE_ARRANGED);
+
+        ws.send(
+          JSON.stringify({
+            msg_type: MessageType.SHIPS_ARE_ARRANGED,
+            game_type: this.gameType,
+          })
+        );
       }
-
-      GameStore.commit("setMyState", GameState.SHIPS_ARE_ARRANGED);
-
-      if (this.gameType === GameType.RANDOM) this.processRandomGameCreation();
-      else this.processFriendGameCreation();
 
       // Удаляем обработчики событий мыши (Pointer), чтобы игрок не мог менять расстановку кораблей во время игры
       GameStore.dispatch("removeOwnGridEventListeners");
+    },
+
+    getPlayButtonCaption(): string {
+      return this.getMyState === GameState.GAME_IS_OVER
+        ? "Играть еще раз с тем же соперником"
+        : "Играть";
     },
   },
 

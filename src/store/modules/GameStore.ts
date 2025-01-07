@@ -119,6 +119,20 @@ export const GameStore = {
         },
     },
     actions: {
+        async addOwnGridEventListeners({ state }: any) {
+            const canvas = (state.context2D as unknown as CanvasRenderingContext2D).canvas;
+
+            console.log('canvas: ', canvas);
+
+            console.log('state.handlers: ', state.handlers);
+
+
+            canvas.addEventListener("pointerdown", state.handlers.pointerDownHandler);
+            canvas.addEventListener("pointermove", state.handlers.pointerMoveHandler);
+            canvas.addEventListener("pointerup", state.handlers.pointerUpHandler);
+            canvas.addEventListener("touchstart", state.handlers.touchStartHandler);
+        },
+
         async removeOwnGridEventListeners({ state }: any) {
             const canvas = (state.context2D as unknown as CanvasRenderingContext2D).canvas;
 

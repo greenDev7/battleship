@@ -88,7 +88,7 @@ export default class GameProcessManager {
 
         return gameCreationBody;
     }
-    private static processGameCreation(data: TransferLevel2Type) {
+    public static processGameCreation(data: TransferLevel2Type) {
         GameStore.commit("setMyState", GameState.SHIPS_POSITIONING);
         GameStore.commit("setEnemyState", GameState.SHIPS_POSITIONING);
         GameStore.commit("setEnemyNickname", data.enemy_nickname);
