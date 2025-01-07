@@ -9,6 +9,7 @@ import WebSocketManager from "./WebSocketManager";
 import HighlightType from "@/model/enums/HighlightType";
 import ShotResult from "@/model/enums/ShotResult";
 import Ship from "@/model/Ship";
+import UIHandler from "@/helpers/UIHandler";
 
 export default class GameProcessManager {
 
@@ -254,7 +255,7 @@ export default class GameProcessManager {
         unsunkShips.forEach((ship) => ship.draw(hostileCtx, "red"));
     }
     private static async processDisconnection(data: TransferLevel2Type) {
-        GameProcessManager.showAlert(
+        UIHandler.showAlert(
             "К сожалению, ваш соперник разорвал соединение и вышел из игры. Обновите страницу для новой игры",
             "danger",
             5000
@@ -270,7 +271,7 @@ export default class GameProcessManager {
         if (!shotLocation.isValid()) return;
 
         if (Game.existsInShotHistory(shotLocation)) {
-            GameProcessManager.showAlert("Вы уже стреляли сюда", "warning");
+            UIHandler.showAlert("Вы уже стреляли сюда", "warning");
             return;
         }
 
@@ -285,17 +286,6 @@ export default class GameProcessManager {
                 enemy_client_id: GameProcessManager.enemyClientUuid,
             })
         );
-    }
-    private static showAlert(
-        alertText: string,
-        alertColor: string = "danger",
-        delay: number = 3000
-    ) {
-        GameStore.commit("setAlert", { alertText, alertColor });
-        setTimeout(GameProcessManager.hideAlert, delay);
-    }
-    private static hideAlert() {
-        GameStore.commit("hideAlert");
     }
     private static async sendUnsunkShipsToEnemy() {
         const ws: WebSocket = WebSocketManager.getWebSocket();

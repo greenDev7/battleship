@@ -16,7 +16,6 @@ export default class WebSocketManager {
 
         return socket;
     }
-
     public static setupWSAndCreateGameOnOpen(ws: WebSocket, gameCreationBody: GameCreationBodyType) {
 
         ws.onopen = function (event) {
@@ -41,10 +40,6 @@ export default class WebSocketManager {
                 console.error("The connection was broken");
             }
         };
-    }
-
-    public static async sendDataToServer(ws: WebSocket, data: any) {
-        if (ws) ws.send(JSON.stringify(data));
     }
     public static getWebSocket(): WebSocket {
         return WebSocketManager.ws;
