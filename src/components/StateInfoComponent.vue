@@ -1,10 +1,13 @@
 <template>
   <p class="text-center fs-5 blink" v-if="this.myState === 1">
-    Ожидание противника...
+    Поиск противника...
+  </p>
+  <p class="text-center fs-5 blink" v-else-if="this.myState === 6">
+    Ждем противника...
   </p>
   <!-- -------------- -->
   <div
-    v-if="isEnemyPositioningOrArranged()"
+    v-else-if="isEnemyPositioningOrArranged()"
     class="card border-success text-center mb-4"
   >
     <div class="card-body text-success">

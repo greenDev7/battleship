@@ -238,7 +238,7 @@ export default defineComponent({
 
       this.gameType = GameType.RANDOM;
 
-      GameStore.commit("setMyState", GameState.WAITING_FOR_ENEMY);
+      GameStore.commit("setMyState", GameState.SEARCHING_FOR_OPPONENT);
 
       let ws: WebSocket = WebSocketManager.createWebSocket(uuidv4());
 
@@ -275,29 +275,7 @@ export default defineComponent({
       this.nicknameDisabled = true;
     },
 
-    processRandomGameCreation() {
-      const ws: WebSocket = WebSocketManager.getWebSocket();
-
-      ws.send(
-        JSON.stringify({
-          msg_type: MessageType.SHIPS_ARE_ARRANGED,
-          game_type: this.gameType,
-        })
-      );
-    },
-
-    processFriendGameCreation() {
-      const ws: WebSocket = WebSocketManager.getWebSocket();
-
-      ws.send(
-        JSON.stringify({
-          msg_type: MessageType.SHIPS_ARE_ARRANGED,
-          game_type: this.gameType,
-        })
-      );
-    },
-
-    handlePlayButtonClick(event: Event) {
+    async handlePlayButtonClick(event: Event) {
       if (!WebSocketManager.getWebSocket()) {
         UIHandler.showAlert(
           "Игра еще не создана. Выберите тип игры с помощью кнопок выше",
@@ -321,19 +299,38 @@ export default defineComponent({
         return;
       }
 
+      if (this.getMyState === GameState.GAME_IS_OVER) {
+        await this.handlePlayAgain();
+        return;
+      }
+
       GameStore.commit("setMyState", GameState.SHIPS_ARE_ARRANGED);
 
       const ws: WebSocket = WebSocketManager.getWebSocket();
-
       ws.send(
         JSON.stringify({
           msg_type: MessageType.SHIPS_ARE_ARRANGED,
-          game_type: this.gameType,
+          game_id: GameProcessManager.getGameId(),
         })
       );
 
       // Удаляем обработчики событий мыши (Pointer), чтобы игрок не мог менять расстановку кораблей во время игры
       GameStore.dispatch("removeOwnGridEventListeners");
+    },
+
+    async handlePlayAgain() {
+      Game.refreshGridAndShips();
+      GameStore.commit("setMyState", GameState.SHIPS_POSITIONING);
+      //TODO: НАДО ТАКЖЕ СБРОСИТЬ ПАРАМЕТР isWinner в false!!!
+      await GameStore.dispatch("addOwnGridEventListeners");
+      const ws: WebSocket = WebSocketManager.getWebSocket();
+      ws.send(
+        JSON.stringify({
+          msg_type: MessageType.PLAY_AGAIN,
+          game_id: GameProcessManager.getGameId(),
+          enemy_client_id: GameProcessManager.getEnemyUUID(),
+        })
+      );
     },
 
     getPlayButtonCaption(): string {

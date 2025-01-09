@@ -33,6 +33,7 @@ interface UnSunkShips extends MsgType {
 }
 
 interface TransferLevel2 extends FireResponse, UnSunkShips {
+    gameId: string;
     enemy_nickname: string;
     turn_to_shoot: boolean;
     shot_location: Loc;

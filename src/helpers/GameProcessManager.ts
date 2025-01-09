@@ -15,7 +15,14 @@ export default class GameProcessManager {
 
     private static currentShot: Location;
     private static enemyClientUuid: string;
+    private static gameId: string;
 
+    public static getEnemyUUID() {
+        return GameProcessManager.enemyClientUuid;
+    }
+    public static getGameId() {
+        return GameProcessManager.gameId;
+    }
     public static async processData(dataFromServer: string) {
         console.log('Data from server was received: ', dataFromServer);
 
@@ -70,6 +77,12 @@ export default class GameProcessManager {
                     await GameProcessManager.processDisconnection(parsedData.data);
                 break;
 
+            case MessageType.PLAY_AGAIN:
+                console.log('MessageType.PLAY_AGAIN data:', parsedData);
+                if (parsedData.is_status_ok)
+                    await GameProcessManager.processPlayAgain(parsedData.data);
+                break;
+
             default:
                 break;
         }
@@ -89,6 +102,7 @@ export default class GameProcessManager {
         return gameCreationBody;
     }
     public static processGameCreation(data: TransferLevel2Type) {
+        GameProcessManager.gameId = data.gameId;
         GameStore.commit("setMyState", GameState.SHIPS_POSITIONING);
         GameStore.commit("setEnemyState", GameState.SHIPS_POSITIONING);
         GameStore.commit("setEnemyNickname", data.enemy_nickname);
@@ -162,6 +176,7 @@ export default class GameProcessManager {
                 // Если все корабли потоплены, даем знать об этом противнику. Игра окончена!
                 if (Game.allShipsAreSunk()) {
                     GameStore.commit("setMyState", GameState.GAME_IS_OVER);
+                    GameStore.commit("setEnemyState", GameState.GAME_IS_OVER);
                     // Отправляем сопернику информацию о завершение игры с типом сообщения GAME_OVER
                     const ws: WebSocket = WebSocketManager.getWebSocket();
                     ws.send(
@@ -228,6 +243,7 @@ export default class GameProcessManager {
     }
     private static async processGameOver(data: TransferLevel2Type) {
         GameStore.commit("setMyState", GameState.GAME_IS_OVER);
+        GameStore.commit("setEnemyState", GameState.GAME_IS_OVER);
         GameStore.commit("setIsWinner");
 
         await GameStore.dispatch("disableShooting");
@@ -250,6 +266,15 @@ export default class GameProcessManager {
             "danger",
             5000
         );
+    }
+    private static async processPlayAgain(data: TransferLevel2Type) {
+        UIHandler.showAlert(
+            "Соперник хочет сыграть с Вами снова",
+            "success",
+            15000
+        );
+
+
     }
 
     public static handleHostileGridClick(event: MouseEvent) {
