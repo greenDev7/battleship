@@ -237,11 +237,10 @@ export default defineComponent({
       }
 
       this.gameType = GameType.RANDOM;
+
       GameStore.commit("setMyState", GameState.WAITING_FOR_ENEMY);
 
-      const clientUUID = uuidv4();
-
-      let ws: WebSocket = WebSocketManager.createWebSocket(clientUUID);
+      let ws: WebSocket = WebSocketManager.createWebSocket(uuidv4());
 
       let gameCreationBody = GameProcessManager.getGameCreationBody(
         GameType.RANDOM,
@@ -317,29 +316,21 @@ export default defineComponent({
 
       Game.clearShotHistory();
 
+      if (!Game.isArrangementCorrect()[0]) {
+        UIHandler.showAlert("Корабли расставлены некорректно!");
+        return;
+      }
+
+      GameStore.commit("setMyState", GameState.SHIPS_ARE_ARRANGED);
+
       const ws: WebSocket = WebSocketManager.getWebSocket();
 
-      if (this.getMyState === GameState.GAME_IS_OVER) {
-        Game.refreshGridAndShips();
-        GameStore.commit("setMyState", GameState.SHIPS_POSITIONING);
-        GameStore.commit("setEnemyState", GameState.SHIPS_POSITIONING);
-
-        GameStore.dispatch("addOwnGridEventListeners");
-      } else {
-        if (!Game.isArrangementCorrect()[0]) {
-          UIHandler.showAlert("Корабли расставлены некорректно!");
-          return;
-        }
-
-        GameStore.commit("setMyState", GameState.SHIPS_ARE_ARRANGED);
-
-        ws.send(
-          JSON.stringify({
-            msg_type: MessageType.SHIPS_ARE_ARRANGED,
-            game_type: this.gameType,
-          })
-        );
-      }
+      ws.send(
+        JSON.stringify({
+          msg_type: MessageType.SHIPS_ARE_ARRANGED,
+          game_type: this.gameType,
+        })
+      );
 
       // Удаляем обработчики событий мыши (Pointer), чтобы игрок не мог менять расстановку кораблей во время игры
       GameStore.dispatch("removeOwnGridEventListeners");
