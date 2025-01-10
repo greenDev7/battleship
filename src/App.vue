@@ -1,13 +1,12 @@
 <template>
   <nav class="navbar navbar-expand navbar-dark bg-dark mb-5">
     <div class="navbar-nav container">
-      <router-link class="nav-item nav-link" to="/battle"
-        >Морской бой</router-link
-      >
-      <router-link class="nav-item nav-link" to="/about"
-        >Статистика</router-link
-      >
-      <router-link class="nav-item nav-link" to="/">Помощь проекту</router-link>
+      <div class="d-flex flex-row w-100 justify-content-evenly"> 
+        <router-link class="nav-item nav-link" to="/battle"
+          >Морской бой</router-link
+        >
+        <router-link class="nav-item nav-link" to="/">О проекте</router-link>
+      </div>
     </div>
   </nav>
   <router-view />
@@ -33,7 +32,7 @@
 }
 
 .wfit {
-  width: fit-content
+  width: fit-content;
 }
 
 @keyframes blink-animation {

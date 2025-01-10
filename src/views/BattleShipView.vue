@@ -151,7 +151,6 @@ export default defineComponent({
       nickName: "",
       topButtonDisabled: false,
       nicknameDisabled: false,
-      playButtonDisabled: false,
       isPlaying: false,
       captchaVisible: false,
       friendComponentVisible: false,
@@ -189,6 +188,7 @@ export default defineComponent({
         this.getMyState === GameState.GAME_IS_OVER
       );
     },
+    
     hideAlert() {
       GameStore.commit("hideAlert");
     },
