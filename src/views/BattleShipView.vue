@@ -61,7 +61,7 @@
       <ArrangementRuleComponent />
     </div>
     <StateInfoComponent
-      v-if="getMyState !== 0 && getMyState !== 5"
+      v-if="isStateInfoComponentVisible()"
       :enemyNickName="getEnemyNickname"
       :enemyState="getEnemyState"
       :myState="getMyState"
@@ -83,7 +83,7 @@
           class="btn btn-lg btn-success w-100 text-nowrap"
           type="button"
           @click="handlePlayButtonClick"
-          :disabled="!(getMyState === 2 || getMyState === 5)"
+          :disabled="!isPlayButtonEnabled()"
         >
           {{ getPlayButtonCaption() }}
         </button>
@@ -174,6 +174,21 @@ export default defineComponent({
   },
 
   methods: {
+    isStateInfoComponentVisible() {
+      return (
+        this.getMyState !== GameState.NOT_CREATED &&
+        this.getMyState !== GameState.GAME_IS_OVER
+      );
+    },
+
+    isPlayButtonEnabled() {
+      return (
+        (this.getMyState === GameState.SHIPS_POSITIONING &&
+          (this.getEnemyState === GameState.SHIPS_POSITIONING ||
+            this.getEnemyState === GameState.SHIPS_ARE_ARRANGED)) ||
+        this.getMyState === GameState.GAME_IS_OVER
+      );
+    },
     hideAlert() {
       GameStore.commit("hideAlert");
     },
@@ -321,7 +336,7 @@ export default defineComponent({
     async handlePlayAgain() {
       Game.refreshGridAndShips();
       GameStore.commit("setMyState", GameState.SHIPS_POSITIONING);
-      //TODO: НАДО ТАКЖЕ СБРОСИТЬ ПАРАМЕТР isWinner в false!!!
+      GameStore.commit("setIsWinner", false);
       await GameStore.dispatch("addOwnGridEventListeners");
       const ws: WebSocket = WebSocketManager.getWebSocket();
       ws.send(

@@ -1,8 +1,8 @@
 <template>
-  <p class="text-center fs-5 blink" v-if="this.myState === 1">
+  <p class="text-center fs-5 blink" v-if="isSearchForEnemy()">
     Поиск противника...
   </p>
-  <p class="text-center fs-5 blink" v-else-if="this.myState === 6">
+  <p class="text-center fs-5 blink" v-else-if="isWaitForEnemyToPlayAgain()">
     Ждем противника...
   </p>
   <!-- -------------- -->
@@ -61,6 +61,17 @@ export default defineComponent({
   },
 
   methods: {
+    isSearchForEnemy(): boolean {
+      return this.myState === 1;
+    },
+
+    isWaitForEnemyToPlayAgain(): boolean {
+      return (
+        this.myState === GameState.SHIPS_POSITIONING &&
+        this.enemyState === GameState.GAME_IS_OVER
+      );
+    },
+
     isEnemyPositioningOrArranged(): boolean {
       return (
         this.enemyState === GameState.SHIPS_POSITIONING ||

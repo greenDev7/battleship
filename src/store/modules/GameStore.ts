@@ -114,8 +114,8 @@ export const GameStore = {
         setEnemyShotHint(state: any, enemyShotHint: string) {
             state.enemyShotHint = enemyShotHint;
         },
-        setIsWinner(state: any) {
-            state.isWinner = true;
+        setIsWinner(state: any, isWinner: boolean) {
+            state.isWinner = isWinner;
         },
     },
     actions: {

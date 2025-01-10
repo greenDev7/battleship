@@ -244,7 +244,7 @@ export default class GameProcessManager {
     private static async processGameOver(data: TransferLevel2Type) {
         GameStore.commit("setMyState", GameState.GAME_IS_OVER);
         GameStore.commit("setEnemyState", GameState.GAME_IS_OVER);
-        GameStore.commit("setIsWinner");
+        GameStore.commit("setIsWinner", true);
 
         await GameStore.dispatch("disableShooting");
         // Отправим сопернику информацию о непотопленных кораблях
@@ -264,7 +264,7 @@ export default class GameProcessManager {
         UIHandler.showAlert(
             "К сожалению, ваш соперник разорвал соединение и вышел из игры. Обновите страницу для новой игры",
             "danger",
-            5000
+            10000
         );
     }
     private static async processPlayAgain(data: TransferLevel2Type) {
@@ -273,8 +273,7 @@ export default class GameProcessManager {
             "success",
             15000
         );
-
-
+        GameStore.commit("setEnemyState", GameState.SHIPS_POSITIONING);
     }
 
     public static handleHostileGridClick(event: MouseEvent) {
