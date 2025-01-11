@@ -96,7 +96,7 @@ export default class GameProcessManager {
             nickName: nickName,
         };
 
-        if (enemy_client_id)
+        if (gameType === GameType.FRIEND && enemy_client_id)
             gameCreationBody.enemy_client_id = enemy_client_id;
 
         return gameCreationBody;

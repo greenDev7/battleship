@@ -1,9 +1,12 @@
 <template>
-  <p class="text-center fs-5 blink" v-if="isSearchForEnemy()">
+  <p class="text-center fs-5 blink" v-if="isSearchingForEnemy()">
     Поиск противника...
   </p>
-  <p class="text-center fs-5 blink" v-else-if="isWaitForEnemyToPlayAgain()">
+  <p class="text-center fs-5 blink" v-else-if="isWaitingForEnemyToPlayAgain()">
     Ждем противника...
+  </p>
+  <p class="text-center fs-5 blink" v-else-if="isWaitingForFriend()">
+    Ждем друга...
   </p>
   <!-- -------------- -->
   <div
@@ -61,15 +64,19 @@ export default defineComponent({
   },
 
   methods: {
-    isSearchForEnemy(): boolean {
+    isSearchingForEnemy(): boolean {
       return this.myState === 1;
     },
 
-    isWaitForEnemyToPlayAgain(): boolean {
+    isWaitingForEnemyToPlayAgain(): boolean {
       return (
         this.myState === GameState.SHIPS_POSITIONING &&
         this.enemyState === GameState.GAME_IS_OVER
       );
+    },
+
+    isWaitingForFriend() {
+      return this.myState === GameState.WAITING_FOR_FRIEND;
     },
 
     isEnemyPositioningOrArranged(): boolean {

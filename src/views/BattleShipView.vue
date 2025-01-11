@@ -44,7 +44,7 @@
     </div>
     <div
       class="border border-dark border-2 rounded-3 mx-auto wfit mb-4"
-      v-if="isFriendGame()"
+      v-if="isFriendGameNotCreated()"
     >
       <FriendGameComponent
         :clientUUID="clientUUID"
@@ -52,7 +52,7 @@
         :friendInputDisabled="friendInputDisabled"
       />
     </div>
-    <div class="mx-auto wfit mb-4" v-if="isFriendGame()">
+    <div class="mx-auto wfit mb-4" v-if="isFriendGameNotCreated()">
       <button
         class="btn btn-lg btn-dark p-3 text-nowrap minw-17"
         type="button"
@@ -188,7 +188,6 @@ export default defineComponent({
 
     isPlayButtonEnabled() {
       return (
-        this.gameType === GameType.FRIEND ||
         (this.getMyState === GameState.SHIPS_POSITIONING &&
           (this.getEnemyState === GameState.SHIPS_POSITIONING ||
             this.getEnemyState === GameState.SHIPS_ARE_ARRANGED)) ||
@@ -200,8 +199,11 @@ export default defineComponent({
       GameStore.commit("hideAlert");
     },
 
-    isFriendGame() {
-      return this.gameType === GameType.FRIEND;
+    isFriendGameNotCreated() {
+      return (
+        this.gameType === GameType.FRIEND &&
+        this.getMyState === GameState.NOT_CREATED
+      );
     },
 
     processCaptcha(isCaptchaSuccess: boolean) {
@@ -255,12 +257,14 @@ export default defineComponent({
 
       if (this.gameType === GameType.RANDOM)
         GameStore.commit("setMyState", GameState.SEARCHING_FOR_OPPONENT);
+      else GameStore.commit("setMyState", GameState.WAITING_FOR_FRIEND);
 
       let ws: WebSocket = WebSocketManager.createWebSocket(this.clientUUID);
 
       let gameCreationBody = GameProcessManager.getGameCreationBody(
         this.gameType,
-        this.nickName.trim()
+        this.nickName.trim(),
+        this.friendUUID
       );
 
       WebSocketManager.setupWSAndCreateGameOnOpen(ws, gameCreationBody);
@@ -361,9 +365,12 @@ export default defineComponent({
     },
 
     getPlayButtonCaption(): string {
-      return this.getMyState === GameState.GAME_IS_OVER
-        ? "Играть еще раз с тем же соперником"
-        : "Играть";
+      let caption =
+        this.gameType === GameType.RANDOM
+          ? "Играть еще раз с тем же соперником"
+          : "Играть с другом еще раз";
+
+      return this.getMyState === GameState.GAME_IS_OVER ? caption : "Играть";
     },
   },
 
