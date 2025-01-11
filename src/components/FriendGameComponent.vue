@@ -20,7 +20,7 @@
             <input
               class="form-control"
               type="text"
-              placeholder="Введите id друга"
+              placeholder="Введи id друга и нажми создать игру"
               @input="$emit('friendUUIDUpdated', $event.target.value)"
               :disabled="friendInputDisabled"
             />

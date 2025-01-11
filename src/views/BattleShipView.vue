@@ -250,11 +250,6 @@ export default defineComponent({
     },
 
     handleGameCreation() {
-      if (!this.isNickNameValid()) {
-        UIHandler.showAlert("Для игры необходимо ввести ник!", "warning");
-        return;
-      }
-
       if (this.gameType === GameType.RANDOM)
         GameStore.commit("setMyState", GameState.SEARCHING_FOR_OPPONENT);
       else GameStore.commit("setMyState", GameState.WAITING_FOR_FRIEND);
@@ -271,6 +266,10 @@ export default defineComponent({
     },
 
     handleRandomGameButtonClick() {
+      if (!this.isNickNameValid()) {
+        UIHandler.showAlert("Для игры необходимо ввести ник!", "warning");
+        return;
+      }
       if (this.isPlaying) {
         UIHandler.showAlert(
           "Игра уже создана или в процессе создания. Для новой игры необходимо обновить страницу!",
@@ -285,6 +284,10 @@ export default defineComponent({
     },
 
     handleFriendGameButtonClick() {
+      if (!this.isNickNameValid()) {
+        UIHandler.showAlert("Для игры необходимо ввести ник!", "warning");
+        return;
+      }
       if (this.isPlaying) {
         UIHandler.showAlert(
           "Игра уже создана или в процессе создания. Для новой игры необходимо обновить страницу!",
@@ -353,6 +356,7 @@ export default defineComponent({
       Game.refreshGridAndShips();
       GameStore.commit("setMyState", GameState.SHIPS_POSITIONING);
       GameStore.commit("setIsWinner", false);
+      GameStore.commit("setEnemyShotHint", "");
       await GameStore.dispatch("addOwnGridEventListeners");
       const ws: WebSocket = WebSocketManager.getWebSocket();
       ws.send(
