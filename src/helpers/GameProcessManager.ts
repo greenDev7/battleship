@@ -88,7 +88,7 @@ export default class GameProcessManager {
         }
     }
 
-    public static getGameCreationBody(gameType: GameType, nickName: string, enemyUUID: string): GameCreationBodyType {
+    public static getGameCreationBody(gameType: GameType, nickName: string, enemy_client_id: string = ""): GameCreationBodyType {
 
         const gameCreationBody: GameCreationBodyType = {
             msg_type: MessageType.GAME_CREATION,
@@ -96,8 +96,8 @@ export default class GameProcessManager {
             nickName: nickName,
         };
 
-        if (gameType === GameType.FRIEND)
-            gameCreationBody.friendUUID = enemyUUID;
+        if (enemy_client_id)
+            gameCreationBody.enemy_client_id = enemy_client_id;
 
         return gameCreationBody;
     }
@@ -266,6 +266,8 @@ export default class GameProcessManager {
             "danger",
             10000
         );
+        GameStore.commit("setMyState", GameState.NOT_CREATED);
+        GameStore.commit("setEnemyState", GameState.NOT_CREATED);
     }
     private static async processPlayAgain(data: TransferLevel2Type) {
         UIHandler.showAlert(

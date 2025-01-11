@@ -5,7 +5,6 @@
       placeholder="Введите ник"
       type="text"
       v-model="nickName"
-      :disabled="nicknameDisabled"
     />
     <div
       v-if="this.captchaVisible"
@@ -28,7 +27,6 @@
         <button
           class="btn btn-lg btn-dark p-3 w-100 text-nowrap"
           type="button"
-          :disabled="topButtonDisabled"
           @click="handleFriendGameButtonClick"
         >
           Игра с другом
@@ -46,17 +44,27 @@
     </div>
     <div
       class="border border-dark border-2 rounded-3 mx-auto wfit mb-4"
-      v-if="friendComponentVisible"
+      v-if="isFriendGame()"
     >
       <FriendGameComponent
-        :clientUUID="myUUIDforFriendGame"
+        :clientUUID="clientUUID"
         @friendUUIDUpdated="validateAndSetFriendUUID"
         :friendInputDisabled="friendInputDisabled"
       />
     </div>
+    <div class="mx-auto wfit mb-4" v-if="isFriendGame()">
+      <button
+        class="btn btn-lg btn-dark p-3 text-nowrap minw-17"
+        type="button"
+        :disabled="topButtonDisabled"
+        @click="handleCreateFriendGameButtonClick"
+      >
+        Создать игру
+      </button>
+    </div>
     <div
       class="border border-dark border-2 rounded-3 wfit mx-auto mb-4"
-      v-if="getMyState === 0"
+      v-if="!isPlaying"
     >
       <ArrangementRuleComponent />
     </div>
@@ -147,14 +155,12 @@ export default defineComponent({
 
   data() {
     return {
-      gameType: 1,
+      gameType: GameType.RANDOM,
       nickName: "",
       topButtonDisabled: false,
-      nicknameDisabled: false,
       isPlaying: false,
       captchaVisible: false,
-      friendComponentVisible: false,
-      myUUIDforFriendGame: "",
+      clientUUID: "",
       friendUUID: "",
       friendInputDisabled: false,
     };
@@ -182,15 +188,20 @@ export default defineComponent({
 
     isPlayButtonEnabled() {
       return (
+        this.gameType === GameType.FRIEND ||
         (this.getMyState === GameState.SHIPS_POSITIONING &&
           (this.getEnemyState === GameState.SHIPS_POSITIONING ||
             this.getEnemyState === GameState.SHIPS_ARE_ARRANGED)) ||
         this.getMyState === GameState.GAME_IS_OVER
       );
     },
-    
+
     hideAlert() {
       GameStore.commit("hideAlert");
+    },
+
+    isFriendGame() {
+      return this.gameType === GameType.FRIEND;
     },
 
     processCaptcha(isCaptchaSuccess: boolean) {
@@ -211,7 +222,7 @@ export default defineComponent({
           );
           return;
         }
-        if (parsedUUID === this.myUUIDforFriendGame) {
+        if (parsedUUID === this.clientUUID) {
           UIHandler.showAlert(
             "UUID ваш и друга не могут совпадать",
             "danger",
@@ -236,62 +247,63 @@ export default defineComponent({
       return this.nickName.trim().length !== 0;
     },
 
-    handleRandomGameButtonClick() {
+    handleGameCreation() {
       if (!this.isNickNameValid()) {
         UIHandler.showAlert("Для игры необходимо ввести ник!", "warning");
         return;
       }
 
-      if (WebSocketManager.getWebSocket()) {
-        UIHandler.showAlert(
-          "Соединение уже установлено. Для новой игры необходимо обновить страницу!",
-          "warning",
-          5000
-        );
-        return;
-      }
+      if (this.gameType === GameType.RANDOM)
+        GameStore.commit("setMyState", GameState.SEARCHING_FOR_OPPONENT);
 
-      this.gameType = GameType.RANDOM;
-
-      GameStore.commit("setMyState", GameState.SEARCHING_FOR_OPPONENT);
-
-      let ws: WebSocket = WebSocketManager.createWebSocket(uuidv4());
+      let ws: WebSocket = WebSocketManager.createWebSocket(this.clientUUID);
 
       let gameCreationBody = GameProcessManager.getGameCreationBody(
-        GameType.RANDOM,
-        this.nickName.trim(),
-        ""
+        this.gameType,
+        this.nickName.trim()
       );
 
       WebSocketManager.setupWSAndCreateGameOnOpen(ws, gameCreationBody);
+    },
 
-      this.isPlaying = true; // устанавливаем факт начала игры
+    handleRandomGameButtonClick() {
+      if (this.isPlaying) {
+        UIHandler.showAlert(
+          "Игра уже создана или в процессе создания. Для новой игры необходимо обновить страницу!",
+          "warning",
+          7000
+        );
+        return;
+      }
+      this.isPlaying = true;
+      this.clientUUID = uuidv4();
+      this.handleGameCreation();
     },
 
     handleFriendGameButtonClick() {
-      if (!this.isNickNameValid()) {
-        UIHandler.showAlert("Для игры необходимо ввести ник!", "warning");
+      if (this.isPlaying) {
+        UIHandler.showAlert(
+          "Игра уже создана или в процессе создания. Для новой игры необходимо обновить страницу!",
+          "warning",
+          7000
+        );
         return;
       }
-
+      this.isPlaying = true;
       this.gameType = GameType.FRIEND;
+      this.clientUUID = uuidv4();
+    },
 
-      // формируем свой UUID для игры с другом
-      this.myUUIDforFriendGame = uuidv4();
-      console.log(
-        "Your clientUUID for friend game: ",
-        this.myUUIDforFriendGame
-      );
-
-      this.isPlaying = true; // устанавливаем факт начала игры
-
-      this.friendComponentVisible = true;
-      this.topButtonDisabled = true;
-      this.nicknameDisabled = true;
+    handleCreateFriendGameButtonClick() {
+      if (!this.friendUUID) {
+        UIHandler.showAlert("Некорректный id друга", "warning", 5000);
+        return;
+      }
+      this.handleGameCreation();
     },
 
     async handlePlayButtonClick(event: Event) {
-      if (!WebSocketManager.getWebSocket()) {
+      if (!this.isPlaying) {
         UIHandler.showAlert(
           "Игра еще не создана. Выберите тип игры с помощью кнопок выше",
           "warning",

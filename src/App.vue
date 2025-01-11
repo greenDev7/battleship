@@ -5,7 +5,7 @@
         <router-link class="nav-item nav-link" to="/battle"
           >Морской бой</router-link
         >
-        <router-link class="nav-item nav-link" to="/">О проекте</router-link>
+        <!-- <router-link class="nav-item nav-link" to="/">О проекте</router-link> -->
       </div>
     </div>
   </nav>
