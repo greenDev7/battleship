@@ -2,7 +2,7 @@
   <nav class="navbar navbar-expand navbar-dark bg-dark mb-5">
     <div class="navbar-nav container">
       <div class="d-flex flex-row w-100 justify-content-evenly"> 
-        <router-link class="nav-item nav-link" to="/battle"
+        <router-link class="nav-item nav-link" to="/"
           >Морской бой</router-link
         >
         <!-- <router-link class="nav-item nav-link" to="/">О проекте</router-link> -->
