@@ -246,7 +246,24 @@ export default defineComponent({
     },
 
     isNickNameValid(): boolean {
-      return this.nickName.trim().length !== 0;
+      let length = this.nickName.trim().length;
+
+      if (length === 0) {
+        UIHandler.showAlert("Ник не должен быть пустым!", "warning");
+        return false;
+      }
+
+      let maxLength = 25;
+
+      if (length > maxLength) {
+        UIHandler.showAlert(
+          `Максимальная длина ника ${maxLength} символов!`,
+          "warning"
+        );
+        return false;
+      }
+
+      return true;
     },
 
     handleGameCreation() {
@@ -266,10 +283,8 @@ export default defineComponent({
     },
 
     handleRandomGameButtonClick() {
-      if (!this.isNickNameValid()) {
-        UIHandler.showAlert("Для игры необходимо ввести ник!", "warning");
-        return;
-      }
+      if (!this.isNickNameValid()) return;
+
       if (this.isPlaying) {
         UIHandler.showAlert(
           "Игра уже создана или в процессе создания. Для новой игры необходимо обновить страницу!",
@@ -284,10 +299,8 @@ export default defineComponent({
     },
 
     handleFriendGameButtonClick() {
-      if (!this.isNickNameValid()) {
-        UIHandler.showAlert("Для игры необходимо ввести ник!", "warning");
-        return;
-      }
+      if (!this.isNickNameValid()) return;
+
       if (this.isPlaying) {
         UIHandler.showAlert(
           "Игра уже создана или в процессе создания. Для новой игры необходимо обновить страницу!",
