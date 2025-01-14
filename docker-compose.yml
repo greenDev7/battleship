@@ -1,0 +1,23 @@
+services:
+
+  # battleship_front:
+  #   container_name: battleship_front
+  #   image: 'battleship_front:1.0'
+  #   build:
+  #     context: .
+  #   volumes:
+  #     - './dist:/usr/src/app/dist'
+  #   ports:
+  #     - "3000:3000"
+  #   stdin_open: true
+  #   tty: true
+  
+  battleship_front_nginx:
+    container_name: battleship_front_nginx
+    image: 'battleship_front_nginx:1.0'
+    build:
+      context: .
+    ports:
+      - "3000:80"
+    stdin_open: true
+    tty: true

@@ -24,7 +24,7 @@ export default class GameProcessManager {
         return GameProcessManager.gameId;
     }
     public static async processData(dataFromServer: string) {
-        console.log('Data from server was received: ', dataFromServer);
+        // console.log('Data from server was received: ', dataFromServer);
 
         let parsedData: WSDataTransferRootType = JSON.parse(dataFromServer);
 
