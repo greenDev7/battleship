@@ -4,8 +4,7 @@ import GameProcessManager from "./GameProcessManager";
 export default class WebSocketManager {
 
     private static ws: WebSocket;
-    // private static readonly WS_SERVER_HOST: string = "192.168.0.12";
-    private static readonly WS_SERVER_HOST: string = "91.245.227.98";
+    private static readonly WS_SERVER_HOST: string = process.env.VUE_APP_WS_SERVER_HOST;
     private static readonly WS_SERVER_PORT: number = 5000;
 
     public static createWebSocket(clientUUID: string): WebSocket {
