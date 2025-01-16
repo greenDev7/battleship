@@ -2,7 +2,7 @@
   <div class="container">
     <input
       class="form-control form-control-lg mb-4"
-      placeholder="Введите ник 1"
+      placeholder="Введите ник"
       type="text"
       v-model="nickName"
     />
