@@ -3,7 +3,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install
 COPY ./ .
-RUN npm run build-dev
+RUN npm run build
 
 FROM nginx:1.27.3 AS production-stage
 RUN mkdir /usr/src/app
