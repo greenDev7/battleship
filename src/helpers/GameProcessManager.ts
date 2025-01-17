@@ -13,7 +13,6 @@ import UIHandler from "@/helpers/UIHandler";
 
 export default class GameProcessManager {
 
-    private static currentShot: Location;
     private static enemyClientUuid: string;
     private static gameId: string;
 
@@ -202,7 +201,7 @@ export default class GameProcessManager {
     private static async processFireResponse(data: TransferLevel2Type) {
         let hostileCtx = GameStore.getters.getHostileContext2D;
 
-        let shot: Location = GameProcessManager.currentShot;
+        let shot: Location = new Location(data.shot_location._x, data.shot_location._y);
         Game.addToShotHistory(shot);
 
         if (data.shot_result === ShotResult.MISS) {
@@ -290,8 +289,6 @@ export default class GameProcessManager {
             UIHandler.showAlert("Вы уже стреляли сюда", "warning");
             return;
         }
-
-        GameProcessManager.currentShot = shotLocation;
 
         const ws: WebSocket = WebSocketManager.getWebSocket();
 
