@@ -132,6 +132,7 @@ export default class GameProcessManager {
             msg_type: MessageType.FIRE_RESPONSE,
             shot_result: ShotResult.MISS,
             enemy_client_id: GameProcessManager.enemyClientUuid,
+            shot_location: data.shot_location,
         };
 
         let ship: Ship | undefined = Game.getShipByLocation(shot);

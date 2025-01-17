@@ -16,6 +16,7 @@ interface Loc {
 };
 
 interface FireResponse extends MsgType {
+    shot_location: Loc;
     shot_result: number;
     enemy_client_id: string;
     sunkShip?: Ship_;
@@ -36,7 +37,6 @@ interface TransferLevel2 extends FireResponse, UnSunkShips {
     gameId: string;
     enemy_nickname: string;
     turn_to_shoot: boolean;
-    shot_location: Loc;
 };
 
 interface WSDataTransferRoot extends MsgType {
