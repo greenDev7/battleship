@@ -15,7 +15,6 @@ import Location from "@/model/Location";
 import Game from "@/model/Game";
 import GameStore from "@/store/index";
 import HighlightType from "@/model/enums/HighlightType";
-import GameProcessManager from "@/helpers/GameProcessManager";
 
 export default defineComponent({
   name: "BattleGridComponent",

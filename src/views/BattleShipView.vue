@@ -18,7 +18,7 @@
           class="btn btn-lg btn-dark p-3 w-100 text-nowrap"
           type="button"
           @click="handleRandomGameButtonClick"
-          :disabled="topButtonDisabled"
+          :disabled="!isCaptchaOk"
         >
           Игра со случайным соперником
         </button>
@@ -28,6 +28,7 @@
           class="btn btn-lg btn-dark p-3 w-100 text-nowrap"
           type="button"
           @click="handleFriendGameButtonClick"
+          :disabled="!isCaptchaOk"
         >
           Игра с другом
         </button>
@@ -36,7 +37,7 @@
         <button
           class="btn btn-lg btn-dark p-3 w-100 text-nowrap"
           type="button"
-          :disabled="topButtonDisabled"
+          :disabled="!isCaptchaOk"
         >
           Игра с компьютером
         </button>
@@ -56,7 +57,7 @@
       <button
         class="btn btn-lg btn-dark p-3 text-nowrap minw-17"
         type="button"
-        :disabled="topButtonDisabled"
+        :disabled="!isCaptchaOk"
         @click="handleCreateFriendGameButtonClick"
       >
         Создать игру
@@ -157,9 +158,9 @@ export default defineComponent({
     return {
       gameType: GameType.RANDOM,
       nickName: "",
-      topButtonDisabled: false,
+      isCaptchaOk: false,
       isPlaying: false,
-      captchaVisible: false,
+      captchaVisible: true,
       clientUUID: "",
       friendUUID: "",
       friendInputDisabled: false,
@@ -207,7 +208,7 @@ export default defineComponent({
     },
 
     processCaptcha(isCaptchaSuccess: boolean) {
-      this.topButtonDisabled = !isCaptchaSuccess;
+      this.isCaptchaOk = isCaptchaSuccess;
       this.captchaVisible = !isCaptchaSuccess;
 
       if (!isCaptchaSuccess) UIHandler.showAlert("Неверный код", "danger");

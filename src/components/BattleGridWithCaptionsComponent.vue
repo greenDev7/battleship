@@ -70,7 +70,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
+import { defineComponent } from "vue";
 import BattleGridComponent from "./BattleGridComponent.vue";
 import { mapGetters } from "vuex";
 import GridType from "@/model/enums/GridType";

@@ -67,7 +67,7 @@ export default class Game {
         return this.containsLocation(location, Game.shotHistory);
     }
     /**
-     * Расставляет случайным образом корабли на сетке
+     * Расставляет случайным образом корабли на сетке (В РАЗРАБОТКЕ)
      */
     private static createInitialRandomShips() {
 
