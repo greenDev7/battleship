@@ -8,7 +8,11 @@
           <tbody>
             <tr>
               <td id="c1">
-                <button class="btn p-0" @click="rearrangeTheShips()">
+                <button
+                  v-if="isReArrangeButtonVisible()"
+                  class="btn p-0"
+                  @click="rearrangeTheShips()"
+                >
                   <img
                     id="img"
                     src="@/assets/refresh_ships.png"
@@ -67,6 +71,8 @@ import { defineComponent } from "vue";
 import BattleGridWithCaptionsComponent from "./BattleGridWithCaptionsComponent.vue";
 import GridType from "@/model/enums/GridType";
 import Game from "@/model/Game";
+import { mapGetters } from "vuex";
+import GameState from "@/model/enums/GameState";
 
 export default defineComponent({
   name: "BattleBoardComponent",
@@ -86,11 +92,24 @@ export default defineComponent({
     };
   },
 
+  computed: {
+    ...mapGetters(["getMyState"]),
+  },
+
   methods: {
     rearrangeTheShips() {
       Game.rearrangeShips();
-    }
-  }
+    },
+
+    isReArrangeButtonVisible(): boolean {
+      return (
+        this.getMyState === GameState.NOT_CREATED ||
+        this.getMyState === GameState.SEARCHING_FOR_OPPONENT ||
+        this.getMyState === GameState.SHIPS_POSITIONING ||
+        this.getMyState === GameState.WAITING_FOR_FRIEND
+      );
+    },
+  },
 });
 </script>
 
