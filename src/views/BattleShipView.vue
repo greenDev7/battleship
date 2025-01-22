@@ -158,9 +158,9 @@ export default defineComponent({
     return {
       gameType: GameType.RANDOM,
       nickName: "",
-      isCaptchaOk: false,
+      isCaptchaOk: true,
       isPlaying: false,
-      captchaVisible: true,
+      captchaVisible: false,
       clientUUID: "",
       friendUUID: "",
       friendInputDisabled: false,
@@ -342,7 +342,7 @@ export default defineComponent({
 
       Game.clearShotHistory();
 
-      if (!Game.isArrangementCorrect()[0]) {
+      if (!Game.isArrangementCorrect(Game.getShips())[0]) {
         UIHandler.showAlert("Корабли расставлены некорректно!");
         return;
       }

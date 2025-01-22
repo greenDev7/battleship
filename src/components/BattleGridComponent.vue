@@ -140,7 +140,7 @@ export default defineComponent({
     },
 
     checkArrangementAndHighlight(ctx: CanvasRenderingContext2D): void {
-      let res = Game.isArrangementCorrect();
+      let res = Game.isArrangementCorrect(Game.getShips());
       if (!res[0]) {
         res[1]?.forEach((l) => l.highlight(ctx, HighlightType.SQUARE));
       }
@@ -188,7 +188,7 @@ export default defineComponent({
       ctx.canvas.height = this.getCanvasHeight;
 
       Game.makeGrid(ctx);
-      Game.createInitialShips();
+      Game.createInitialRandomShips();
 
       if (this.gridType === GridType.Own) {
         Game.getShips().forEach((ship) => {
