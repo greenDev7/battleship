@@ -1,5 +1,4 @@
 import Ship from "./Ship";
-import ShipOrientation from "./enums/ShipOrientation";
 import Location from "./Location";
 import { GameStore } from "@/store/modules/GameStore";
 
@@ -14,26 +13,20 @@ export default class Game {
      */
     public static getShips(): Ship[] {
         return Game.ships;
-    }
+    }   
     /**
-     * createDefaultShips
-    */
-    public static createInitialShips() {
-        Game.ships = [
-            new Ship(1, ShipOrientation.Horizontal, new Location(8, 2)),
-            new Ship(1, ShipOrientation.Horizontal, new Location(0, 9)),
-            new Ship(1, ShipOrientation.Horizontal, new Location(7, 5)),
-            new Ship(1, ShipOrientation.Horizontal, new Location(8, 8)),
+     * Выполняет перестановку кораблей на своем гриде
+     */
+    public static rearrangeShips() {
+        const st = GameStore.state;
+        const ctx: CanvasRenderingContext2D = GameStore.getters.getContext2D(st);
 
-            new Ship(2, ShipOrientation.Horizontal, new Location(0, 0)),
-            new Ship(2, ShipOrientation.Vertical, new Location(4, 3)),
-            new Ship(2, ShipOrientation.Vertical, new Location(1, 2)),
+        Game.clearGrid(ctx);
+        Game.makeGrid(ctx);
 
-            new Ship(3, ShipOrientation.Horizontal, new Location(5, 0)),
-            new Ship(3, ShipOrientation.Horizontal, new Location(4, 9)),
+        Game.createInitialRandomShips();
 
-            new Ship(4, ShipOrientation.Vertical, new Location(2, 6))
-        ]
+        Game.ships.forEach(s => { s.draw(ctx); });
     }
     /**
      * Очищает канвас, заново рисует сетку и корабли
@@ -50,7 +43,7 @@ export default class Game {
         Game.makeGrid(ctx);
         Game.makeGrid(hostileCtx);
 
-        Game.createInitialShips();
+        Game.createInitialRandomShips();
 
         Game.ships.forEach(s => { s.draw(ctx); });
     }
@@ -67,24 +60,46 @@ export default class Game {
         return this.containsLocation(location, Game.shotHistory);
     }
     /**
-     * Расставляет случайным образом корабли на сетке (В РАЗРАБОТКЕ)
+     * Расставляет случайным образом корабли на сетке
      */
-    private static createInitialRandomShips() {
+    public static createInitialRandomShips() {
+        console.log('createInitialRandomShips');
+        Game.ships = [];
+        let tempShips: Ship[] = [];
 
+        let loc4: Location = new Location(Math.floor(Math.random() * 7), Math.floor(Math.random() * 7));
+        let ship4: Ship = new Ship(4, Math.floor(Math.random() * 2), loc4);
+        tempShips.push(ship4);
+
+        let shipLengths = [3, 3, 2, 2, 2, 1, 1, 1, 1];
+
+        for (const sl of shipLengths) {
+            let rightXY = 11 - sl;
+            let tempLoc: Location = new Location(Math.floor(Math.random() * rightXY), Math.floor(Math.random() * rightXY));
+            tempShips.push(new Ship(sl, Math.floor(Math.random() * 2), tempLoc));
+
+            while (!Game.isArrangementCorrect(tempShips)[0]) {
+                tempShips.pop()
+                let tempLoc: Location = new Location(Math.floor(Math.random() * rightXY), Math.floor(Math.random() * rightXY));
+                tempShips.push(new Ship(sl, Math.floor(Math.random() * 2), tempLoc));
+            }
+        }
+
+        Game.ships = tempShips;
     }
     /**
      * Возвращает true, если корабли расставлены корректно (ни один из них не пересекается со всеми другими),
      * иначе возвращает false и массив с координатами пересечений
      */
-    public static isArrangementCorrect(): [boolean, Location[] | undefined] {
+    public static isArrangementCorrect(ships: Ship[]): [boolean, Location[] | undefined] {
 
         let intersections: Location[] = [];
 
-        for (let i = 0; i < Game.ships.length - 1; i++) {
-            const outerShip = Game.ships[i];
+        for (let i = 0; i < ships.length - 1; i++) {
+            const outerShip = ships[i];
 
-            for (let j = i + 1; j < Game.ships.length; j++) {
-                const innerShip = Game.ships[j];
+            for (let j = i + 1; j < ships.length; j++) {
+                const innerShip = ships[j];
                 const res = outerShip.isIntersect(innerShip);
                 if (res[0])
                     Array.prototype.push.apply(intersections, [res[1], res[2]]);

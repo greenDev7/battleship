@@ -7,7 +7,20 @@
         <table>
           <tbody>
             <tr>
-              <td>
+              <td id="c1">
+                <button
+                  v-if="isReArrangeButtonVisible()"
+                  class="btn p-0"
+                  @click="rearrangeTheShips()"
+                >
+                  <img
+                    id="img"
+                    src="@/assets/refresh_ships.png"
+                    alt="refresh_ships"
+                  />
+                </button>
+              </td>
+              <td id="c2">
                 <span
                   v-show="turnOrderHintsVisible"
                   :class="{ blink: !isMyTurnToShoot }"
@@ -22,7 +35,7 @@
               </td>
             </tr>
             <tr>
-              <td><BattleGridWithCaptionsComponent /></td>
+              <td colspan="2"><BattleGridWithCaptionsComponent /></td>
             </tr>
           </tbody>
         </table>
@@ -57,6 +70,9 @@
 import { defineComponent } from "vue";
 import BattleGridWithCaptionsComponent from "./BattleGridWithCaptionsComponent.vue";
 import GridType from "@/model/enums/GridType";
+import Game from "@/model/Game";
+import { mapGetters } from "vuex";
+import GameState from "@/model/enums/GameState";
 
 export default defineComponent({
   name: "BattleBoardComponent",
@@ -75,9 +91,40 @@ export default defineComponent({
       hostileGrid: GridType.Hostile,
     };
   },
+
+  computed: {
+    ...mapGetters(["getMyState"]),
+  },
+
+  methods: {
+    rearrangeTheShips() {
+      Game.rearrangeShips();
+    },
+
+    isReArrangeButtonVisible(): boolean {
+      return (
+        this.getMyState === GameState.NOT_CREATED ||
+        this.getMyState === GameState.SEARCHING_FOR_OPPONENT ||
+        this.getMyState === GameState.SHIPS_POSITIONING ||
+        this.getMyState === GameState.WAITING_FOR_FRIEND
+      );
+    },
+  },
 });
 </script>
 
 
 <style lang="css" scoped>
+img {
+  width: 20px;
+  height: 20px;
+}
+
+#c1 {
+  width: 10%;
+}
+
+#c2 {
+  width: 90%;
+}
 </style>
