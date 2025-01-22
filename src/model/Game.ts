@@ -1,5 +1,4 @@
 import Ship from "./Ship";
-import ShipOrientation from "./enums/ShipOrientation";
 import Location from "./Location";
 import { GameStore } from "@/store/modules/GameStore";
 
@@ -64,6 +63,7 @@ export default class Game {
      * Расставляет случайным образом корабли на сетке
      */
     public static createInitialRandomShips() {
+        console.log('createInitialRandomShips');
         Game.ships = [];
         let tempShips: Ship[] = [];
 
