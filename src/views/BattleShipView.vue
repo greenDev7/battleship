@@ -425,11 +425,12 @@ export default defineComponent({
       GameStore.commit("setMyState", GameState.PLAYING);
       Game.createComputerRandomShips();
       GameProcessManager.setGameType(GameType.COMPUTER);
+      ComputerGameManager.createPossibleLocations();
 
       let isMyTurn: boolean = Math.random() - 0.5 > 0;
       GameStore.commit("setMyTurnToShoot", isMyTurn);
       if (isMyTurn) await GameStore.dispatch("enableShooting");
-      else ComputerGameManager.computerShot();
+      else await ComputerGameManager.computerShot();
     },
   },
 

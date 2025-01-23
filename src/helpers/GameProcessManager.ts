@@ -147,6 +147,8 @@ export default class GameProcessManager {
 
         // если наш корабль ранили
         if (ship) {
+            await GameStore.dispatch("disableShooting");
+
             ht = HighlightType.CROSS; // меняем тип выделения на "крест"
             ship.hitsNumber++; // увеличиваем счетчик ранений у подбитого корабля
 
@@ -194,8 +196,7 @@ export default class GameProcessManager {
                         })
                     );
                 }
-            }
-            await GameStore.dispatch("disableShooting");
+            }            
         } else await GameStore.dispatch("enableShooting");
 
         await shot.highlight(ctx, ht);
@@ -300,7 +301,7 @@ export default class GameProcessManager {
         }
 
         if (GameProcessManager.gameType === GameType.COMPUTER) {
-            ComputerGameManager.playerShot();
+            ComputerGameManager.playerShot(shotLocation);
             return;
         }
 
