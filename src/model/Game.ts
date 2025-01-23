@@ -6,6 +6,7 @@ export default class Game {
 
     private static ships: Ship[];
     private static shotHistory: Location[] = [];
+    private static computerShips: Ship[] = [];
 
 
     /**
@@ -13,7 +14,7 @@ export default class Game {
      */
     public static getShips(): Ship[] {
         return Game.ships;
-    }   
+    }
     /**
      * Выполняет перестановку кораблей на своем гриде
      */
@@ -60,11 +61,23 @@ export default class Game {
         return this.containsLocation(location, Game.shotHistory);
     }
     /**
-     * Расставляет случайным образом корабли на сетке
+     * Присваивает массиву кораблей массив кораблей с рандомной расстановкой
      */
     public static createInitialRandomShips() {
         console.log('createInitialRandomShips');
-        Game.ships = [];
+        Game.ships = Game.generateRandomShips();
+    }
+    /**
+     * Присваивает массиву кораблей компьютера (для игры с компьютером) массив кораблей с рандомной расстановкой
+     */
+    public static createComputerRandomShips() {
+        console.log('createComputerRandomShips');
+        Game.computerShips = this.generateRandomShips();
+    }
+    /**
+     * Генерирует массив кораблей с рандомной расстановкой
+     */
+    private static generateRandomShips(): Ship[] {
         let tempShips: Ship[] = [];
 
         let loc4: Location = new Location(Math.floor(Math.random() * 7), Math.floor(Math.random() * 7));
@@ -85,7 +98,7 @@ export default class Game {
             }
         }
 
-        Game.ships = tempShips;
+        return tempShips;
     }
     /**
      * Возвращает true, если корабли расставлены корректно (ни один из них не пересекается со всеми другими),

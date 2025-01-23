@@ -1,4 +1,7 @@
 <template>
+  <p class="text-center fs-5 blink" v-if="isShipPositioningForComputerGame()">
+    Расставьте корабли и нажмите "Играть"
+  </p>
   <p class="text-center fs-5 blink" v-if="isSearchingForEnemy()">
     Поиск соперника...
   </p>
@@ -43,6 +46,7 @@
 import { defineComponent } from "vue";
 import type { PropType } from "vue";
 import GameState from "@/model/enums/GameState";
+import GameType from "@/model/enums/GameType";
 
 export default defineComponent({
   name: "StateInfoComponent",
@@ -57,6 +61,10 @@ export default defineComponent({
       type: Number as PropType<GameState>,
       default: GameState.NOT_CREATED,
     },
+    gameType: {
+      type: Number as PropType<GameType>,
+      default: GameType.RANDOM,
+    },
   },
 
   data() {
@@ -64,6 +72,13 @@ export default defineComponent({
   },
 
   methods: {
+    isShipPositioningForComputerGame(): boolean {
+      return (
+        this.gameType === GameType.COMPUTER &&
+        this.myState === GameState.SHIPS_POSITIONING
+      );
+    },
+
     isSearchingForEnemy(): boolean {
       return this.myState === 1;
     },

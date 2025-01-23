@@ -23,7 +23,7 @@
           Игра со случайным соперником
         </button>
       </div>
-      <div class="w-100 maxw-400 pb-3 ms-lg-5">
+      <div class="w-100 maxw-400 pb-3">
         <button
           class="btn btn-lg btn-dark p-3 w-100 text-nowrap"
           type="button"
@@ -33,15 +33,16 @@
           Игра с другом
         </button>
       </div>
-      <!-- <div class="w-100 maxw-400 pb-3">
+      <div class="w-100 maxw-400 pb-3 ms-lg-5">
         <button
           class="btn btn-lg btn-dark p-3 w-100 text-nowrap"
           type="button"
+          @click="handleComputerGameButtonClick"
           :disabled="!isCaptchaOk"
         >
           Игра с компьютером
         </button>
-      </div> -->
+      </div>
     </div>
     <div
       class="border border-dark border-2 rounded-3 mx-auto wfit mb-4"
@@ -74,6 +75,7 @@
       :enemyNickName="getEnemyNickname"
       :enemyState="getEnemyState"
       :myState="getMyState"
+      :gameType="gameType"
     />
     <GameOverInfoComponent v-if="getMyState === 5" :isWinner="getIsWinner" />
 
@@ -192,7 +194,9 @@ export default defineComponent({
         (this.getMyState === GameState.SHIPS_POSITIONING &&
           (this.getEnemyState === GameState.SHIPS_POSITIONING ||
             this.getEnemyState === GameState.SHIPS_ARE_ARRANGED)) ||
-        this.getMyState === GameState.GAME_IS_OVER
+        this.getMyState === GameState.GAME_IS_OVER ||
+        (this.gameType === GameType.COMPUTER &&
+          this.getMyState === GameState.SHIPS_POSITIONING)
       );
     },
 
@@ -315,6 +319,24 @@ export default defineComponent({
       this.clientUUID = uuidv4();
     },
 
+    handleComputerGameButtonClick() {
+      console.log("handleComputerGameButtonClick");
+
+      if (this.isPlaying) {
+        UIHandler.showAlert(
+          "Игра уже создана или в процессе создания. Для новой игры необходимо обновить страницу!",
+          "warning",
+          7000
+        );
+        return;
+      }
+      this.isPlaying = true;
+
+      GameStore.commit("setMyState", GameState.SHIPS_POSITIONING);
+
+      this.gameType = GameType.COMPUTER;
+    },
+
     handleCreateFriendGameButtonClick() {
       if (!this.friendUUID) {
         UIHandler.showAlert("Некорректный id друга", "warning", 5000);
@@ -354,6 +376,14 @@ export default defineComponent({
 
       GameStore.commit("setMyState", GameState.SHIPS_ARE_ARRANGED);
 
+      // Удаляем обработчики событий мыши (Pointer), чтобы игрок не мог менять расстановку кораблей во время игры
+      GameStore.dispatch("removeOwnGridEventListeners");
+
+      if (this.gameType === GameType.COMPUTER) {
+        await this.setAttributesForComputerGame();
+        return;
+      }
+
       const ws: WebSocket = WebSocketManager.getWebSocket();
       ws.send(
         JSON.stringify({
@@ -361,9 +391,6 @@ export default defineComponent({
           game_id: GameProcessManager.getGameId(),
         })
       );
-
-      // Удаляем обработчики событий мыши (Pointer), чтобы игрок не мог менять расстановку кораблей во время игры
-      GameStore.dispatch("removeOwnGridEventListeners");
     },
 
     async handlePlayAgain() {
@@ -389,6 +416,16 @@ export default defineComponent({
           : "Играть с другом еще раз";
 
       return this.getMyState === GameState.GAME_IS_OVER ? caption : "Играть";
+    },
+
+    async setAttributesForComputerGame() {
+      GameStore.commit("setEnemyNickname", "Computer");
+      GameStore.commit("setEnemyState", GameState.PLAYING);
+      GameStore.commit("setMyState", GameState.PLAYING);
+
+      let isMyTurn: boolean = Math.random() - 0.5 > 0;
+      GameStore.commit("setMyTurnToShoot", isMyTurn);
+      if (isMyTurn) await GameStore.dispatch("enableShooting");
     },
   },
 
