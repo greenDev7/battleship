@@ -10,12 +10,20 @@ import HighlightType from "@/model/enums/HighlightType";
 import ShotResult from "@/model/enums/ShotResult";
 import Ship from "@/model/Ship";
 import UIHandler from "@/helpers/UIHandler";
+import ComputerGameManager from "./ComputerGameManager";
 
 export default class GameProcessManager {
 
     private static enemyClientUuid: string;
     private static gameId: string;
+    private static gameType: GameType;
 
+    public static getGameType() {
+        return GameProcessManager.gameType;
+    }
+    public static setGameType(gt: GameType) {
+        GameProcessManager.gameType = gt;
+    }
     public static getEnemyUUID() {
         return GameProcessManager.enemyClientUuid;
     }
@@ -135,7 +143,7 @@ export default class GameProcessManager {
             shot_location: data.shot_location,
         };
 
-        let ship: Ship | undefined = Game.getShipByLocation(shot);
+        let ship: Ship | undefined = Game.getShipByLocation(Game.getShips(), shot);
 
         // если наш корабль ранили
         if (ship) {
@@ -288,6 +296,11 @@ export default class GameProcessManager {
 
         if (Game.existsInShotHistory(shotLocation)) {
             UIHandler.showAlert("Вы уже стреляли сюда", "warning");
+            return;
+        }
+
+        if (GameProcessManager.gameType === GameType.COMPUTER) {
+            ComputerGameManager.playerShot();
             return;
         }
 

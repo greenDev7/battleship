@@ -140,6 +140,7 @@ import GameStore from "@/store/index";
 import Game from "@/model/Game";
 import WebSocketManager from "@/helpers/WebSocketManager";
 import GameProcessManager from "@/helpers/GameProcessManager";
+import ComputerGameManager from "@/helpers/ComputerGameManager";
 import GameType from "@/model/enums/GameType";
 import GameState from "@/model/enums/GameState";
 import UIHandler from "@/helpers/UIHandler";
@@ -380,7 +381,7 @@ export default defineComponent({
       GameStore.dispatch("removeOwnGridEventListeners");
 
       if (this.gameType === GameType.COMPUTER) {
-        await this.setAttributesForComputerGame();
+        await this.setAttributesAndStartComputerGame();
         return;
       }
 
@@ -418,14 +419,17 @@ export default defineComponent({
       return this.getMyState === GameState.GAME_IS_OVER ? caption : "Играть";
     },
 
-    async setAttributesForComputerGame() {
+    async setAttributesAndStartComputerGame() {
       GameStore.commit("setEnemyNickname", "Computer");
       GameStore.commit("setEnemyState", GameState.PLAYING);
       GameStore.commit("setMyState", GameState.PLAYING);
+      Game.createComputerRandomShips();
+      GameProcessManager.setGameType(GameType.COMPUTER);
 
       let isMyTurn: boolean = Math.random() - 0.5 > 0;
       GameStore.commit("setMyTurnToShoot", isMyTurn);
       if (isMyTurn) await GameStore.dispatch("enableShooting");
+      else ComputerGameManager.computerShot();
     },
   },
 

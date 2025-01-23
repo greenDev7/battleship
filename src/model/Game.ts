@@ -8,12 +8,17 @@ export default class Game {
     private static shotHistory: Location[] = [];
     private static computerShips: Ship[] = [];
 
-
     /**
      * Возвращает корабли
      */
     public static getShips(): Ship[] {
         return Game.ships;
+    }
+    /**
+     * Возвращает корабли компьютера
+     */
+    public static getComputerShips(): Ship[] {
+        return Game.computerShips;
     }
     /**
      * Выполняет перестановку кораблей на своем гриде
@@ -133,9 +138,9 @@ export default class Game {
     /**
      * Возвращает корабль по данной локации
      */
-    public static getShipByLocation(location: Location): Ship | undefined {
+    public static getShipByLocation(ships: Ship[], location: Location): Ship | undefined {
 
-        let notDestroyedShips: Ship[] = Game.ships.filter(s => s.hitsNumber < s.length);
+        let notDestroyedShips: Ship[] = ships.filter(s => s.hitsNumber < s.length);
 
         for (const ship of notDestroyedShips)
             if (Game.containsLocation(location, ship.getLocations()))
