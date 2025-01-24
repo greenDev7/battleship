@@ -11,15 +11,28 @@ export default class ComputerGameManager {
 
     public static async computerShot() {
 
-        let ship: Ship | undefined;
+        let ship: Ship | undefined = undefined;
 
         do {
             console.log('Computer move');
             // Формируем массив с индексами элементов availableLocations, у которых значения равны true
-            let indexesOfTrue = ComputerGameManager.availableLocations.reduce(function (arr: number[], e, i) { if (e) arr.push(i); return arr; }, []);
-            let randIndex = Math.floor(Math.random() * indexesOfTrue.length);
-            console.log('randIndex:', randIndex);
-            let shot: Location = new Location(indexesOfTrue[randIndex] % 10, Math.floor(indexesOfTrue[randIndex] / 10));
+            let indexesOfTrue = ComputerGameManager.availableLocations.reduce(function (arr: number[], el, index) { if (el) arr.push(index); return arr; }, []);
+
+            // Формируем выстрел компьютера
+            let shot: Location;
+
+            if (ship) {
+                // Если имеется раненный корабль, то нужно попытаться сначала его добить
+                shot = new Location(1, 1);
+                console.log('killing unsunk ship: ', ship);
+                // нужно попробовать выбрать из доступных локаций те, которые будут соседними по отношению к текущему попаданию
+            }
+            else {
+                let randIndex = Math.floor(Math.random() * indexesOfTrue.length);
+                shot = new Location(indexesOfTrue[randIndex] % 10, Math.floor(indexesOfTrue[randIndex] / 10));
+                ComputerGameManager.availableLocations[indexesOfTrue[randIndex]] = false;
+            }
+
             console.log('computer shoots at:', shot.toString());
 
             let ht: HighlightType = HighlightType.CIRCLE;
@@ -64,7 +77,6 @@ export default class ComputerGameManager {
             } else await GameStore.dispatch("enableShooting");
 
             await shot.highlight(ctx, ht);
-            ComputerGameManager.availableLocations[indexesOfTrue[randIndex]] = false;
             GameStore.commit("setEnemyShotHint", shot.toString());
 
         } while (ship)
