@@ -227,8 +227,8 @@ export default class Game {
     /**
      * Возвращает true, если все корабли потоплены, иначе false
      */
-    public static allShipsAreSunk(): boolean {
-        return Game.ships.every(ship => ship.length === ship.hitsNumber);
+    public static allShipsAreSunk(ships: Ship[]): boolean {
+        return ships.every(ship => ship.length === ship.hitsNumber);
     }
     /**
      * Подсвечивает диагональные локации и, если нужно, добавляет их в историю выстрелов

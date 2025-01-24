@@ -411,10 +411,13 @@ export default defineComponent({
     },
 
     getPlayButtonCaption(): string {
-      let caption =
-        this.gameType === GameType.RANDOM
-          ? "Играть еще раз с тем же соперником"
-          : "Играть с другом еще раз";
+      let caption: string;
+
+      if (this.gameType === GameType.RANDOM)
+        caption = "Играть еще раз с тем же соперником";
+      else if (this.gameType === GameType.FRIEND)
+        caption = "Играть с другом еще раз";
+      else caption = "Играть с компьютером еще раз";
 
       return this.getMyState === GameState.GAME_IS_OVER ? caption : "Играть";
     },

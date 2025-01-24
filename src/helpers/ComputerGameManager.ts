@@ -1,40 +1,96 @@
 import GameState from "@/model/enums/GameState";
 import HighlightType from "@/model/enums/HighlightType";
+import ShipOrientation from "@/model/enums/ShipOrientation";
 import Game from "@/model/Game";
 import Location from "@/model/Location";
 import Ship from "@/model/Ship";
-import { ShipType } from "@/model/WSDataTransferRoot";
 import GameStore from "@/store/index";
 
 export default class ComputerGameManager {
 
-    private static possibleShootingLocations: boolean[];
+    private static availableLocations: boolean[];
 
     public static async computerShot() {
-        console.log('Computer move');
-        let len = ComputerGameManager.possibleShootingLocations.filter(x => x).length;
-        console.log('psl array length:', len);
-        let randIndex: number = Math.floor(Math.random() * len);
-        console.log('randIndex:', randIndex);
-        let shot: Location = new Location(randIndex % 10, Math.floor(randIndex / 10));
-        console.log('computer shoots at:', shot.toString());
+
+        let ship: Ship | undefined;
+
+        do {
+            console.log('Computer move');
+            // Формируем массив с индексами элементов availableLocations, у которых значения равны true
+            let indexesOfTrue = ComputerGameManager.availableLocations.reduce(function (arr: number[], e, i) { if (e) arr.push(i); return arr; }, []);
+            let randIndex = Math.floor(Math.random() * indexesOfTrue.length);
+            console.log('randIndex:', randIndex);
+            let shot: Location = new Location(indexesOfTrue[randIndex] % 10, Math.floor(indexesOfTrue[randIndex] / 10));
+            console.log('computer shoots at:', shot.toString());
+
+            let ht: HighlightType = HighlightType.CIRCLE;
+            let ctx = GameStore.getters.getContext2D;
+
+            ship = Game.getShipByLocation(Game.getShips(), shot);
+
+            if (ship) {
+                // Если компьютер попал - отключаем у соперника возможность выстрела
+                await GameStore.dispatch("disableShooting");
+
+                ht = HighlightType.CROSS; // меняем тип выделения на "крест"
+                ship.hitsNumber++; // увеличиваем счетчик ранений у подбитого корабля
+                // находим диагональные локации
+                let diags: Location[] = Game.getDiagonalLocations(shot);
+                console.log('diags:', diags);
+                // Исключаем диагональные локации из возможных для выстрела
+                await ComputerGameManager.excludeLocationsFromPossible(diags);
+                // подсвечиваем диагональные локации
+                await Game.highlightDiagonals(ctx, diags);
+
+                // если корабль потоплен
+                if (ship.hitsNumber === ship.length) {
+                    // находим боковые локации
+                    let edgeLocs = await Ship.getFrontAndBackLocations(
+                        ship.length,
+                        ship.location.x,
+                        ship.location.y,
+                        ship.type
+                    );
+                    // выделяем их на своем гриде
+                    for (const loc of edgeLocs) await loc.highlight(ctx);
+                    // Исключаем боковые локации из возможных для выстрела
+                    await ComputerGameManager.excludeLocationsFromPossible(edgeLocs);
+                    // Если все корабли потоплены - игра окончена
+                    if (Game.allShipsAreSunk(Game.getShips())) {
+                        GameStore.commit("setMyState", GameState.GAME_IS_OVER);
+                        GameStore.commit("setEnemyState", GameState.GAME_IS_OVER);
+                    }
+                }
+
+            } else await GameStore.dispatch("enableShooting");
+
+            await shot.highlight(ctx, ht);
+            ComputerGameManager.availableLocations[indexesOfTrue[randIndex]] = false;
+            GameStore.commit("setEnemyShotHint", shot.toString());
+
+            // console.log('indexesOfTrue:', ComputerGameManager.availableLocations.reduce(function (arr: number[], e, i) { if (e) arr.push(i); return arr; }, []));
+
+        } while (ship)
+    }
+    public static async playerShot(shot: Location) {
+        console.log('Player move');
+
+        Game.addToShotHistory(shot);
 
         let ht: HighlightType = HighlightType.CIRCLE;
-        let ctx = GameStore.getters.getContext2D;
+        let hostileCtx = GameStore.getters.getHostileContext2D;
 
-        let ship: Ship | undefined = Game.getShipByLocation(Game.getShips(), shot);
+        let ship: Ship | undefined = Game.getShipByLocation(Game.getComputerShips(), shot);
 
         if (ship) {
-            await GameStore.dispatch("disableShooting");
-
             ht = HighlightType.CROSS; // меняем тип выделения на "крест"
             ship.hitsNumber++; // увеличиваем счетчик ранений у подбитого корабля
             // находим диагональные локации
             let diags: Location[] = Game.getDiagonalLocations(shot);
-            // Исключаем диагональные локации из возможных для выстрела
-            await ComputerGameManager.excludeLocationsFromPossible(diags);
+            // добавляем диагональные локации в историю выстрелов
+            for (const loc of diags) Game.addToShotHistory(loc);
             // подсвечиваем диагональные локации
-            await Game.highlightDiagonals(ctx, diags);
+            await Game.highlightDiagonals(hostileCtx, diags);
 
             // если корабль потоплен
             if (ship.hitsNumber === ship.length) {
@@ -45,43 +101,41 @@ export default class ComputerGameManager {
                     ship.location.y,
                     ship.type
                 );
-                // выделяем их на своем гриде
-                for (const loc of edgeLocs) await loc.highlight(ctx);
-                // Исключаем боковые локации из возможных для выстрела
-                await ComputerGameManager.excludeLocationsFromPossible(edgeLocs);
-                // Если все корабли потоплены - игра окончена
-                if (Game.allShipsAreSunk()) {
+                // добавляем боковые локации в историю выстрелов
+                for (const loc of edgeLocs) Game.addToShotHistory(loc);
+                // выделяем их
+                for (const loc of edgeLocs) await loc.highlight(hostileCtx);
+
+                // Если все корабли компьютера потоплены - игра окончена, игрок выиграл
+                if (Game.allShipsAreSunk(Game.getComputerShips())) {
                     GameStore.commit("setMyState", GameState.GAME_IS_OVER);
                     GameStore.commit("setEnemyState", GameState.GAME_IS_OVER);
+                    GameStore.commit("setIsWinner", true);
+                    console.log("PLAYER WON!");
                 }
             }
 
-        } else await GameStore.dispatch("enableShooting");
+        } else {
+            await GameStore.dispatch("disableShooting");
+            await ComputerGameManager.computerShot();
+        }
 
-        await shot.highlight(ctx, ht);
-        ComputerGameManager.possibleShootingLocations[randIndex] = false;
-        GameStore.commit("setEnemyShotHint", shot.toString());
+        await shot.highlight(hostileCtx, ht);
     }
-    public static playerShot(shot: Location) {
-        console.log('Player move');
-        
-
-    }
-
     /**
      * Создает массив возможных локаций, куда компьютер может стрелять
      */
     public static createPossibleLocations() {
         console.log('creating possible locations...');
-        ComputerGameManager.possibleShootingLocations = [];
+        ComputerGameManager.availableLocations = [];
         for (let i = 0; i < 100; i++)
-            ComputerGameManager.possibleShootingLocations.push(true);
+            ComputerGameManager.availableLocations.push(true);
     }
     /**
      * Исключает локации из возможных, чтобы компьютер по ним уже не стрелял
      */
     private static async excludeLocationsFromPossible(locs: Location[]) {
         for (const loc of locs)
-            ComputerGameManager.possibleShootingLocations[loc.y * 10 + loc.x] = false;
+            ComputerGameManager.availableLocations[loc.y * 10 + loc.x] = false;
     }
 }

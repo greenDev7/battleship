@@ -184,7 +184,7 @@ export default class GameProcessManager {
                 for (const loc of edgeLocs) await loc.highlight(ctx);
 
                 // Если все корабли потоплены, даем знать об этом противнику. Игра окончена!
-                if (Game.allShipsAreSunk()) {
+                if (Game.allShipsAreSunk(Game.getShips())) {
                     GameStore.commit("setMyState", GameState.GAME_IS_OVER);
                     GameStore.commit("setEnemyState", GameState.GAME_IS_OVER);
                     // Отправляем сопернику информацию о завершение игры с типом сообщения GAME_OVER
@@ -196,7 +196,7 @@ export default class GameProcessManager {
                         })
                     );
                 }
-            }            
+            }
         } else await GameStore.dispatch("enableShooting");
 
         await shot.highlight(ctx, ht);
