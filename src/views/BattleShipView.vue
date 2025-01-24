@@ -428,7 +428,7 @@ export default defineComponent({
       GameStore.commit("setMyState", GameState.PLAYING);
       Game.createComputerRandomShips();
       GameProcessManager.setGameType(GameType.COMPUTER);
-      ComputerGameManager.createPossibleLocations();
+      ComputerGameManager.createAvailableLocations();
 
       let isMyTurn: boolean = Math.random() - 0.5 > 0;
       GameStore.commit("setMyTurnToShoot", isMyTurn);

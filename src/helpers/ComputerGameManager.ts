@@ -1,6 +1,5 @@
 import GameState from "@/model/enums/GameState";
 import HighlightType from "@/model/enums/HighlightType";
-import ShipOrientation from "@/model/enums/ShipOrientation";
 import Game from "@/model/Game";
 import Location from "@/model/Location";
 import Ship from "@/model/Ship";
@@ -38,7 +37,7 @@ export default class ComputerGameManager {
                 let diags: Location[] = Game.getDiagonalLocations(shot);
                 console.log('diags:', diags);
                 // Исключаем диагональные локации из возможных для выстрела
-                await ComputerGameManager.excludeLocationsFromPossible(diags);
+                await ComputerGameManager.excludeLocations(diags);
                 // подсвечиваем диагональные локации
                 await Game.highlightDiagonals(ctx, diags);
 
@@ -54,8 +53,8 @@ export default class ComputerGameManager {
                     // выделяем их на своем гриде
                     for (const loc of edgeLocs) await loc.highlight(ctx);
                     // Исключаем боковые локации из возможных для выстрела
-                    await ComputerGameManager.excludeLocationsFromPossible(edgeLocs);
-                    // Если все корабли потоплены - игра окончена
+                    await ComputerGameManager.excludeLocations(edgeLocs);
+                    // Если все корабли потоплены - игра окончена, компьютер выиграл
                     if (Game.allShipsAreSunk(Game.getShips())) {
                         GameStore.commit("setMyState", GameState.GAME_IS_OVER);
                         GameStore.commit("setEnemyState", GameState.GAME_IS_OVER);
@@ -67,8 +66,6 @@ export default class ComputerGameManager {
             await shot.highlight(ctx, ht);
             ComputerGameManager.availableLocations[indexesOfTrue[randIndex]] = false;
             GameStore.commit("setEnemyShotHint", shot.toString());
-
-            // console.log('indexesOfTrue:', ComputerGameManager.availableLocations.reduce(function (arr: number[], e, i) { if (e) arr.push(i); return arr; }, []));
 
         } while (ship)
     }
@@ -123,18 +120,18 @@ export default class ComputerGameManager {
         await shot.highlight(hostileCtx, ht);
     }
     /**
-     * Создает массив возможных локаций, куда компьютер может стрелять
+     * Создает массив доступных локаций, куда компьютер может стрелять
      */
-    public static createPossibleLocations() {
-        console.log('creating possible locations...');
+    public static createAvailableLocations() {
+        console.log('creating available locations...');
         ComputerGameManager.availableLocations = [];
         for (let i = 0; i < 100; i++)
             ComputerGameManager.availableLocations.push(true);
     }
     /**
-     * Исключает локации из возможных, чтобы компьютер по ним уже не стрелял
+     * Исключает локации из доступных, чтобы компьютер по ним уже не стрелял
      */
-    private static async excludeLocationsFromPossible(locs: Location[]) {
+    private static async excludeLocations(locs: Location[]) {
         for (const loc of locs)
             ComputerGameManager.availableLocations[loc.y * 10 + loc.x] = false;
     }
