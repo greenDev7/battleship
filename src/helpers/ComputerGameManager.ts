@@ -36,7 +36,7 @@ export default class ComputerGameManager {
                 // находим диагональные локации
                 let diags: Location[] = Game.getDiagonalLocations(shot);
                 console.log('diags:', diags);
-                // Исключаем диагональные локации из возможных для выстрела
+                // Исключаем диагональные локации из доступных для выстрела
                 await ComputerGameManager.excludeLocations(diags);
                 // подсвечиваем диагональные локации
                 await Game.highlightDiagonals(ctx, diags);
@@ -52,7 +52,7 @@ export default class ComputerGameManager {
                     );
                     // выделяем их на своем гриде
                     for (const loc of edgeLocs) await loc.highlight(ctx);
-                    // Исключаем боковые локации из возможных для выстрела
+                    // Исключаем боковые локации из доступных для выстрела
                     await ComputerGameManager.excludeLocations(edgeLocs);
                     // Если все корабли потоплены - игра окончена, компьютер выиграл
                     if (Game.allShipsAreSunk(Game.getShips())) {
