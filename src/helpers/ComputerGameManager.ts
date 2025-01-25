@@ -55,7 +55,6 @@ export default class ComputerGameManager {
                 ship.hitsNumber++; // увеличиваем счетчик ранений у подбитого корабля
                 // находим диагональные локации
                 let diags: Location[] = Game.getDiagonalLocations(shot);
-                console.log('diags:', diags);
                 // Исключаем диагональные локации из доступных для выстрела
                 await ComputerGameManager.excludeLocations(diags);
                 // подсвечиваем диагональные локации
@@ -115,7 +114,6 @@ export default class ComputerGameManager {
 
         let randomIndex = Math.floor(Math.random() * availableLocs.length);
         let loc: Location = availableLocs[randomIndex];
-        console.log('nearby random loc:', loc);
         ComputerGameManager.excludeLocation(loc);
         return loc;
     }
