@@ -27,7 +27,7 @@ export default class ComputerGameManager {
                 // При этом нужно попробовать выбрать из доступных локаций те, которые будут соседними по отношению к текущему попаданию
                 let nearbyLocs = await Location.getNearbyLocations(ch.x, ch.y);
                 // и из этих локации выбираем одну рандомную (если она существует)
-                let nearRandomLoc = ComputerGameManager.getRandomLocationFromNearbyAndExclude(nearbyLocs);
+                let nearRandomLoc = ComputerGameManager.getRandomLocationFromNearby(nearbyLocs);
 
                 if (nearRandomLoc)
                     shot = nearRandomLoc;
@@ -101,7 +101,7 @@ export default class ComputerGameManager {
         let randIndex = Math.floor(Math.random() * indexesOfTrue.length);
         return new Location(indexesOfTrue[randIndex] % 10, Math.floor(indexesOfTrue[randIndex] / 10));
     }
-    private static getRandomLocationFromNearbyAndExclude(nearbyLocs: Location[]): Location | undefined {
+    private static getRandomLocationFromNearby(nearbyLocs: Location[]): Location | undefined {
 
         let availableLocs: Location[] = [];
 
@@ -114,7 +114,6 @@ export default class ComputerGameManager {
 
         let randomIndex = Math.floor(Math.random() * availableLocs.length);
         let loc: Location = availableLocs[randomIndex];
-        ComputerGameManager.excludeLocation(loc);
         return loc;
     }
     public static async playerShot(shot: Location) {
