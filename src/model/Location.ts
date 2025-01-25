@@ -99,4 +99,32 @@ export default class Location {
      * Возвращает координату в ее текстовом представлении, например (к-7)
      */
     public toString = () => `(${letterDict[this._x]}-${this._y + 1})`;
+
+    /**
+     * Возвращает смежные (недиагональные) локации по отношению к данной
+     */
+    public static async getNearbyLocations(loc_x: number, loc_y: number) {
+        let nearbyLocs: Location[] = [];
+
+        for (let i = -1; i <= 1; i++)
+            for (let j = -1; j <= 1; j++) {
+
+                let neighborX = loc_x + i;
+                let neighborY = loc_y + j;
+
+                // проверка, что локации НЕдиагональные и не выходят за рамки грида
+                if ((i * i + j * j !== 1) || neighborX < 0 || neighborY < 0 || neighborX > 9 || neighborY > 9)
+                    continue;
+
+                nearbyLocs.push(new Location(neighborX, neighborY));
+            }
+
+        return nearbyLocs;
+    }
+    /**
+     * Возвращает порядковое представление локации. Например, для локации б-2 возвращает 11 
+     */
+    public convertToSequenceNumber(): number {
+        return this._y * 10 + this._x;
+    }
 }

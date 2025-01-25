@@ -231,12 +231,6 @@ export default class Game {
         return ships.every(ship => ship.length === ship.hitsNumber);
     }
     /**
-     * Возвращает раненные (поврежденные) корабли
-     */
-    public static getDamagedShips(ships: Ship[]): Ship[] {
-        return ships.filter(ship => ship.hitsNumber > 0 && ship.hitsNumber < ship.length);
-    }
-    /**
      * Подсвечивает диагональные локации и, если нужно, добавляет их в историю выстрелов
      */
     public static async highlightDiagonals(

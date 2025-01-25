@@ -8,6 +8,7 @@ import GameStore from "@/store/index";
 export default class ComputerGameManager {
 
     private static availableLocations: boolean[];
+    private static currentHit: Location | undefined = undefined;
 
     public static async computerShot() {
 
@@ -15,25 +16,29 @@ export default class ComputerGameManager {
 
         do {
             console.log('Computer move');
-            // Формируем массив с индексами элементов availableLocations, у которых значения равны true
-            let indexesOfTrue = ComputerGameManager.availableLocations.reduce(function (arr: number[], el, index) { if (el) arr.push(index); return arr; }, []);
 
             // Формируем выстрел компьютера
             let shot: Location;
 
-            if (ship) {
-                // Если имеется раненный корабль, то нужно попытаться сначала его добить
-                shot = new Location(1, 1);
-                console.log('killing unsunk ship: ', ship);
-                // нужно попробовать выбрать из доступных локаций те, которые будут соседними по отношению к текущему попаданию
-            }
-            else {
-                let randIndex = Math.floor(Math.random() * indexesOfTrue.length);
-                shot = new Location(indexesOfTrue[randIndex] % 10, Math.floor(indexesOfTrue[randIndex] / 10));
-                ComputerGameManager.availableLocations[indexesOfTrue[randIndex]] = false;
-            }
+            let ch = ComputerGameManager.currentHit;
+            if (ch) {
+                // Если имеется раненный корабль игрока, то нужно попытаться сначала его добить
+                console.log('killing damaged ship: ', ComputerGameManager.currentHit);
+                // При этом нужно попробовать выбрать из доступных локаций те, которые будут соседними по отношению к текущему попаданию
+                let nearbyLocs = await Location.getNearbyLocations(ch.x, ch.y);
+                // и из этих локации выбираем одну рандомную (если она существует)
+                let nearRandomLoc = ComputerGameManager.getRandomLocationFromNearbyAndExclude(nearbyLocs);
 
-            console.log('computer shoots at:', shot.toString());
+                if (nearRandomLoc)
+                    shot = nearRandomLoc;
+                else {
+                    shot = ComputerGameManager.getRandomLocationFromAvailables();
+                    ComputerGameManager.currentHit = undefined;
+                }
+            }
+            else shot = ComputerGameManager.getRandomLocationFromAvailables();
+
+            console.log('Computer shoots at:', shot.toString());
 
             let ht: HighlightType = HighlightType.CIRCLE;
             let ctx = GameStore.getters.getContext2D;
@@ -43,6 +48,8 @@ export default class ComputerGameManager {
             if (ship) {
                 // Если компьютер попал - отключаем у соперника возможность выстрела
                 await GameStore.dispatch("disableShooting");
+
+                ComputerGameManager.currentHit = shot;
 
                 ht = HighlightType.CROSS; // меняем тип выделения на "крест"
                 ship.hitsNumber++; // увеличиваем счетчик ранений у подбитого корабля
@@ -56,6 +63,9 @@ export default class ComputerGameManager {
 
                 // если корабль потоплен
                 if (ship.hitsNumber === ship.length) {
+
+                    ComputerGameManager.currentHit = undefined;
+
                     // находим боковые локации
                     let edgeLocs = await Ship.getFrontAndBackLocations(
                         ship.length,
@@ -78,8 +88,36 @@ export default class ComputerGameManager {
 
             await shot.highlight(ctx, ht);
             GameStore.commit("setEnemyShotHint", shot.toString());
+            // Исключаем выстрел из доступных локаций
+            ComputerGameManager.excludeLocation(shot);
 
         } while (ship)
+    }
+    /**
+     * Возвращает одну рандомную локацию из доступных 
+     */
+    private static getRandomLocationFromAvailables(): Location {
+        // Формируем массив с индексами элементов availableLocations, у которых значения равны true
+        let indexesOfTrue = ComputerGameManager.availableLocations.reduce(function (arr: number[], el, index) { if (el) arr.push(index); return arr; }, []);
+        let randIndex = Math.floor(Math.random() * indexesOfTrue.length);
+        return new Location(indexesOfTrue[randIndex] % 10, Math.floor(indexesOfTrue[randIndex] / 10));
+    }
+    private static getRandomLocationFromNearbyAndExclude(nearbyLocs: Location[]): Location | undefined {
+
+        let availableLocs: Location[] = [];
+
+        for (const loc of nearbyLocs)
+            if (ComputerGameManager.isAvailableLocation(loc))
+                availableLocs.push(loc);
+
+        if (availableLocs.length === 0)
+            return undefined;
+
+        let randomIndex = Math.floor(Math.random() * availableLocs.length);
+        let loc: Location = availableLocs[randomIndex];
+        console.log('nearby random loc:', loc);
+        ComputerGameManager.excludeLocation(loc);
+        return loc;
     }
     public static async playerShot(shot: Location) {
         console.log('Player move');
@@ -145,6 +183,18 @@ export default class ComputerGameManager {
      */
     private static async excludeLocations(locs: Location[]) {
         for (const loc of locs)
-            ComputerGameManager.availableLocations[loc.y * 10 + loc.x] = false;
+            ComputerGameManager.excludeLocation(loc);
+    }
+    /**
+     * Исключает локацию из доступных
+     */
+    private static excludeLocation(loc: Location) {
+        ComputerGameManager.availableLocations[loc.convertToSequenceNumber()] = false;
+    }
+    /**
+     * Возвращает true, если локация доступна для выстрела, иначе false 
+     */
+    private static isAvailableLocation(loc: Location): boolean {
+        return ComputerGameManager.availableLocations[loc.convertToSequenceNumber()];
     }
 }

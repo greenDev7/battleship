@@ -130,25 +130,14 @@ export default class Ship {
     /**
      * Возвращает торцевые локации корабля (в случае потопления корабля их необходимо подсветить)
      */
-    public static async getFrontAndBackLocations(length: number, loc_x: number, loc_y: number, shipType: number) {
-        let locs: Location[] = [];
+    public static async getFrontAndBackLocations(length: number, loc_x: number, loc_y: number, shipType: number): Promise<Location[]> {
 
-        if (length === 1) {
+        if (length === 1)
             // если корабль однопалубный, то возвращаем смежные (недиагональные) локации
-            for (let i = -1; i <= 1; i++)
-                for (let j = -1; j <= 1; j++) {
-
-                    let neighborX = loc_x + i;
-                    let neighborY = loc_y + j;
-
-                    // проверка, что локации НЕдиагональные и не выходят за рамки грида
-                    if ((i * i + j * j !== 1) || neighborX < 0 || neighborY < 0 || neighborX > 9 || neighborY > 9)
-                        continue;
-
-                    locs.push(new Location(neighborX, neighborY));
-                }
-        }
+            return await Location.getNearbyLocations(loc_x, loc_y);
         else {
+
+            let locs: Location[] = [];
 
             if (shipType === ShipOrientation.Horizontal) {
                 let leftLoc = new Location(loc_x - 1, loc_y);
@@ -164,8 +153,9 @@ export default class Ship {
                 if (topLoc.y >= 0) locs.push(topLoc);
                 if (bottomLoc.y <= 9) locs.push(bottomLoc);
             }
+
+            return locs;
         }
-        return locs;
     }
     /**
      * Возвращает true и координаты пересечений обоих кораблей, если данный корабль пересекается с кораблем ship, иначе возвращает false
