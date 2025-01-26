@@ -9,6 +9,8 @@ export default class ComputerGameManager {
 
     private static availableLocations: boolean[];
     private static currentHit: Location | undefined = undefined;
+    private static numberOfMissesBeforeCheating: number = 10;
+    private static numberOfMisses: number = 0;
 
     public static async computerShot() {
 
@@ -20,23 +22,39 @@ export default class ComputerGameManager {
             // Формируем выстрел компьютера
             let shot: Location;
 
-            let ch = ComputerGameManager.currentHit;
-            if (ch) {
-                // Если имеется раненный корабль игрока, то нужно попытаться сначала его добить
-                console.log('killing damaged ship: ', ComputerGameManager.currentHit);
-                // При этом нужно попробовать выбрать из доступных локаций те, которые будут соседними по отношению к текущему попаданию
-                let nearbyLocs = await Location.getNearbyLocations(ch.x, ch.y);
-                // и из этих локации выбираем одну рандомную (если она существует)
-                let nearRandomLoc = ComputerGameManager.getRandomLocationFromNearby(nearbyLocs);
+            console.log('numberOfMisses: ', ComputerGameManager.numberOfMisses);
 
-                if (nearRandomLoc)
-                    shot = nearRandomLoc;
-                else {
+            // Если компьютер промахивается numberOfMissesBeforeCheating раз, придется читерить =)
+            // и подсказывать компьютеру локацию где находится корабль игрока. 
+            // При этом у игрока должен быть хотя бы один целый и невредимый корабль (hitsNumber === 0)
+            if (ComputerGameManager.numberOfMisses === ComputerGameManager.numberOfMissesBeforeCheating && Game.getShips().some(s => s.hitsNumber === 0)) {
+                console.log("Sorry, player, but I'm peeping...");
+                let peepedLocation = ComputerGameManager.getExactLocation();
+                if (peepedLocation)
+                    shot = peepedLocation;
+                else
                     shot = ComputerGameManager.getRandomLocationFromAvailables();
-                    ComputerGameManager.currentHit = undefined;
-                }
             }
-            else shot = ComputerGameManager.getRandomLocationFromAvailables();
+            else {
+
+                let ch = ComputerGameManager.currentHit;
+                if (ch) {
+                    // Если имеется раненный корабль игрока, то нужно попытаться сначала его добить
+                    console.log('killing damaged ship: ', ComputerGameManager.currentHit);
+                    // При этом нужно попробовать выбрать из доступных локаций те, которые будут соседними по отношению к текущему попаданию
+                    let nearbyLocs = await Location.getNearbyLocations(ch.x, ch.y);
+                    // и из этих локации выбираем одну рандомную (если она существует)
+                    let nearRandomLoc = ComputerGameManager.getRandomLocationFromNearby(nearbyLocs);
+
+                    if (nearRandomLoc)
+                        shot = nearRandomLoc;
+                    else {
+                        shot = ComputerGameManager.getRandomLocationFromAvailables();
+                        ComputerGameManager.currentHit = undefined;
+                    }
+                }
+                else shot = ComputerGameManager.getRandomLocationFromAvailables();
+            }
 
             console.log('Computer shoots at:', shot.toString());
 
@@ -48,7 +66,9 @@ export default class ComputerGameManager {
             if (ship) {
                 // Если компьютер попал - отключаем у соперника возможность выстрела
                 await GameStore.dispatch("disableShooting");
-
+                // Обнуляем счетчик промахов
+                ComputerGameManager.numberOfMisses = 0;
+                // Сохраняем попадание в currentHit
                 ComputerGameManager.currentHit = shot;
 
                 ht = HighlightType.CROSS; // меняем тип выделения на "крест"
@@ -83,7 +103,12 @@ export default class ComputerGameManager {
                     }
                 }
 
-            } else await GameStore.dispatch("enableShooting");
+            } else {
+                await GameStore.dispatch("enableShooting");
+                // Если компьютер промазал, увеличиваем счетчик промахов
+                ComputerGameManager.numberOfMisses++;
+            }
+
 
             await shot.highlight(ctx, ht);
             GameStore.commit("setEnemyShotHint", shot.toString());
@@ -91,6 +116,15 @@ export default class ComputerGameManager {
             ComputerGameManager.excludeLocation(shot);
 
         } while (ship)
+    }
+    /**
+     * Возвращает локацию, принадлежащую целому и невредимому кораблю
+     */
+    private static getExactLocation(): Location | undefined {
+        // получим целый и невредимый корабль
+        let ship = Game.getShips().find(s => s.hitsNumber === 0);
+        if (ship)
+            return ship.getLocations()[0];
     }
     /**
      * Возвращает одну рандомную локацию из доступных 
