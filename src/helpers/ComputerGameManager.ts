@@ -100,6 +100,11 @@ export default class ComputerGameManager {
                     if (Game.allShipsAreSunk(Game.getShips())) {
                         GameStore.commit("setMyState", GameState.GAME_IS_OVER);
                         GameStore.commit("setEnemyState", GameState.GAME_IS_OVER);
+
+                        await shot.highlight(ctx, ht);
+                        let hostileCtx = GameStore.getters.getHostileContext2D;
+                        Game.getComputerShips().filter(s => s.hitsNumber < s.length).forEach(s => s.draw(hostileCtx, 'red'));
+                        break;
                     }
                 }
 
@@ -116,39 +121,6 @@ export default class ComputerGameManager {
             ComputerGameManager.excludeLocation(shot);
 
         } while (ship)
-    }
-    /**
-     * Возвращает локацию, принадлежащую целому и невредимому кораблю
-     */
-    private static getExactLocation(): Location | undefined {
-        // получим целый и невредимый корабль
-        let ship = Game.getShips().find(s => s.hitsNumber === 0);
-        if (ship)
-            return ship.getLocations()[0];
-    }
-    /**
-     * Возвращает одну рандомную локацию из доступных 
-     */
-    private static getRandomLocationFromAvailables(): Location {
-        // Формируем массив с индексами элементов availableLocations, у которых значения равны true
-        let indexesOfTrue = ComputerGameManager.availableLocations.reduce(function (arr: number[], el, index) { if (el) arr.push(index); return arr; }, []);
-        let randIndex = Math.floor(Math.random() * indexesOfTrue.length);
-        return new Location(indexesOfTrue[randIndex] % 10, Math.floor(indexesOfTrue[randIndex] / 10));
-    }
-    private static getRandomLocationFromNearby(nearbyLocs: Location[]): Location | undefined {
-
-        let availableLocs: Location[] = [];
-
-        for (const loc of nearbyLocs)
-            if (ComputerGameManager.isAvailableLocation(loc))
-                availableLocs.push(loc);
-
-        if (availableLocs.length === 0)
-            return undefined;
-
-        let randomIndex = Math.floor(Math.random() * availableLocs.length);
-        let loc: Location = availableLocs[randomIndex];
-        return loc;
     }
     public static async playerShot(shot: Location) {
         console.log('Player move');
@@ -199,6 +171,39 @@ export default class ComputerGameManager {
         }
 
         await shot.highlight(hostileCtx, ht);
+    }
+    /**
+     * Возвращает локацию, принадлежащую целому и невредимому кораблю
+     */
+    private static getExactLocation(): Location | undefined {
+        // получим целый и невредимый корабль
+        let ship = Game.getShips().find(s => s.hitsNumber === 0);
+        if (ship)
+            return ship.getLocations()[0];
+    }
+    /**
+     * Возвращает одну рандомную локацию из доступных 
+     */
+    private static getRandomLocationFromAvailables(): Location {
+        // Формируем массив с индексами элементов availableLocations, у которых значения равны true
+        let indexesOfTrue = ComputerGameManager.availableLocations.reduce(function (arr: number[], el, index) { if (el) arr.push(index); return arr; }, []);
+        let randIndex = Math.floor(Math.random() * indexesOfTrue.length);
+        return new Location(indexesOfTrue[randIndex] % 10, Math.floor(indexesOfTrue[randIndex] / 10));
+    }
+    private static getRandomLocationFromNearby(nearbyLocs: Location[]): Location | undefined {
+
+        let availableLocs: Location[] = [];
+
+        for (const loc of nearbyLocs)
+            if (ComputerGameManager.isAvailableLocation(loc))
+                availableLocs.push(loc);
+
+        if (availableLocs.length === 0)
+            return undefined;
+
+        let randomIndex = Math.floor(Math.random() * availableLocs.length);
+        let loc: Location = availableLocs[randomIndex];
+        return loc;
     }
     /**
      * Создает массив доступных локаций, куда компьютер может стрелять
