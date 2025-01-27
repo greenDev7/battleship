@@ -176,6 +176,8 @@ export default class ComputerGameManager {
         let ship = Game.getShips().find(s => s.hitsNumber === 0);
         if (ship)
             return ship.getLocations()[0];
+        
+        return undefined;
     }
     /**
      * Возвращает одну рандомную локацию из доступных 
