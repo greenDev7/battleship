@@ -85,6 +85,7 @@ export default defineComponent({
 
     isWaitingForEnemyToPlayAgain(): boolean {
       return (
+        this.gameType !== GameType.COMPUTER &&
         this.myState === GameState.SHIPS_POSITIONING &&
         this.enemyState === GameState.GAME_IS_OVER
       );
