@@ -17,8 +17,6 @@ export default class ComputerGameManager {
         let ship: Ship | undefined = undefined;
 
         do {
-            console.log('Computer move');
-
             // Формируем выстрел компьютера
             let shot: Location;
 
@@ -82,9 +80,8 @@ export default class ComputerGameManager {
 
                 // если корабль потоплен
                 if (ship.hitsNumber === ship.length) {
-
+                    // сбрасываем currentHit
                     ComputerGameManager.currentHit = undefined;
-
                     // находим боковые локации
                     let edgeLocs = await Ship.getFrontAndBackLocations(
                         ship.length,
@@ -103,6 +100,7 @@ export default class ComputerGameManager {
 
                         await shot.highlight(ctx, ht);
                         let hostileCtx = GameStore.getters.getHostileContext2D;
+                        // Показываем игроку местонахождение непотопленных кораблей компьютера
                         Game.getComputerShips().filter(s => s.hitsNumber < s.length).forEach(s => s.draw(hostileCtx, 'red'));
                         break;
                     }
@@ -114,12 +112,10 @@ export default class ComputerGameManager {
                 ComputerGameManager.numberOfMisses++;
             }
 
-
             await shot.highlight(ctx, ht);
             GameStore.commit("setEnemyShotHint", shot.toString());
             // Исключаем выстрел из доступных локаций
             ComputerGameManager.excludeLocation(shot);
-
         } while (ship)
     }
     public static async playerShot(shot: Location) {
