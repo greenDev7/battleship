@@ -10,12 +10,20 @@ import HighlightType from "@/model/enums/HighlightType";
 import ShotResult from "@/model/enums/ShotResult";
 import Ship from "@/model/Ship";
 import UIHandler from "@/helpers/UIHandler";
+import ComputerGameManager from "./ComputerGameManager";
 
 export default class GameProcessManager {
 
     private static enemyClientUuid: string;
     private static gameId: string;
+    private static gameType: GameType;
 
+    public static getGameType() {
+        return GameProcessManager.gameType;
+    }
+    public static setGameType(gt: GameType) {
+        GameProcessManager.gameType = gt;
+    }
     public static getEnemyUUID() {
         return GameProcessManager.enemyClientUuid;
     }
@@ -135,10 +143,12 @@ export default class GameProcessManager {
             shot_location: data.shot_location,
         };
 
-        let ship: Ship | undefined = Game.getShipByLocation(shot);
+        let ship: Ship | undefined = Game.getShipByLocation(Game.getShips(), shot);
 
         // если наш корабль ранили
         if (ship) {
+            await GameStore.dispatch("disableShooting");
+
             ht = HighlightType.CROSS; // меняем тип выделения на "крест"
             ship.hitsNumber++; // увеличиваем счетчик ранений у подбитого корабля
 
@@ -174,7 +184,7 @@ export default class GameProcessManager {
                 for (const loc of edgeLocs) await loc.highlight(ctx);
 
                 // Если все корабли потоплены, даем знать об этом противнику. Игра окончена!
-                if (Game.allShipsAreSunk()) {
+                if (Game.allShipsAreSunk(Game.getShips())) {
                     GameStore.commit("setMyState", GameState.GAME_IS_OVER);
                     GameStore.commit("setEnemyState", GameState.GAME_IS_OVER);
                     // Отправляем сопернику информацию о завершение игры с типом сообщения GAME_OVER
@@ -187,7 +197,6 @@ export default class GameProcessManager {
                     );
                 }
             }
-            await GameStore.dispatch("disableShooting");
         } else await GameStore.dispatch("enableShooting");
 
         await shot.highlight(ctx, ht);
@@ -288,6 +297,11 @@ export default class GameProcessManager {
 
         if (Game.existsInShotHistory(shotLocation)) {
             UIHandler.showAlert("Вы уже стреляли сюда", "warning");
+            return;
+        }
+
+        if (GameProcessManager.gameType === GameType.COMPUTER) {
+            ComputerGameManager.playerShot(shotLocation);
             return;
         }
 

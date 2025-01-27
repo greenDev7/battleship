@@ -6,14 +6,20 @@ export default class Game {
 
     private static ships: Ship[];
     private static shotHistory: Location[] = [];
-
+    private static computerShips: Ship[] = [];
 
     /**
      * Возвращает корабли
      */
     public static getShips(): Ship[] {
         return Game.ships;
-    }   
+    }
+    /**
+     * Возвращает корабли компьютера
+     */
+    public static getComputerShips(): Ship[] {
+        return Game.computerShips;
+    }
     /**
      * Выполняет перестановку кораблей на своем гриде
      */
@@ -60,11 +66,23 @@ export default class Game {
         return this.containsLocation(location, Game.shotHistory);
     }
     /**
-     * Расставляет случайным образом корабли на сетке
+     * Присваивает массиву кораблей массив кораблей с рандомной расстановкой
      */
     public static createInitialRandomShips() {
         console.log('createInitialRandomShips');
-        Game.ships = [];
+        Game.ships = Game.generateRandomShips();
+    }
+    /**
+     * Присваивает массиву кораблей компьютера (для игры с компьютером) массив кораблей с рандомной расстановкой
+     */
+    public static createComputerRandomShips() {
+        console.log('createComputerRandomShips');
+        Game.computerShips = this.generateRandomShips();
+    }
+    /**
+     * Генерирует массив кораблей с рандомной расстановкой
+     */
+    private static generateRandomShips(): Ship[] {
         let tempShips: Ship[] = [];
 
         let loc4: Location = new Location(Math.floor(Math.random() * 7), Math.floor(Math.random() * 7));
@@ -85,7 +103,7 @@ export default class Game {
             }
         }
 
-        Game.ships = tempShips;
+        return tempShips;
     }
     /**
      * Возвращает true, если корабли расставлены корректно (ни один из них не пересекается со всеми другими),
@@ -120,9 +138,9 @@ export default class Game {
     /**
      * Возвращает корабль по данной локации
      */
-    public static getShipByLocation(location: Location): Ship | undefined {
+    public static getShipByLocation(ships: Ship[], location: Location): Ship | undefined {
 
-        let notDestroyedShips: Ship[] = Game.ships.filter(s => s.hitsNumber < s.length);
+        let notDestroyedShips: Ship[] = ships.filter(s => s.hitsNumber < s.length);
 
         for (const ship of notDestroyedShips)
             if (Game.containsLocation(location, ship.getLocations()))
@@ -209,8 +227,8 @@ export default class Game {
     /**
      * Возвращает true, если все корабли потоплены, иначе false
      */
-    public static allShipsAreSunk(): boolean {
-        return Game.ships.every(ship => ship.length === ship.hitsNumber);
+    public static allShipsAreSunk(ships: Ship[]): boolean {
+        return ships.every(ship => ship.length === ship.hitsNumber);
     }
     /**
      * Подсвечивает диагональные локации и, если нужно, добавляет их в историю выстрелов
