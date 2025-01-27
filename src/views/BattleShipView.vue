@@ -400,16 +400,16 @@ export default defineComponent({
       GameStore.commit("setIsWinner", false);
       GameStore.commit("setEnemyShotHint", "");
       await GameStore.dispatch("addOwnGridEventListeners");
-      const ws: WebSocket = WebSocketManager.getWebSocket();
 
-      if (this.gameType !== GameType.COMPUTER)
-        ws.send(
+      if (this.gameType !== GameType.COMPUTER) {
+        WebSocketManager.getWebSocket().send(
           JSON.stringify({
             msg_type: MessageType.PLAY_AGAIN,
             game_id: GameProcessManager.getGameId(),
             enemy_client_id: GameProcessManager.getEnemyUUID(),
           })
         );
+      }
     },
 
     getPlayButtonCaption(): string {

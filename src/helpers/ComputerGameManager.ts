@@ -157,6 +157,7 @@ export default class ComputerGameManager {
                     GameStore.commit("setMyState", GameState.GAME_IS_OVER);
                     GameStore.commit("setEnemyState", GameState.GAME_IS_OVER);
                     GameStore.commit("setIsWinner", true);
+                    await GameStore.dispatch("disableShooting");
                     console.log("PLAYER WON!");
                 }
             }
